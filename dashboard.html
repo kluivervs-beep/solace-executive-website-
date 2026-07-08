@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard (voorbeeld) | Solace Executive</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body { background: var(--color-bg); min-height: 100dvh; }
+
+  .demo-banner {
+    background: rgba(180, 146, 61, 0.12);
+    border-bottom: 1px solid var(--color-gold-dim);
+    color: var(--color-gold-light);
+    text-align: center;
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    padding: 10px var(--space-2);
+  }
+  .demo-banner strong { color: var(--color-ink); }
+
+  .dash-shell {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: calc(100dvh - 40px);
+  }
+  .dash-side {
+    background: var(--color-bg-elevated);
+    border-right: 1px solid var(--color-border);
+    padding: var(--space-4) var(--space-3);
+    display: flex;
+    flex-direction: column;
+  }
+  .dash-brand { display: flex; align-items: center; gap: 10px; margin-bottom: var(--space-6); }
+  .dash-brand img { width: 28px; height: 28px; }
+  .dash-brand .brand-name { font-family: var(--font-display); font-size: 16px; letter-spacing: 0.14em; color: var(--color-ink); }
+  .dash-brand .brand-sub { font-family: var(--font-sans); font-size: 8px; letter-spacing: 0.28em; color: var(--color-gold); }
+
+  .dash-nav { display: flex; flex-direction: column; gap: 4px; }
+  .dash-nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
+    color: var(--color-ink-muted);
+    cursor: pointer;
+  }
+  .dash-nav a svg { width: 17px; height: 17px; flex-shrink: 0; }
+  .dash-nav a.is-active { background: rgba(180, 146, 61, 0.12); color: var(--color-gold-light); }
+  .dash-nav a:hover { color: var(--color-ink); }
+
+  .dash-side-foot { margin-top: auto; padding-top: var(--space-4); border-top: 1px solid var(--color-border); }
+  .dash-side-foot a { font-size: 12.5px; color: var(--color-ink-muted); }
+  .dash-side-foot a:hover { color: var(--color-gold-light); }
+
+  .dash-main { padding: var(--space-5); max-width: 1100px; }
+  .dash-welcome { margin-bottom: var(--space-5); }
+  .dash-welcome .eyebrow { color: var(--color-gold); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; }
+  .dash-welcome h1 { font-family: var(--font-display); font-size: 32px; font-weight: 500; color: var(--color-ink); }
+
+  .dash-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); margin-bottom: var(--space-5); }
+  .dash-stat { background: var(--color-bg-elevated); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-3); }
+  .dash-stat .num { font-family: var(--font-display); font-size: 30px; color: var(--color-ink); }
+  .dash-stat .label { font-size: 12px; color: var(--color-ink-muted); margin-top: 4px; }
+
+  .dash-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-4); align-items: start; }
+
+  .dash-panel { background: var(--color-bg-elevated); border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
+  .dash-panel-head { padding: var(--space-3) var(--space-3) var(--space-2); border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; }
+  .dash-panel-head h2 { font-family: var(--font-display); font-size: 18px; font-weight: 500; color: var(--color-ink); }
+  .dash-panel-head span { font-size: 11px; color: var(--color-ink-muted); }
+
+  .request-row { display: flex; align-items: center; justify-content: space-between; padding: 14px var(--space-3); border-bottom: 1px solid var(--color-border); font-size: 13.5px; }
+  .request-row:last-child { border-bottom: none; }
+  .request-row .req-name { color: var(--color-ink); margin-bottom: 3px; }
+  .request-row .req-meta { color: var(--color-ink-muted); font-size: 12px; }
+  .req-status { font-size: 11px; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.03em; white-space: nowrap; }
+  .req-status--review { background: rgba(180, 146, 61, 0.15); color: var(--color-gold-light); }
+  .req-status--done { background: rgba(69, 108, 105, 0.2); color: #8fd0c8; }
+
+  .chat-panel { display: flex; flex-direction: column; height: 420px; }
+  .chat-log { flex: 1; overflow-y: auto; padding: var(--space-3); display: flex; flex-direction: column; gap: 12px; }
+  .chat-bubble { max-width: 85%; padding: 10px 14px; border-radius: 14px; font-size: 13px; line-height: 1.5; }
+  .chat-bubble--ai { background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-ink); align-self: flex-start; border-bottom-left-radius: 2px; }
+  .chat-bubble--user { background: var(--color-gold); color: #1B1405; align-self: flex-end; border-bottom-right-radius: 2px; }
+  .chat-input-row { display: flex; gap: 8px; padding: var(--space-2); border-top: 1px solid var(--color-border); }
+  .chat-input-row input {
+    flex: 1;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    color: var(--color-ink);
+    font-size: 13px;
+  }
+  .chat-input-row button { padding: 0 16px; }
+
+  @media (max-width: 900px) {
+    .dash-shell { grid-template-columns: 1fr; }
+    .dash-side { flex-direction: row; overflow-x: auto; align-items: center; gap: var(--space-3); }
+    .dash-brand { margin-bottom: 0; }
+    .dash-nav { flex-direction: row; }
+    .dash-side-foot { display: none; }
+    .dash-stats { grid-template-columns: 1fr; }
+    .dash-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="demo-banner">
+  <strong>Voorbeeldweergave.</strong> Dit dashboard toont voorbeelddata en is nog niet gekoppeld aan een echt account.
+</div>
+
+<div class="dash-shell">
+  <aside class="dash-side">
+    <a href="index.html" class="dash-brand">
+      <img src="assets/icons/monogram.svg" alt="">
+      <span class="brand-word">
+        <span class="brand-name">SOLACE</span><br>
+        <span class="brand-sub">EXECUTIVE</span>
+      </span>
+    </a>
+
+    <nav class="dash-nav">
+      <a class="is-active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>Dashboard</a>
+      <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Aanvragen</a>
+      <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.1-3.8 3.8-5.8 7-5.8s5.9 2 7 5.8"/></svg>Concierge</a>
+      <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Account</a>
+    </nav>
+
+    <div class="dash-side-foot">
+      <a href="login.html">&larr; Uitloggen</a>
+    </div>
+  </aside>
+
+  <main class="dash-main">
+    <div class="dash-welcome">
+      <p class="eyebrow">LEDENOMGEVING &middot; VOORBEELD</p>
+      <h1>Welkom terug, J. de Vries.</h1>
+    </div>
+
+    <div class="dash-stats">
+      <div class="dash-stat">
+        <div class="num">2</div>
+        <div class="label">Lopende aanvragen</div>
+      </div>
+      <div class="dash-stat">
+        <div class="num">1</div>
+        <div class="label">Aankomende reis</div>
+      </div>
+      <div class="dash-stat">
+        <div class="num">24u</div>
+        <div class="label">Gemiddelde responstijd</div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <section class="dash-panel">
+        <div class="dash-panel-head">
+          <h2>Recente aanvragen</h2>
+          <span>Voorbeelddata</span>
+        </div>
+        <div class="request-row">
+          <div>
+            <div class="req-name">Private jet &middot; Amsterdam &rarr; Madrid</div>
+            <div class="req-meta">Ingediend 3 dagen geleden</div>
+          </div>
+          <span class="req-status req-status--review">In beoordeling</span>
+        </div>
+        <div class="request-row">
+          <div>
+            <div class="req-name">Executive transport &middot; Parijs</div>
+            <div class="req-meta">Ingediend 1 week geleden</div>
+          </div>
+          <span class="req-status req-status--done">Bevestigd</span>
+        </div>
+        <div class="request-row">
+          <div>
+            <div class="req-name">Jacht &middot; Weekend Barcelona</div>
+            <div class="req-meta">Ingediend 2 weken geleden</div>
+          </div>
+          <span class="req-status req-status--done">Afgerond</span>
+        </div>
+      </section>
+
+      <section class="dash-panel chat-panel">
+        <div class="dash-panel-head">
+          <h2>AI Concierge</h2>
+          <span>Voorbeeld</span>
+        </div>
+        <div class="chat-log">
+          <div class="chat-bubble chat-bubble--ai">Goedemiddag. Waarmee kan ik u vandaag helpen?</div>
+          <div class="chat-bubble chat-bubble--user">Ik heb vrijdag een chauffeur nodig in Londen, rond 18:00.</div>
+          <div class="chat-bubble chat-bubble--ai">Genoteerd. Ik geef dit door aan het team voor beoordeling en u hoort binnen enkele uren van ons.</div>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" placeholder="Typ een bericht&hellip;" disabled>
+          <button class="btn btn-primary btn-small" disabled style="opacity:0.5; cursor:not-allowed;">Stuur</button>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

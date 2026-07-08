@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ledenportaal | Solace Executive</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(180,146,61,0.10), transparent 60%),
+      linear-gradient(180deg, #0B141B 0%, #0F1B24 55%, #0C161D 100%);
+    padding: var(--space-4);
+  }
+  .login-wrap { width: 100%; max-width: 420px; }
+  .login-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: var(--space-6);
+  }
+  .login-brand img { width: 34px; height: 34px; }
+  .login-brand .brand-word { display: flex; flex-direction: column; line-height: 1; }
+  .login-brand .brand-name { font-family: var(--font-display); font-size: 19px; letter-spacing: 0.16em; color: var(--color-ink); }
+  .login-brand .brand-sub { font-family: var(--font-sans); font-size: 9px; letter-spacing: 0.32em; color: var(--color-gold); margin-top: 3px; }
+
+  .login-card {
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+  }
+  .preview-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-gold-light);
+    background: rgba(180, 146, 61, 0.12);
+    border: 1px solid var(--color-gold-dim);
+    padding: 6px 12px;
+    border-radius: 20px;
+    margin-bottom: var(--space-3);
+  }
+  .login-card h1 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--color-ink);
+    margin-bottom: 8px;
+  }
+  .login-card > p {
+    color: var(--color-ink-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: var(--space-4);
+  }
+  .login-actions { display: flex; flex-direction: column; gap: 10px; margin-top: var(--space-3); }
+  .login-back {
+    text-align: center;
+    margin-top: var(--space-4);
+    font-size: 13px;
+    color: var(--color-ink-muted);
+  }
+  .login-back a { color: var(--color-gold-light); text-decoration: underline; text-underline-offset: 3px; }
+</style>
+</head>
+<body>
+
+<div class="login-wrap">
+  <a href="index.html" class="login-brand" aria-label="Solace Executive">
+    <img src="assets/icons/monogram.svg" alt="">
+    <span class="brand-word">
+      <span class="brand-name">SOLACE</span>
+      <span class="brand-sub">EXECUTIVE</span>
+    </span>
+  </a>
+
+  <div class="login-card">
+    <span class="preview-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg>
+      Binnenkort beschikbaar
+    </span>
+    <h1>Ledenportaal</h1>
+    <p>
+      Dit is een voorbeeldweergave van het toekomstige ledenportaal.
+      Inloggen is nog niet functioneel &mdash; dit vereist een backend
+      (authenticatie en een database) die nog niet aan de website is
+      gekoppeld.
+    </p>
+
+    <form novalidate onsubmit="return false;">
+      <div class="field">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" autocomplete="email" disabled placeholder="naam@voorbeeld.nl">
+      </div>
+      <div class="field">
+        <label for="password">Wachtwoord</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" disabled placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+      </div>
+
+      <div class="login-actions">
+        <button type="button" class="btn btn-primary btn-wide" disabled style="opacity:0.5; cursor:not-allowed;">Inloggen</button>
+        <a href="dashboard.html" class="btn btn-outline btn-wide">Bekijk voorbeelddashboard</a>
+      </div>
+    </form>
+
+    <p class="login-back">Nog geen lid? <a href="index.html#lidmaatschap">Vraag toegang aan</a></p>
+  </div>
+</div>
+
+</body>
+</html>
