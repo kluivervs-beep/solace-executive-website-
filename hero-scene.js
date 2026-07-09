@@ -402,6 +402,7 @@ async function initHeroScene() {
     }
 
     tick();
+    requestAnimationFrame(() => canvas.classList.add('is-ready'));
 
     document.addEventListener('visibilitychange', () => {
       animating = !document.hidden;
