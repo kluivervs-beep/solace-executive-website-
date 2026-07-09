@@ -32,6 +32,52 @@
   });
 
   /* ---------------------------------------------------------------------
+     Intake modal: every "Aan de Slag" / #lidmaatschap link opens the
+     intake form as an overlay instead of scrolling down the page.
+  --------------------------------------------------------------------- */
+  const intakeModal = document.getElementById('intakeModal');
+
+  function openIntakeModal() {
+    if (!intakeModal) return;
+    intakeModal.classList.add('is-open');
+    intakeModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    // Deferred with setTimeout so this runs after the browser's own
+    // post-click focus handling on the trigger link, which would
+    // otherwise steal focus back from the field right after this.
+    setTimeout(() => {
+      const firstField = intakeModal.querySelector('input:not([type="hidden"]), select, textarea');
+      firstField?.focus({ preventScroll: true });
+    }, 0);
+  }
+
+  function closeIntakeModal() {
+    if (!intakeModal) return;
+    intakeModal.classList.remove('is-open');
+    intakeModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+  }
+
+  document.querySelectorAll('a[href="#lidmaatschap"]').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      openIntakeModal();
+    });
+  });
+
+  intakeModal?.querySelectorAll('[data-modal-close]').forEach((el) => {
+    el.addEventListener('click', closeIntakeModal);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && intakeModal?.classList.contains('is-open')) closeIntakeModal();
+  });
+
+  if (window.location.hash === '#lidmaatschap') {
+    openIntakeModal();
+  }
+
+  /* ---------------------------------------------------------------------
      Transition overlay: branded curtain wipe on first load only. Waits
      for fonts so text doesn't reflow after reveal, with a minimum
      display time (feels intentional) and a safety timeout (never blocks

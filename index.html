@@ -255,17 +255,22 @@
     </div>
   </section>
 
-  <!-- INTAKE -->
-  <section class="membership" id="lidmaatschap">
+  <!-- INTAKE (modal, opened via JS by any "Aan de Slag" / #lidmaatschap link) -->
+  <div class="intake-modal" id="intakeModal" aria-hidden="true">
+    <div class="intake-modal-backdrop" data-modal-close></div>
+    <div class="intake-modal-panel" role="dialog" aria-modal="true" aria-labelledby="intakeModalTitle">
+      <button type="button" class="intake-modal-close" data-modal-close aria-label="Sluiten">
+        <svg viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
     <div class="section-inner membership-inner">
-      <p class="eyebrow reveal" data-i18n="intake.eyebrow">LIDMAATSCHAP &middot; OP AANVRAAG</p>
-      <h2 class="section-title reveal" data-i18n="intake.title">Vertel ons over uzelf.</h2>
-      <p class="membership-sub reveal" data-i18n="intake.sub">
+      <p class="eyebrow" data-i18n="intake.eyebrow">LIDMAATSCHAP &middot; OP AANVRAAG</p>
+      <h2 class="section-title" id="intakeModalTitle" data-i18n="intake.title">Vertel ons over uzelf.</h2>
+      <p class="membership-sub" data-i18n="intake.sub">
         Wij beoordelen elke aanvraag persoonlijk. Vertel ons wie u bent en
         wat u nodig heeft. Bij een match nemen wij per e-mail contact op.
       </p>
 
-      <form class="intake-form intake-form--steps reveal" id="intakeForm" action="https://formspree.io/f/xgojjlzv" method="POST" novalidate>
+      <form class="intake-form intake-form--steps" id="intakeForm" action="https://formspree.io/f/xgojjlzv" method="POST" novalidate>
         <input type="hidden" name="_subject" value="Nieuwe aanvraag via solaceexecutive.com">
         <div class="step-progress"><div class="step-progress-bar" id="stepProgressBar"></div></div>
         <button type="button" class="step-back" id="stepBack" aria-label="Vorige vraag" hidden>
@@ -384,7 +389,8 @@
         </p>
       </form>
     </div>
-  </section>
+    </div>
+  </div>
 
   <section class="whatsapp-section" id="chat">
     <div class="section-inner whatsapp-inner">
