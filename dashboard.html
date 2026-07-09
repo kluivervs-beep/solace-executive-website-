@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dashboard | Solace Executive</title>
+<title data-i18n="dash.meta.title">Dashboard | Solace Executive</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,10 +25,13 @@
     display: flex;
     flex-direction: column;
   }
-  .dash-brand { display: flex; align-items: center; gap: 10px; margin-bottom: var(--space-6); }
+  .dash-brand { display: flex; align-items: center; gap: 10px; margin-bottom: var(--space-4); }
   .dash-brand img { width: 28px; height: 28px; }
   .dash-brand .brand-name { font-family: var(--font-display); font-size: 16px; letter-spacing: 0.14em; color: var(--color-ink); }
   .dash-brand .brand-sub { font-family: var(--font-sans); font-size: 8px; letter-spacing: 0.28em; color: var(--color-gold); }
+
+  .dash-lang { margin-bottom: var(--space-5); }
+  .dash-lang.lang-switch { display: inline-flex; }
 
   .dash-nav { display: flex; flex-direction: column; gap: 4px; }
   .dash-nav a {
@@ -137,6 +140,7 @@
     .dash-shell { grid-template-columns: 1fr; }
     .dash-side { flex-direction: row; overflow-x: auto; align-items: center; gap: var(--space-3); }
     .dash-brand { margin-bottom: 0; }
+    .dash-lang { margin-bottom: 0; }
     .dash-nav { flex-direction: row; }
     .dash-side-foot { display: none; }
     .dash-stats { grid-template-columns: 1fr; }
@@ -155,15 +159,20 @@
       </span>
     </a>
 
+    <div class="dash-lang lang-switch" role="group" aria-label="Taal / Language">
+      <button type="button" class="lang-btn" data-lang="nl">NL</button>
+      <button type="button" class="lang-btn" data-lang="en">EN</button>
+    </div>
+
     <nav class="dash-nav">
-      <a class="is-active" data-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>Dashboard</a>
-      <a data-view="requests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Aanvragen</a>
-      <a data-view="concierge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.1-3.8 3.8-5.8 7-5.8s5.9 2 7 5.8"/></svg>Concierge</a>
-      <a data-view="account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Account</a>
+      <a class="is-active" data-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg><span data-i18n="dash.nav.dashboard">Dashboard</span></a>
+      <a data-view="requests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span data-i18n="dash.nav.requests">Aanvragen</span></a>
+      <a data-view="concierge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.1-3.8 3.8-5.8 7-5.8s5.9 2 7 5.8"/></svg><span data-i18n="dash.nav.concierge">Concierge</span></a>
+      <a data-view="account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i18n="dash.nav.account">Account</span></a>
     </nav>
 
     <div class="dash-side-foot">
-      <a href="#" id="logoutLink">&larr; Uitloggen</a>
+      <a href="#" id="logoutLink">&larr; <span data-i18n="dash.logout">Uitloggen</span></a>
     </div>
   </aside>
 
@@ -172,30 +181,30 @@
     <section class="dash-view is-active" data-view="dashboard">
       <div class="dash-welcome">
         <div>
-          <p class="eyebrow">LEDENOMGEVING</p>
-          <h1 id="welcomeHeading">Welkom terug.</h1>
+          <p class="eyebrow" data-i18n="dash.eyebrow">LEDENOMGEVING</p>
+          <h1 id="welcomeHeading" data-i18n="dash.welcome">Welkom terug.</h1>
         </div>
       </div>
 
       <div class="dash-stats">
         <div class="dash-stat">
           <div class="num" id="statReview">0</div>
-          <div class="label">Lopende aanvragen</div>
+          <div class="label" data-i18n="dash.stat.review">Lopende aanvragen</div>
         </div>
         <div class="dash-stat">
           <div class="num" id="statConfirmed">0</div>
-          <div class="label">Bevestigd</div>
+          <div class="label" data-i18n="dash.stat.confirmed">Bevestigd</div>
         </div>
         <div class="dash-stat">
           <div class="num">&lt; 24u</div>
-          <div class="label">Gemiddelde responstijd</div>
+          <div class="label" data-i18n="dash.stat.response">Gemiddelde responstijd</div>
         </div>
       </div>
 
       <section class="dash-panel">
         <div class="dash-panel-head">
-          <h2>Recente aanvragen</h2>
-          <span class="dash-panel-link" data-goto-view="requests">Bekijk alles &rarr;</span>
+          <h2 data-i18n="dash.recent.title">Recente aanvragen</h2>
+          <span class="dash-panel-link" data-goto-view="requests" data-i18n-html="dash.recent.viewall">Bekijk alles &rarr;</span>
         </div>
         <div id="requestListRecent">
           <div class="skeleton-row"></div>
@@ -207,16 +216,16 @@
     <section class="dash-view" data-view="requests" hidden>
       <div class="dash-welcome">
         <div>
-          <p class="eyebrow">AANVRAGEN</p>
-          <h1>Al uw aanvragen.</h1>
+          <p class="eyebrow" data-i18n="dash.requests.eyebrow">AANVRAGEN</p>
+          <h1 data-i18n="dash.requests.title">Al uw aanvragen.</h1>
         </div>
       </div>
 
       <div class="filter-chips">
-        <button type="button" class="chip is-active" data-filter="all">Alles</button>
-        <button type="button" class="chip" data-filter="review">In behandeling</button>
-        <button type="button" class="chip" data-filter="confirmed">Bevestigd</button>
-        <button type="button" class="chip" data-filter="done">Afgerond</button>
+        <button type="button" class="chip is-active" data-filter="all" data-i18n="dash.filter.all">Alles</button>
+        <button type="button" class="chip" data-filter="review" data-i18n="dash.filter.review">In behandeling</button>
+        <button type="button" class="chip" data-filter="confirmed" data-i18n="dash.filter.confirmed">Bevestigd</button>
+        <button type="button" class="chip" data-filter="done" data-i18n="dash.filter.done">Afgerond</button>
       </div>
 
       <section class="dash-panel">
@@ -231,24 +240,24 @@
     <section class="dash-view" data-view="concierge" hidden>
       <div class="dash-welcome">
         <div>
-          <p class="eyebrow">CONCIERGE</p>
-          <h1>Chat met uw concierge.</h1>
+          <p class="eyebrow" data-i18n="dash.concierge.eyebrow">CONCIERGE</p>
+          <h1 data-i18n="dash.concierge.title">Chat met uw concierge.</h1>
         </div>
       </div>
 
       <section class="dash-panel chat-panel">
         <div class="dash-panel-head">
-          <h2>AI Concierge</h2>
-          <span>Voorbeeld</span>
+          <h2 data-i18n="dash.concierge.panel">AI Concierge</h2>
+          <span data-i18n="dash.concierge.preview">Voorbeeld</span>
         </div>
         <div class="chat-log">
-          <div class="chat-bubble chat-bubble--ai">Goedemiddag. Waarmee kan ik u vandaag helpen?</div>
-          <div class="chat-bubble chat-bubble--user">Ik heb vrijdag een chauffeur nodig in Londen, rond 18:00.</div>
-          <div class="chat-bubble chat-bubble--ai">Genoteerd. Ik geef dit door aan het team voor beoordeling en u hoort binnen enkele uren van ons.</div>
+          <div class="chat-bubble chat-bubble--ai" data-i18n="dash.concierge.msg1">Goedemiddag. Waarmee kan ik u vandaag helpen?</div>
+          <div class="chat-bubble chat-bubble--user" data-i18n="dash.concierge.msg2">Ik heb vrijdag een chauffeur nodig in Londen, rond 18:00.</div>
+          <div class="chat-bubble chat-bubble--ai" data-i18n="dash.concierge.msg3">Genoteerd. Ik geef dit door aan het team voor beoordeling en u hoort binnen enkele uren van ons.</div>
         </div>
         <div class="chat-input-row">
-          <input type="text" placeholder="Typ een bericht&hellip;" disabled>
-          <button class="btn btn-primary btn-small" disabled style="opacity:0.5; cursor:not-allowed;">Stuur</button>
+          <input type="text" data-i18n="dash.concierge.placeholder" data-i18n-attr="placeholder" placeholder="Typ een bericht&hellip;" disabled>
+          <button class="btn btn-primary btn-small" disabled style="opacity:0.5; cursor:not-allowed;" data-i18n="dash.concierge.send">Stuur</button>
         </div>
       </section>
     </section>
@@ -256,27 +265,27 @@
     <section class="dash-view" data-view="account" hidden>
       <div class="dash-welcome">
         <div>
-          <p class="eyebrow">ACCOUNT</p>
-          <h1>Uw gegevens.</h1>
+          <p class="eyebrow" data-i18n="dash.account.eyebrow">ACCOUNT</p>
+          <h1 data-i18n="dash.account.title">Uw gegevens.</h1>
         </div>
       </div>
 
       <section class="dash-panel account-panel">
         <form id="accountForm">
           <div class="field">
-            <label for="accEmail">E-mail</label>
+            <label for="accEmail" data-i18n="dash.account.email">E-mail</label>
             <input type="email" id="accEmail" disabled>
           </div>
           <div class="field">
-            <label for="accName">Naam</label>
+            <label for="accName" data-i18n="dash.account.name">Naam</label>
             <input type="text" id="accName" autocomplete="name">
           </div>
           <div class="field">
-            <label for="accCompany">Bedrijf</label>
+            <label for="accCompany" data-i18n="dash.account.company">Bedrijf</label>
             <input type="text" id="accCompany" autocomplete="organization">
           </div>
-          <button type="submit" class="btn btn-primary">Opslaan</button>
-          <span class="account-saved" id="accountSaved">Opgeslagen.</span>
+          <button type="submit" class="btn btn-primary" data-i18n="dash.account.save">Opslaan</button>
+          <span class="account-saved" id="accountSaved" data-i18n="dash.account.saved">Opgeslagen.</span>
         </form>
       </section>
     </section>
@@ -284,21 +293,23 @@
   </main>
 </div>
 
+<script src="i18n.js"></script>
 <script type="module">
   import { supabase } from './supabase-client.js';
 
-  const STATUS_LABEL = { review: 'In beoordeling', confirmed: 'Bevestigd', done: 'Afgerond' };
+  const t = (key) => (window.SolaceI18n ? window.SolaceI18n.t(key) : key);
+
   const STATUS_CLASS = { review: 'req-status--review', confirmed: 'req-status--done', done: 'req-status--done' };
   const STATUS_RANK = { review: 0, confirmed: 1, done: 2 };
 
   function timeAgo(isoDate) {
     const diffMs = Date.now() - new Date(isoDate).getTime();
     const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    if (days < 1) return 'vandaag';
-    if (days === 1) return '1 dag geleden';
-    if (days < 14) return `${days} dagen geleden`;
+    if (days < 1) return t('dash.time.today');
+    if (days === 1) return t('dash.time.oneDay');
+    if (days < 14) return t('dash.time.days').replace('{n}', days);
     const weeks = Math.floor(days / 7);
-    return weeks === 1 ? '1 week geleden' : `${weeks} weken geleden`;
+    return weeks === 1 ? t('dash.time.oneWeek') : t('dash.time.weeks').replace('{n}', weeks);
   }
 
   function progressDotsHtml(status) {
@@ -313,10 +324,10 @@
       <div class="request-row">
         <div>
           <div class="req-name">${r.service}</div>
-          <div class="req-meta">Ingediend ${timeAgo(r.created_at)}</div>
+          <div class="req-meta">${t('dash.submitted').replace('{time}', timeAgo(r.created_at))}</div>
           ${progressDotsHtml(r.status)}
         </div>
-        <span class="req-status ${STATUS_CLASS[r.status] || 'req-status--review'}">${STATUS_LABEL[r.status] || r.status}</span>
+        <span class="req-status ${STATUS_CLASS[r.status] || 'req-status--review'}">${t('dash.status.' + r.status) || r.status}</span>
       </div>
     `;
   }
@@ -363,14 +374,29 @@
     });
   });
 
-  // --- Requests: fetch once, filter client-side ---
+  // --- Requests: fetch once, filter and re-render client-side ---
   let allRequests = [];
   let activeFilter = 'all';
+  let memberName = '';
 
   function renderFilteredRequests() {
     const filtered = activeFilter === 'all' ? allRequests : allRequests.filter((r) => r.status === activeFilter);
-    renderRequestList(document.getElementById('requestListFull'), filtered, 'Geen aanvragen in deze categorie.');
+    renderRequestList(document.getElementById('requestListFull'), filtered, t('dash.empty.filtered'));
   }
+
+  function renderAll() {
+    document.getElementById('welcomeHeading').textContent =
+      memberName ? t('dash.welcome.name').replace('{name}', memberName) : t('dash.welcome');
+    renderRequestList(document.getElementById('requestListRecent'), allRequests.slice(0, 3), t('dash.empty.none'));
+    renderFilteredRequests();
+  }
+
+  // Re-render dynamic (JS-generated) text after a language switch. Deferred
+  // with setTimeout so it always runs after i18n.js's own click handler,
+  // regardless of listener registration order.
+  document.querySelectorAll('.lang-btn').forEach((btn) => {
+    btn.addEventListener('click', () => setTimeout(renderAll, 0));
+  });
 
   document.querySelectorAll('.chip').forEach((chip) => {
     chip.addEventListener('click', () => {
@@ -395,8 +421,7 @@
       .eq('id', userId)
       .single();
 
-    document.getElementById('welcomeHeading').textContent =
-      profile?.full_name ? `Welkom terug, ${profile.full_name}.` : 'Welkom terug.';
+    memberName = profile?.full_name || '';
     document.getElementById('accEmail').value = session.user.email || '';
     document.getElementById('accName').value = profile?.full_name || '';
     document.getElementById('accCompany').value = profile?.company || '';
@@ -408,19 +433,14 @@
       .order('created_at', { ascending: false });
 
     if (error) {
-      const failMsg = '<div class="request-empty">Aanvragen konden niet worden geladen.</div>';
+      const failMsg = `<div class="request-empty">${t('dash.error.load')}</div>`;
       document.getElementById('requestListRecent').innerHTML = failMsg;
       document.getElementById('requestListFull').innerHTML = failMsg;
       return;
     }
 
     allRequests = requests || [];
-    renderRequestList(
-      document.getElementById('requestListRecent'),
-      allRequests.slice(0, 3),
-      'Nog geen aanvragen. Gebruik de intake op de website om er een in te dienen.'
-    );
-    renderFilteredRequests();
+    renderAll();
 
     animateCount(document.getElementById('statReview'), allRequests.filter((r) => r.status === 'review').length);
     animateCount(document.getElementById('statConfirmed'), allRequests.filter((r) => r.status === 'confirmed').length);
@@ -442,7 +462,9 @@
 
     await supabase.from('profiles').update({ full_name, company }).eq('id', session.user.id);
 
-    document.getElementById('welcomeHeading').textContent = full_name ? `Welkom terug, ${full_name}.` : 'Welkom terug.';
+    memberName = full_name;
+    document.getElementById('welcomeHeading').textContent =
+      memberName ? t('dash.welcome.name').replace('{name}', memberName) : t('dash.welcome');
     const saved = document.getElementById('accountSaved');
     saved.classList.add('is-visible');
     setTimeout(() => saved.classList.remove('is-visible'), 2000);
