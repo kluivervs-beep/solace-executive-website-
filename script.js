@@ -136,16 +136,6 @@
       document.querySelectorAll('.stat-number').forEach((el) => {
         el.textContent = el.dataset.count;
       });
-
-      const jetPath = document.getElementById('jetPathProgress');
-      const jetIcon = document.getElementById('jetIcon');
-      if (jetPath && jetIcon) {
-        const total = jetPath.getTotalLength();
-        const point = jetPath.getPointAtLength(total);
-        jetIcon.setAttribute('transform', `translate(${point.x} ${point.y})`);
-        jetPath.style.strokeDasharray = 'none';
-        jetPath.style.strokeDashoffset = '0';
-      }
     }
   }
 
@@ -258,10 +248,11 @@
     stepProgressBar.style.width = `${((stepIndex + 1) / steps.length) * 100}%`;
   }
 
-  function showStep(index) {
+  function showStep(index, { focus = true } = {}) {
     steps.forEach((step, i) => step.classList.toggle('is-active', i === index));
     if (stepBackBtn) stepBackBtn.hidden = index === 0;
     updateStepProgress();
+    if (!focus) return;
     const active = steps[index];
     const focusable = active?.querySelector('input, select, textarea') || active?.querySelector('button[type="submit"]');
     focusable?.focus({ preventScroll: true });
@@ -287,7 +278,7 @@
   }
 
   if (form && steps.length) {
-    showStep(stepIndex);
+    showStep(stepIndex, { focus: false });
 
     form.querySelectorAll('.step-next').forEach((btn) => {
       btn.addEventListener('click', goToNextStep);

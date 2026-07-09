@@ -318,7 +318,6 @@ async function initHeroScene() {
     });
 
     const worldPos = new THREE.Vector3();
-    const camDir = new THREE.Vector3();
 
     function projectCity(city) {
       const canvasRect = canvas.getBoundingClientRect();
@@ -344,8 +343,6 @@ async function initHeroScene() {
     }
 
     function updateLabels() {
-      camera.getWorldDirection(camDir);
-
       CITIES.forEach((city) => {
         const { facing, offsetX, offsetY } = projectCity(city);
         const el = labelEls[city.name];
