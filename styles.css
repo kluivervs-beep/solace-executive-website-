@@ -426,19 +426,9 @@ input, textarea, select {
   pointer-events: none;
   z-index: 1;
   display: none;
-  opacity: 0;
-  transition: opacity 800ms var(--ease-out);
 }
 .hero-canvas.is-active { display: block; }
-.hero-canvas.is-active.is-ready { opacity: 1; }
-.hero-canvas.is-active ~ .hero-ring,
-.hero-canvas.is-active ~ .hero-glow {
-  transition: opacity 800ms var(--ease-out);
-}
-.hero-canvas.is-active.is-ready ~ .hero-ring,
-.hero-canvas.is-active.is-ready ~ .hero-glow {
-  opacity: 0;
-}
+.hero-canvas.is-active ~ .hero-ring { display: none; }
 
 .globe-label {
   position: absolute;
