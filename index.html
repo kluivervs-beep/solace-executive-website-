@@ -263,7 +263,8 @@
         wat u nodig heeft. Bij een match nemen wij per e-mail contact op.
       </p>
 
-      <form class="intake-form intake-form--steps reveal" id="intakeForm" novalidate>
+      <form class="intake-form intake-form--steps reveal" id="intakeForm" action="https://formspree.io/f/xgojjlzv" method="POST" novalidate>
+        <input type="hidden" name="_subject" value="Nieuwe aanvraag via solaceexecutive.com">
         <div class="step-progress"><div class="step-progress-bar" id="stepProgressBar"></div></div>
         <button type="button" class="step-back" id="stepBack" aria-label="Vorige vraag" hidden>
           <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -376,9 +377,8 @@
         <p class="form-success" id="formSuccess" role="status" aria-live="polite" hidden data-i18n="form.success">
           Bedankt. Wij beoordelen uw aanvraag persoonlijk. Bij een match ontvangt u binnen enkele dagen bericht van ons per e-mail.
         </p>
-        <p class="form-note" data-i18n="form.note">
-          Dit formulier is momenteel niet gekoppeld aan een backend/e-mailservice.
-          Sluit een provider (bijv. Formspree, e-mail-API) aan om aanvragen echt te ontvangen.
+        <p class="form-note form-note--error" id="formError" role="alert" hidden data-i18n="form.error.submit">
+          Er ging iets mis bij het versturen. Probeer het opnieuw, of mail ons direct op hello@solaceexecutive.example.
         </p>
       </form>
     </div>

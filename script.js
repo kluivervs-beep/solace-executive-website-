@@ -166,10 +166,11 @@
   }
 
   /* ---------------------------------------------------------------------
-     Intake form: client-side validation + local "submit" (no backend)
+     Intake form: client-side validation + Formspree submission
   --------------------------------------------------------------------- */
   const form = document.getElementById('intakeForm');
   const successMsg = document.getElementById('formSuccess');
+  const formErrorMsg = document.getElementById('formError');
 
   const validators = {
     name: (v) => v.trim().length > 1,
@@ -351,18 +352,30 @@
     const submitBtn = form.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
     submitBtn.querySelector('.btn-label').textContent = t('form.submitting');
+    formErrorMsg.hidden = true;
 
-    // No backend wired up yet — simulate a submit so the flow is demonstrable.
-    setTimeout(() => {
-      submitBtn.disabled = false;
-      submitBtn.querySelector('.btn-label').textContent = t('form.submit');
-      successMsg.hidden = false;
-      form.reset();
-      if (steps.length) {
-        stepIndex = 0;
-        showStep(stepIndex);
-      }
-    }, 700);
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { Accept: 'application/json' },
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`Formspree responded with ${response.status}`);
+        form.reset();
+        if (steps.length) {
+          stepIndex = 0;
+          showStep(stepIndex);
+        }
+        successMsg.hidden = false;
+      })
+      .catch((err) => {
+        console.warn('Solace: intake form submission failed.', err);
+        formErrorMsg.hidden = false;
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.querySelector('.btn-label').textContent = t('form.submit');
+      });
   });
 
   // Clear field error as the user corrects it
@@ -373,8 +386,9 @@
     el.addEventListener('change', () => showGroupError(''));
   });
 
-  // Hide the success banner again once the user starts a new application
+  // Hide the success/error banners again once the user starts a new application
   form?.addEventListener('focusin', () => {
     if (successMsg && !successMsg.hidden) successMsg.hidden = true;
+    if (formErrorMsg && !formErrorMsg.hidden) formErrorMsg.hidden = true;
   });
 })();

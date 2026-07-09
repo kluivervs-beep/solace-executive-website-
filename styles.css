@@ -999,6 +999,10 @@ input, textarea, select {
   color: var(--color-ink-muted);
   opacity: 0.8;
 }
+.form-note--error {
+  color: #E08167;
+  opacity: 1;
+}
 
 /* ==========================================================================
    Multi-step ("Typeform-style") intake form
