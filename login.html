@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ledenportaal | Solace Executive</title>
+<title>Inloggen | Solace Executive</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -76,6 +76,13 @@
     color: var(--color-ink-muted);
   }
   .login-back a { color: var(--color-gold-light); text-decoration: underline; text-underline-offset: 3px; }
+  .login-error {
+    font-size: 13px;
+    color: #E08167;
+    margin-bottom: var(--space-3);
+    display: none;
+  }
+  .login-error.is-visible { display: block; }
 </style>
 </head>
 <body>
@@ -90,37 +97,66 @@
   </a>
 
   <div class="login-card">
-    <span class="preview-badge">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg>
-      Binnenkort beschikbaar
-    </span>
     <h1>Ledenportaal</h1>
     <p>
-      Dit is een voorbeeldweergave van het toekomstige ledenportaal.
-      Inloggen is nog niet functioneel &mdash; dit vereist een backend
-      (authenticatie en een database) die nog niet aan de website is
-      gekoppeld.
+      Log in met de gegevens die u van ons heeft ontvangen.
     </p>
 
-    <form novalidate onsubmit="return false;">
+    <p class="login-error" id="loginError" role="alert"></p>
+
+    <form id="loginForm" novalidate>
       <div class="field">
         <label for="email">E-mail</label>
-        <input type="email" id="email" name="email" autocomplete="email" disabled placeholder="naam@voorbeeld.nl">
+        <input type="email" id="email" name="email" autocomplete="email" required placeholder="naam@voorbeeld.nl">
       </div>
       <div class="field">
         <label for="password">Wachtwoord</label>
-        <input type="password" id="password" name="password" autocomplete="current-password" disabled placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+        <input type="password" id="password" name="password" autocomplete="current-password" required placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
       </div>
 
       <div class="login-actions">
-        <button type="button" class="btn btn-primary btn-wide" disabled style="opacity:0.5; cursor:not-allowed;">Inloggen</button>
-        <a href="dashboard.html" class="btn btn-outline btn-wide">Bekijk voorbeelddashboard</a>
+        <button type="submit" class="btn btn-primary btn-wide" id="loginSubmit">Inloggen</button>
       </div>
     </form>
 
-    <p class="login-back">Nog geen lid? <a href="index.html#lidmaatschap">Vraag toegang aan</a></p>
+    <p class="login-back">Wachtwoord vergeten of nog geen lid? <a href="index.html#lidmaatschap">Neem contact op</a></p>
   </div>
 </div>
+
+<script type="module">
+  import { supabase } from './supabase-client.js';
+
+  const form = document.getElementById('loginForm');
+  const errorEl = document.getElementById('loginError');
+  const submitBtn = document.getElementById('loginSubmit');
+
+  // Already signed in? Skip straight to the dashboard.
+  supabase.auth.getSession().then(({ data }) => {
+    if (data.session) window.location.href = 'dashboard.html';
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.classList.remove('is-visible');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Bezig met inloggen…';
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      errorEl.textContent = 'Inloggen mislukt. Controleer uw e-mail en wachtwoord.';
+      errorEl.classList.add('is-visible');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Inloggen';
+      return;
+    }
+
+    window.location.href = 'dashboard.html';
+  });
+</script>
 
 </body>
 </html>

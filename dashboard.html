@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dashboard (voorbeeld) | Solace Executive</title>
+<title>Dashboard | Solace Executive</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,21 +13,10 @@
 <style>
   body { background: var(--color-bg); min-height: 100dvh; }
 
-  .demo-banner {
-    background: rgba(180, 146, 61, 0.12);
-    border-bottom: 1px solid var(--color-gold-dim);
-    color: var(--color-gold-light);
-    text-align: center;
-    font-size: 12.5px;
-    letter-spacing: 0.02em;
-    padding: 10px var(--space-2);
-  }
-  .demo-banner strong { color: var(--color-ink); }
-
   .dash-shell {
     display: grid;
     grid-template-columns: 240px 1fr;
-    min-height: calc(100dvh - 40px);
+    min-height: 100dvh;
   }
   .dash-side {
     background: var(--color-bg-elevated);
@@ -84,6 +73,8 @@
   .req-status { font-size: 11px; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.03em; white-space: nowrap; }
   .req-status--review { background: rgba(180, 146, 61, 0.15); color: var(--color-gold-light); }
   .req-status--done { background: rgba(69, 108, 105, 0.2); color: #8fd0c8; }
+  .request-empty { padding: var(--space-4) var(--space-3); color: var(--color-ink-muted); font-size: 13.5px; text-align: center; }
+  .dash-loading { padding: var(--space-6); text-align: center; color: var(--color-ink-muted); }
 
   .chat-panel { display: flex; flex-direction: column; height: 420px; }
   .chat-log { flex: 1; overflow-y: auto; padding: var(--space-3); display: flex; flex-direction: column; gap: 12px; }
@@ -115,10 +106,6 @@
 </head>
 <body>
 
-<div class="demo-banner">
-  <strong>Voorbeeldweergave.</strong> Dit dashboard toont voorbeelddata en is nog niet gekoppeld aan een echt account.
-</div>
-
 <div class="dash-shell">
   <aside class="dash-side">
     <a href="index.html" class="dash-brand">
@@ -137,27 +124,27 @@
     </nav>
 
     <div class="dash-side-foot">
-      <a href="login.html">&larr; Uitloggen</a>
+      <a href="#" id="logoutLink">&larr; Uitloggen</a>
     </div>
   </aside>
 
   <main class="dash-main">
     <div class="dash-welcome">
-      <p class="eyebrow">LEDENOMGEVING &middot; VOORBEELD</p>
-      <h1>Welkom terug, J. de Vries.</h1>
+      <p class="eyebrow">LEDENOMGEVING</p>
+      <h1 id="welcomeHeading">Welkom terug.</h1>
     </div>
 
     <div class="dash-stats">
       <div class="dash-stat">
-        <div class="num">2</div>
+        <div class="num" id="statReview">&ndash;</div>
         <div class="label">Lopende aanvragen</div>
       </div>
       <div class="dash-stat">
-        <div class="num">1</div>
-        <div class="label">Aankomende reis</div>
+        <div class="num" id="statConfirmed">&ndash;</div>
+        <div class="label">Bevestigd</div>
       </div>
       <div class="dash-stat">
-        <div class="num">24u</div>
+        <div class="num">&lt; 24u</div>
         <div class="label">Gemiddelde responstijd</div>
       </div>
     </div>
@@ -166,28 +153,9 @@
       <section class="dash-panel">
         <div class="dash-panel-head">
           <h2>Recente aanvragen</h2>
-          <span>Voorbeelddata</span>
         </div>
-        <div class="request-row">
-          <div>
-            <div class="req-name">Private jet &middot; Amsterdam &rarr; Madrid</div>
-            <div class="req-meta">Ingediend 3 dagen geleden</div>
-          </div>
-          <span class="req-status req-status--review">In beoordeling</span>
-        </div>
-        <div class="request-row">
-          <div>
-            <div class="req-name">Executive transport &middot; Parijs</div>
-            <div class="req-meta">Ingediend 1 week geleden</div>
-          </div>
-          <span class="req-status req-status--done">Bevestigd</span>
-        </div>
-        <div class="request-row">
-          <div>
-            <div class="req-name">Jacht &middot; Weekend Barcelona</div>
-            <div class="req-meta">Ingediend 2 weken geleden</div>
-          </div>
-          <span class="req-status req-status--done">Afgerond</span>
+        <div id="requestList">
+          <div class="dash-loading">Aanvragen laden&hellip;</div>
         </div>
       </section>
 
@@ -209,6 +177,83 @@
     </div>
   </main>
 </div>
+
+<script type="module">
+  import { supabase } from './supabase-client.js';
+
+  const STATUS_LABEL = { review: 'In beoordeling', confirmed: 'Bevestigd', done: 'Afgerond' };
+  const STATUS_CLASS = { review: 'req-status--review', confirmed: 'req-status--done', done: 'req-status--done' };
+
+  function timeAgo(isoDate) {
+    const diffMs = Date.now() - new Date(isoDate).getTime();
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (days < 1) return 'vandaag';
+    if (days === 1) return '1 dag geleden';
+    if (days < 14) return `${days} dagen geleden`;
+    const weeks = Math.floor(days / 7);
+    return weeks === 1 ? '1 week geleden' : `${weeks} weken geleden`;
+  }
+
+  function renderRequests(requests) {
+    const list = document.getElementById('requestList');
+    if (!requests.length) {
+      list.innerHTML = '<div class="request-empty">Nog geen aanvragen. Gebruik de intake op de website om er een in te dienen.</div>';
+      return;
+    }
+    list.innerHTML = requests.map((r) => `
+      <div class="request-row">
+        <div>
+          <div class="req-name">${r.service}</div>
+          <div class="req-meta">Ingediend ${timeAgo(r.created_at)}</div>
+        </div>
+        <span class="req-status ${STATUS_CLASS[r.status] || 'req-status--review'}">${STATUS_LABEL[r.status] || r.status}</span>
+      </div>
+    `).join('');
+  }
+
+  async function init() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    const userId = session.user.id;
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name')
+      .eq('id', userId)
+      .single();
+
+    document.getElementById('welcomeHeading').textContent =
+      profile?.full_name ? `Welkom terug, ${profile.full_name}.` : 'Welkom terug.';
+
+    const { data: requests, error } = await supabase
+      .from('requests')
+      .select('service, status, created_at')
+      .eq('member_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      document.getElementById('requestList').innerHTML =
+        '<div class="request-empty">Aanvragen konden niet worden geladen.</div>';
+      return;
+    }
+
+    renderRequests(requests || []);
+    document.getElementById('statReview').textContent = requests.filter((r) => r.status === 'review').length;
+    document.getElementById('statConfirmed').textContent = requests.filter((r) => r.status === 'confirmed').length;
+  }
+
+  document.getElementById('logoutLink').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await supabase.auth.signOut();
+    window.location.href = 'login.html';
+  });
+
+  init();
+</script>
 
 </body>
 </html>
