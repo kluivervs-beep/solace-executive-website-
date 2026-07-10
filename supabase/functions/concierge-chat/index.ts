@@ -144,6 +144,24 @@ Deno.serve(async (req) => {
         toolResultContent = insertError
           ? `Could not log the request: ${insertError.message}`
           : 'Request logged for the team to review.';
+
+        // Notify the team by email (reuses the same Formspree form the
+        // public intake uses) so a new concierge request doesn't sit
+        // unseen in the database until someone opens the dashboard.
+        try {
+          await fetch('https://formspree.io/f/xgojjlzv', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json', accept: 'application/json' },
+            body: JSON.stringify({
+              _subject: `Nieuwe conciërge-aanvraag: ${service}`,
+              name: userData.user.email ?? 'Lid',
+              email: userData.user.email ?? '',
+              message: notes,
+            }),
+          });
+        } catch (notifyErr) {
+          console.error('Formspree notify error:', notifyErr);
+        }
       }
 
       conversation.push({ role: 'assistant', content: data.content });

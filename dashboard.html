@@ -115,6 +115,7 @@
   .chip.is-active { border-color: var(--color-gold); color: var(--color-gold-light); background: rgba(180, 146, 61, 0.12); }
 
   .chat-panel { display: flex; flex-direction: column; height: 460px; }
+  #chatActive { flex: 1; display: flex; flex-direction: column; min-height: 0; }
   .chat-log { flex: 1; overflow-y: auto; padding: var(--space-3); display: flex; flex-direction: column; gap: 12px; }
   .chat-bubble { max-width: 85%; padding: 10px 14px; border-radius: 14px; font-size: 13px; line-height: 1.5; }
   .chat-bubble--ai { background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-ink); align-self: flex-start; border-bottom-left-radius: 2px; }
@@ -140,6 +141,36 @@
     font-size: 13px;
   }
   .chat-input-row button { padding: 0 16px; }
+
+  .chat-locked { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 10px; padding: var(--space-4); }
+  .chat-locked-title { font-family: var(--font-display); font-size: 19px; color: var(--color-ink); }
+  .chat-locked-body { font-size: 13.5px; line-height: 1.6; color: var(--color-ink-muted); max-width: 320px; }
+  .chat-locked .btn { margin-top: 6px; }
+
+  .tour-highlight {
+    position: relative;
+    z-index: 260;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 0 0 4px rgba(180, 146, 61, 0.6), 0 0 0 9999px rgba(6, 10, 14, 0.6);
+  }
+  .tour-tip {
+    position: fixed;
+    z-index: 261;
+    width: 280px;
+    max-width: calc(100vw - 32px);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  }
+  .tour-tip-title { font-family: var(--font-display); font-size: 16px; color: var(--color-ink); margin-bottom: 4px; }
+  .tour-tip p { font-size: 13px; line-height: 1.55; color: var(--color-ink-muted); margin: 0 0 var(--space-3); }
+  .tour-tip-actions { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+  .tour-tip-progress { font-size: 11px; letter-spacing: 0.06em; color: var(--color-ink-muted); }
+  .tour-tip-buttons { display: flex; align-items: center; gap: 12px; }
+  .tour-skip { font-size: 12.5px; color: var(--color-ink-muted); background: none; border: none; cursor: pointer; padding: 6px 2px; }
+  .tour-skip:hover { color: var(--color-ink); }
 
   .account-panel { padding: var(--space-4); max-width: 440px; }
   .account-panel .field input:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -273,13 +304,20 @@
         <div class="dash-panel-head">
           <h2 data-i18n="dash.concierge.panel">AI Concierge</h2>
         </div>
-        <div class="chat-log" id="chatLog">
-          <div class="chat-bubble chat-bubble--ai" data-i18n="dash.concierge.msg1">Goedemiddag. Waarmee kan ik u vandaag helpen?</div>
+        <div id="chatLocked" class="chat-locked" hidden>
+          <p class="chat-locked-title" data-i18n="dash.concierge.locked.title">Exclusief voor actieve leden</p>
+          <p class="chat-locked-body" data-i18n="dash.concierge.locked.body">De AI Concierge is een voordeel van uw lidmaatschap. Neem contact op om uw lidmaatschap te activeren.</p>
+          <a href="https://wa.me/31644917512?text=Hallo%2C%20ik%20wil%20graag%20mijn%20lidmaatschap%20activeren." class="btn btn-primary btn-small" target="_blank" rel="noopener" data-i18n="dash.concierge.locked.cta">Activeer via WhatsApp</a>
         </div>
-        <form class="chat-input-row" id="chatForm">
-          <input type="text" id="chatInput" data-i18n="dash.concierge.placeholder" data-i18n-attr="placeholder" placeholder="Typ een bericht&hellip;" autocomplete="off">
-          <button type="submit" class="btn btn-primary btn-small" id="chatSend" data-i18n="dash.concierge.send">Stuur</button>
-        </form>
+        <div id="chatActive">
+          <div class="chat-log" id="chatLog">
+            <div class="chat-bubble chat-bubble--ai" data-i18n="dash.concierge.msg1">Goedemiddag. Waarmee kan ik u vandaag helpen?</div>
+          </div>
+          <form class="chat-input-row" id="chatForm">
+            <input type="text" id="chatInput" data-i18n="dash.concierge.placeholder" data-i18n-attr="placeholder" placeholder="Typ een bericht&hellip;" autocomplete="off">
+            <button type="submit" class="btn btn-primary btn-small" id="chatSend" data-i18n="dash.concierge.send">Stuur</button>
+          </form>
+        </div>
       </section>
     </section>
 
@@ -427,6 +465,93 @@
     });
   });
 
+  let tourTipEl = null;
+  let tourHighlightedEl = null;
+
+  function buildTourSteps() {
+    return [
+      { selector: '.dash-nav a[data-view="dashboard"]', title: t('tour.step1.title'), body: t('tour.step1.body') },
+      { selector: '.dash-nav a[data-view="requests"]', title: t('tour.step2.title'), body: t('tour.step2.body') },
+      { selector: '.dash-nav a[data-view="concierge"]', title: t('tour.step3.title'), body: t('tour.step3.body') },
+      { selector: '.dash-nav a[data-view="account"]', title: t('tour.step4.title'), body: t('tour.step4.body') },
+    ];
+  }
+
+  function clearTourHighlight() {
+    if (tourHighlightedEl) {
+      tourHighlightedEl.classList.remove('tour-highlight');
+      tourHighlightedEl = null;
+    }
+  }
+
+  function positionTourTip(target) {
+    if (!tourTipEl || !target) return;
+    const rect = target.getBoundingClientRect();
+    const tipRect = tourTipEl.getBoundingClientRect();
+    let top = rect.bottom + 14;
+    let left = rect.left;
+    if (left + tipRect.width > window.innerWidth - 16) left = window.innerWidth - tipRect.width - 16;
+    if (left < 16) left = 16;
+    if (top + tipRect.height > window.innerHeight - 16) top = Math.max(16, rect.top - tipRect.height - 14);
+    tourTipEl.style.top = `${top}px`;
+    tourTipEl.style.left = `${left}px`;
+  }
+
+  function showTourStep(index) {
+    clearTourHighlight();
+    const steps = buildTourSteps();
+    const step = steps[index];
+    if (!step) { endTour(); return; }
+    const target = document.querySelector(step.selector);
+    if (!target) { endTour(); return; }
+
+    target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    target.classList.add('tour-highlight');
+    tourHighlightedEl = target;
+
+    if (!tourTipEl) {
+      tourTipEl = document.createElement('div');
+      tourTipEl.className = 'tour-tip';
+      document.body.appendChild(tourTipEl);
+    }
+    const isLast = index === steps.length - 1;
+    tourTipEl.innerHTML = `
+      <div class="tour-tip-title">${step.title}</div>
+      <p>${step.body}</p>
+      <div class="tour-tip-actions">
+        <span class="tour-tip-progress">${index + 1} / ${steps.length}</span>
+        <div class="tour-tip-buttons">
+          <button type="button" class="tour-skip" id="tourSkip">${t('tour.skip')}</button>
+          <button type="button" class="btn btn-primary btn-small" id="tourNext">${isLast ? t('tour.done') : t('tour.next')}</button>
+        </div>
+      </div>
+    `;
+
+    setTimeout(() => positionTourTip(target), 350);
+
+    document.getElementById('tourSkip').addEventListener('click', endTour);
+    document.getElementById('tourNext').addEventListener('click', () => {
+      if (isLast) endTour(); else showTourStep(index + 1);
+    });
+  }
+
+  async function endTour() {
+    clearTourHighlight();
+    if (tourTipEl) { tourTipEl.remove(); tourTipEl = null; }
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      await supabase.from('profiles').update({ has_seen_tour: true }).eq('id', session.user.id);
+    }
+  }
+
+  function startTour() {
+    showTourStep(0);
+  }
+
+  window.addEventListener('resize', () => {
+    if (tourHighlightedEl) positionTourTip(tourHighlightedEl);
+  });
+
   async function init() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
@@ -438,7 +563,7 @@
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('full_name, company')
+      .select('full_name, company, is_member_active, has_seen_tour')
       .eq('id', userId)
       .single();
 
@@ -446,6 +571,9 @@
     document.getElementById('accEmail').value = session.user.email || '';
     document.getElementById('accName').value = profile?.full_name || '';
     document.getElementById('accCompany').value = profile?.company || '';
+
+    document.getElementById('chatLocked').hidden = !!profile?.is_member_active;
+    document.getElementById('chatActive').hidden = !profile?.is_member_active;
 
     const { data: requests, error } = await supabase
       .from('requests')
@@ -465,6 +593,10 @@
 
     animateCount(document.getElementById('statReview'), allRequests.filter((r) => r.status === 'review').length);
     animateCount(document.getElementById('statConfirmed'), allRequests.filter((r) => r.status === 'confirmed').length);
+
+    if (!profile?.has_seen_tour) {
+      setTimeout(startTour, 700);
+    }
   }
 
   document.getElementById('logoutLink').addEventListener('click', async (e) => {

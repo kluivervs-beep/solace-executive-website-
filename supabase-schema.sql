@@ -50,3 +50,28 @@ alter table public.requests enable row level security;
 create policy "Members can view their own requests"
   on public.requests for select
   using (auth.uid() = member_id);
+
+-- Membership gating (AI Concierge is a paid-membership perk) and
+-- first-login onboarding tour tracking.
+alter table public.profiles
+  add column is_member_active boolean not null default false,
+  add column has_seen_tour boolean not null default false;
+
+-- Members can update their own profile (name/company/has_seen_tour),
+-- but must never be able to flip is_member_active themselves from the
+-- browser. Direct edits via the Table Editor / SQL Editor, and calls
+-- made with the service_role key (the concierge-chat edge function),
+-- bypass this and go through unchanged.
+create or replace function public.protect_membership_fields()
+returns trigger as $$
+begin
+  if auth.role() = 'authenticated' then
+    new.is_member_active := old.is_member_active;
+  end if;
+  return new;
+end;
+$$ language plpgsql security definer;
+
+create trigger protect_membership_fields_trigger
+  before update on public.profiles
+  for each row execute procedure public.protect_membership_fields();
