@@ -1368,7 +1368,7 @@ body.modal-open { overflow: hidden; }
 }
 
 @media (max-width: 960px) {
-  .main-nav, .header-cta { display: none; }
+  .main-nav, .header-cta, .member-link { display: none; }
   .nav-toggle { display: flex; }
 }
 
