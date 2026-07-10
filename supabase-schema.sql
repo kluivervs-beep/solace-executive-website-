@@ -75,3 +75,15 @@ $$ language plpgsql security definer;
 create trigger protect_membership_fields_trigger
   before update on public.profiles
   for each row execute procedure public.protect_membership_fields();
+
+-- Lets the stripe-webhook edge function (service role) look up which
+-- member a Stripe customer email belongs to, so it can flip
+-- is_member_active automatically on payment / cancellation.
+create or replace function public.get_profile_id_by_email(lookup_email text)
+returns uuid
+language sql
+security definer
+set search_path = public, auth
+as $$
+  select id from auth.users where email = lookup_email limit 1;
+$$;
