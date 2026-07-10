@@ -3,7 +3,7 @@
 // access to data is controlled entirely by row-level security policies
 // in the database, not by keeping this key secret.
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.110.2?bundle';
 
 const SUPABASE_URL = 'https://weiihajterqholxppgsl.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr';
