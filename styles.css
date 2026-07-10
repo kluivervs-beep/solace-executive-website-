@@ -763,6 +763,49 @@ input, textarea, select {
 .service-card--cta h3 { color: var(--color-gold-light); }
 
 /* ==========================================================================
+   Membership benefits
+   ========================================================================== */
+
+.benefits { background: var(--color-bg-elevated-2); position: relative; }
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5) var(--space-4);
+  margin-top: var(--space-5);
+}
+
+.benefit-card { display: flex; flex-direction: column; gap: 10px; }
+.benefit-icon {
+  width: 26px;
+  height: 26px;
+  color: var(--color-gold);
+  stroke: currentColor;
+  fill: none;
+  margin-bottom: 4px;
+}
+.benefit-card h3 {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+.benefit-card p {
+  color: var(--color-ink-muted);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+.benefits-cta { margin-top: var(--space-6); }
+
+@media (max-width: 900px) {
+  .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .benefits-grid { grid-template-columns: 1fr; }
+}
+
+/* ==========================================================================
    Private Jets / Network
    ========================================================================== */
 
