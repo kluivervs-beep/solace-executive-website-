@@ -2,14 +2,15 @@
 //
 // Triggered by a Supabase Database Webhook on UPDATE of public.requests.
 // When a request's status actually changes (e.g. you mark it
-// 'confirmed' in the Table Editor), this emails the member so they
-// don't have to keep checking their dashboard.
+// 'confirmed' in the Table Editor), this emails the member directly
+// (via Resend) so they don't have to keep checking their dashboard.
 //
 // Set up the webhook in Supabase: Database -> Webhooks -> Create a
 // new hook -> Table: requests -> Events: Update -> Type: Supabase Edge
 // Functions -> select this function.
 //
-// Requires this secret (Edge Functions -> Secrets):
+// Requires these secrets (Edge Functions -> Secrets):
+//   RESEND_API_KEY            — resend.com -> API keys
 //   SUPABASE_SERVICE_ROLE_KEY — Project Settings -> API -> service_role
 // SUPABASE_URL is already injected automatically by Supabase.
 
@@ -17,14 +18,39 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.110.2?bundl
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 const STATUS_LABEL_NL: Record<string, string> = {
-  review: 'in beoordeling',
-  confirmed: 'bevestigd',
-  done: 'afgerond',
+  review: 'In beoordeling',
+  confirmed: 'Bevestigd',
+  done: 'Afgerond',
 };
+
+function buildEmailHtml(name: string, service: string, statusLabel: string): string {
+  return `<div style="background:#F3EEE2;padding:32px 16px;font-family:Georgia,'Times New Roman',serif;">
+  <div style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #E4DFD0;">
+    <div style="background:#0F1B24;padding:28px 32px;text-align:center;">
+      <div style="font-size:20px;letter-spacing:0.16em;color:#F5F1E6;">SOLACE</div>
+      <div style="font-size:10px;letter-spacing:0.32em;color:#B4923D;margin-top:4px;font-family:Arial,sans-serif;">EXECUTIVE</div>
+    </div>
+    <div style="padding:32px;">
+      <p style="font-size:15px;line-height:1.6;color:#1C2B37;margin:0 0 16px;">Beste ${name},</p>
+      <p style="font-size:15px;line-height:1.6;color:#1C2B37;margin:0 0 20px;">De status van uw aanvraag is bijgewerkt:</p>
+      <div style="background:#F3EEE2;border-left:3px solid #B4923D;padding:14px 18px;margin:0 0 24px;">
+        <div style="font-size:13px;color:#5B6670;margin-bottom:4px;font-family:Arial,sans-serif;">${service}</div>
+        <div style="font-size:17px;font-weight:bold;color:#0F1B24;">${statusLabel}</div>
+      </div>
+      <p style="font-size:14px;line-height:1.6;color:#5B6670;margin:0 0 28px;font-family:Arial,sans-serif;">U kunt de details terugvinden in uw ledenportaal.</p>
+      <a href="https://solaceexecutive.com/dashboard.html" style="display:inline-block;background:#B4923D;color:#1B1405;text-decoration:none;padding:12px 28px;border-radius:24px;font-size:13px;font-weight:bold;letter-spacing:0.04em;font-family:Arial,sans-serif;">Naar ledenportaal</a>
+    </div>
+    <div style="padding:20px 32px;border-top:1px solid #E4DFD0;text-align:center;">
+      <div style="font-size:11px;color:#9a9488;font-family:Arial,sans-serif;">Solace Executive &middot; Private Concierge</div>
+    </div>
+  </div>
+</div>`;
+}
 
 Deno.serve(async (req) => {
   try {
@@ -49,24 +75,24 @@ Deno.serve(async (req) => {
     }
 
     const statusLabel = STATUS_LABEL_NL[record.status] ?? record.status;
+    const name = contact.full_name || 'lid';
 
-    const notifyRes = await fetch('https://formspree.io/f/xgojjlzv', {
+    const resendRes = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
+        Authorization: `Bearer ${RESEND_API_KEY}`,
         'content-type': 'application/json',
-        accept: 'application/json',
-        referer: 'https://solaceexecutive.com/',
       },
       body: JSON.stringify({
-        _subject: `Update over uw aanvraag: ${record.service}`,
-        name: 'Solace Executive',
-        email: contact.email,
-        message: `Beste ${contact.full_name || 'lid'},\n\nDe status van uw aanvraag "${record.service}" is bijgewerkt naar: ${statusLabel}.\n\nU kunt de details terugvinden in uw ledenportaal.\n\nMet vriendelijke groet,\nSolace Executive`,
+        from: 'Solace Executive <hello@solaceexecutive.com>',
+        to: [contact.email],
+        subject: `Update over uw aanvraag: ${record.service}`,
+        html: buildEmailHtml(name, record.service, statusLabel),
       }),
     });
 
-    if (!notifyRes.ok) {
-      console.error('Formspree notify failed:', notifyRes.status, await notifyRes.text());
+    if (!resendRes.ok) {
+      console.error('Resend notify failed:', resendRes.status, await resendRes.text());
     }
 
     return new Response(JSON.stringify({ notified: true }), {
