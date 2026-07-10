@@ -119,6 +119,16 @@
   .chat-bubble { max-width: 85%; padding: 10px 14px; border-radius: 14px; font-size: 13px; line-height: 1.5; }
   .chat-bubble--ai { background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-ink); align-self: flex-start; border-bottom-left-radius: 2px; }
   .chat-bubble--user { background: var(--color-gold); color: #1B1405; align-self: flex-end; border-bottom-right-radius: 2px; }
+  .chat-bubble--error { background: rgba(192, 86, 63, 0.12); border: 1px solid rgba(192, 86, 63, 0.4); color: #E08167; align-self: flex-start; }
+  .chat-typing { display: flex; gap: 4px; align-self: flex-start; padding: 12px 14px; }
+  .chat-typing span { width: 5px; height: 5px; border-radius: 50%; background: var(--color-ink-muted); animation: chat-typing-bounce 1.1s ease-in-out infinite; }
+  .chat-typing span:nth-child(2) { animation-delay: 0.15s; }
+  .chat-typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes chat-typing-bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-3px); opacity: 1; }
+  }
+  .chat-input-row input:disabled, .chat-input-row button:disabled { opacity: 0.6; cursor: not-allowed; }
   .chat-input-row { display: flex; gap: 8px; padding: var(--space-2); border-top: 1px solid var(--color-border); }
   .chat-input-row input {
     flex: 1;
@@ -248,17 +258,14 @@
       <section class="dash-panel chat-panel">
         <div class="dash-panel-head">
           <h2 data-i18n="dash.concierge.panel">AI Concierge</h2>
-          <span data-i18n="dash.concierge.preview">Voorbeeld</span>
         </div>
-        <div class="chat-log">
+        <div class="chat-log" id="chatLog">
           <div class="chat-bubble chat-bubble--ai" data-i18n="dash.concierge.msg1">Goedemiddag. Waarmee kan ik u vandaag helpen?</div>
-          <div class="chat-bubble chat-bubble--user" data-i18n="dash.concierge.msg2">Ik heb vrijdag een chauffeur nodig in Londen, rond 18:00.</div>
-          <div class="chat-bubble chat-bubble--ai" data-i18n="dash.concierge.msg3">Genoteerd. Ik geef dit door aan het team voor beoordeling en u hoort binnen enkele uren van ons.</div>
         </div>
-        <div class="chat-input-row">
-          <input type="text" data-i18n="dash.concierge.placeholder" data-i18n-attr="placeholder" placeholder="Typ een bericht&hellip;" disabled>
-          <button class="btn btn-primary btn-small" disabled style="opacity:0.5; cursor:not-allowed;" data-i18n="dash.concierge.send">Stuur</button>
-        </div>
+        <form class="chat-input-row" id="chatForm">
+          <input type="text" id="chatInput" data-i18n="dash.concierge.placeholder" data-i18n-attr="placeholder" placeholder="Typ een bericht&hellip;" autocomplete="off">
+          <button type="submit" class="btn btn-primary btn-small" id="chatSend" data-i18n="dash.concierge.send">Stuur</button>
+        </form>
       </section>
     </section>
 
@@ -468,6 +475,70 @@
     const saved = document.getElementById('accountSaved');
     saved.classList.add('is-visible');
     setTimeout(() => saved.classList.remove('is-visible'), 2000);
+  });
+
+  // --- AI Concierge chat (Claude, via a Supabase Edge Function) ---
+  const chatLog = document.getElementById('chatLog');
+  const chatForm = document.getElementById('chatForm');
+  const chatInput = document.getElementById('chatInput');
+  const chatSend = document.getElementById('chatSend');
+  let chatHistory = [];
+
+  function addBubble(text, kind) {
+    const el = document.createElement('div');
+    el.className = `chat-bubble chat-bubble--${kind}`;
+    el.textContent = text;
+    chatLog.appendChild(el);
+    chatLog.scrollTop = chatLog.scrollHeight;
+    return el;
+  }
+
+  function showTyping() {
+    const el = document.createElement('div');
+    el.className = 'chat-typing';
+    el.id = 'chatTyping';
+    el.innerHTML = '<span></span><span></span><span></span>';
+    chatLog.appendChild(el);
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
+
+  function hideTyping() {
+    document.getElementById('chatTyping')?.remove();
+  }
+
+  chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    addBubble(text, 'user');
+    chatHistory.push({ role: 'user', content: text });
+    chatInput.value = '';
+    chatInput.disabled = true;
+    chatSend.disabled = true;
+    showTyping();
+
+    try {
+      const { data, error } = await supabase.functions.invoke('concierge-chat', {
+        body: { messages: chatHistory },
+      });
+
+      hideTyping();
+
+      if (error || data?.error) {
+        addBubble('Sorry, de concierge is even niet bereikbaar. Probeer het zo nog eens.', 'error');
+      } else {
+        addBubble(data.reply, 'ai');
+        chatHistory.push({ role: 'assistant', content: data.reply });
+      }
+    } catch (err) {
+      hideTyping();
+      addBubble('Sorry, de concierge is even niet bereikbaar. Probeer het zo nog eens.', 'error');
+    }
+
+    chatInput.disabled = false;
+    chatSend.disabled = false;
+    chatInput.focus();
   });
 
   init();
