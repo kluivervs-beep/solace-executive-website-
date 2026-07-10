@@ -1357,6 +1357,41 @@ body.modal-open { overflow: hidden; }
 .whatsapp-card-email a { color: var(--color-gold-light); }
 
 /* ==========================================================================
+   Partners
+   ========================================================================== */
+
+.partners { background: var(--color-bg); padding: var(--space-5) 0; }
+.partners-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+.partners-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  color: var(--color-ink-muted);
+}
+.partner-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-bg-elevated);
+}
+.partner-logo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.partner-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--color-ink);
+  letter-spacing: 0.02em;
+}
+
+/* ==========================================================================
    Footer
    ========================================================================== */
 
