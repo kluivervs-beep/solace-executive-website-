@@ -148,10 +148,17 @@ Deno.serve(async (req) => {
         // Notify the team by email (reuses the same Formspree form the
         // public intake uses) so a new concierge request doesn't sit
         // unseen in the database until someone opens the dashboard.
+        // A Referer header is set explicitly since this call comes from
+        // a server, not a browser tab on the site, and Formspree ties
+        // submissions to the form's registered domain.
         try {
-          await fetch('https://formspree.io/f/xgojjlzv', {
+          const notifyRes = await fetch('https://formspree.io/f/xgojjlzv', {
             method: 'POST',
-            headers: { 'content-type': 'application/json', accept: 'application/json' },
+            headers: {
+              'content-type': 'application/json',
+              accept: 'application/json',
+              referer: 'https://solaceexecutive.com/',
+            },
             body: JSON.stringify({
               _subject: `Nieuwe conciërge-aanvraag: ${service}`,
               name: userData.user.email ?? 'Lid',
@@ -159,6 +166,9 @@ Deno.serve(async (req) => {
               message: notes,
             }),
           });
+          if (!notifyRes.ok) {
+            console.error('Formspree notify failed:', notifyRes.status, await notifyRes.text());
+          }
         } catch (notifyErr) {
           console.error('Formspree notify error:', notifyErr);
         }
