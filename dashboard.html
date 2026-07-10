@@ -70,6 +70,7 @@
   .dash-panel-head { padding: var(--space-3) var(--space-3) var(--space-2); border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; }
   .dash-panel-head h2 { font-family: var(--font-display); font-size: 18px; font-weight: 500; color: var(--color-ink); }
   .dash-panel-head span { font-size: 11px; color: var(--color-ink-muted); }
+  .dash-panel-sub { font-size: 12px; color: var(--color-ink-muted); margin-top: 2px; }
   .dash-panel-link { font-size: 12px; color: var(--color-gold-light); cursor: pointer; }
   .dash-panel-link:hover { text-decoration: underline; }
 
@@ -81,6 +82,18 @@
   .req-status--review { background: rgba(180, 146, 61, 0.15); color: var(--color-gold-light); }
   .req-status--done { background: rgba(69, 108, 105, 0.2); color: #8fd0c8; }
   .request-empty { padding: var(--space-4) var(--space-3); color: var(--color-ink-muted); font-size: 13.5px; text-align: center; }
+  .request-show-more {
+    display: block;
+    width: 100%;
+    padding: 12px var(--space-3);
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--color-gold-light);
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .request-show-more:hover { color: var(--color-ink); }
 
   .req-progress { display: flex; align-items: center; gap: 4px; }
   .req-progress .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-border); flex-shrink: 0; }
@@ -326,7 +339,10 @@
 
       <section class="dash-panel chat-panel">
         <div class="dash-panel-head">
-          <h2 data-i18n="dash.concierge.panel">AI Concierge</h2>
+          <div>
+            <h2 data-i18n="dash.concierge.panel">AI Concierge</h2>
+            <p class="dash-panel-sub" id="conciergeSub"></p>
+          </div>
         </div>
         <div id="chatLocked" class="chat-locked" hidden>
           <p class="chat-locked-title" data-i18n="dash.concierge.locked.title">Exclusief voor actieve leden</p>
@@ -488,10 +504,36 @@
   let allRequests = [];
   let activeFilter = 'all';
   let memberName = '';
+  let showAllDone = false;
+  const DONE_COLLAPSE_THRESHOLD = 3;
 
   function renderFilteredRequests() {
     const filtered = activeFilter === 'all' ? allRequests : allRequests.filter((r) => r.status === activeFilter);
-    renderRequestList(document.getElementById('requestListFull'), filtered, t('dash.empty.filtered'));
+    const el = document.getElementById('requestListFull');
+
+    if (!filtered.length) {
+      renderRequestList(el, filtered, t('dash.empty.filtered'));
+      return;
+    }
+
+    // Once there are more than a handful of completed requests, collapse
+    // the older ones behind a "show more" toggle instead of always
+    // listing full history — keeps the tab focused on what's current.
+    const doneItems = filtered.filter((r) => r.status === 'done');
+    const hiddenCount = doneItems.length - DONE_COLLAPSE_THRESHOLD;
+    let visible = filtered;
+    let showMoreHtml = '';
+
+    if (!showAllDone && hiddenCount > 0) {
+      const visibleDone = new Set(doneItems.slice(0, DONE_COLLAPSE_THRESHOLD));
+      visible = filtered.filter((r) => r.status !== 'done' || visibleDone.has(r));
+      showMoreHtml = `<button type="button" class="request-show-more" id="requestShowMoreDone">${t('dash.requests.showMore').replace('{n}', hiddenCount)}</button>`;
+    }
+
+    el.innerHTML = visible.map(requestRowHtml).join('') + showMoreHtml;
+
+    const btn = document.getElementById('requestShowMoreDone');
+    if (btn) btn.addEventListener('click', () => { showAllDone = true; renderFilteredRequests(); });
   }
 
   function renderAll() {
@@ -511,6 +553,7 @@
   document.querySelectorAll('.chip').forEach((chip) => {
     chip.addEventListener('click', () => {
       activeFilter = chip.dataset.filter;
+      showAllDone = false;
       document.querySelectorAll('.chip').forEach((c) => c.classList.toggle('is-active', c === chip));
       renderFilteredRequests();
     });
@@ -635,6 +678,9 @@
       const lang = window.SolaceI18n ? window.SolaceI18n.lang : 'nl';
       const since = new Intl.DateTimeFormat(lang === 'nl' ? 'nl-NL' : 'en-GB', { month: 'long', year: 'numeric' }).format(new Date(profile.created_at));
       document.getElementById('accountSince').textContent = t('dash.account.since').replace('{date}', since);
+      if (memberName) {
+        document.getElementById('conciergeSub').textContent = t('dash.concierge.sub').replace('{name}', memberName).replace('{date}', since);
+      }
     }
 
     document.getElementById('chatLocked').hidden = !!profile?.is_member_active;
