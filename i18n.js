@@ -154,9 +154,13 @@
       'dash.account.title': 'Uw gegevens.',
       'dash.account.email': 'E-mail',
       'dash.account.name': 'Naam',
+      'dash.account.phone': 'Telefoonnummer',
       'dash.account.company': 'Bedrijf',
       'dash.account.save': 'Opslaan',
       'dash.account.saved': 'Opgeslagen.',
+      'dash.account.status.active': 'Actief lid',
+      'dash.account.status.inactive': 'Nog niet actief',
+      'dash.account.since': 'Lid sinds {date}',
     },
     en: {
       'meta.title': 'Solace Executive | Executive Concierge',
@@ -307,9 +311,13 @@
       'dash.account.title': 'Your details.',
       'dash.account.email': 'Email',
       'dash.account.name': 'Name',
+      'dash.account.phone': 'Phone number',
       'dash.account.company': 'Company',
       'dash.account.save': 'Save',
       'dash.account.saved': 'Saved.',
+      'dash.account.status.active': 'Active member',
+      'dash.account.status.inactive': 'Not yet active',
+      'dash.account.since': 'Member since {date}',
     },
   };
 

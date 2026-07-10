@@ -177,6 +177,23 @@
   .account-saved { color: var(--color-gold-light); font-size: 13px; margin-left: 12px; display: none; }
   .account-saved.is-visible { display: inline; }
 
+  .account-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--color-border);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--color-ink-muted);
+    margin-bottom: 8px;
+  }
+  .account-status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-ink-muted); flex-shrink: 0; }
+  .account-status.is-active { border-color: rgba(122, 168, 116, 0.4); color: #9AC79A; }
+  .account-status.is-active .account-status-dot { background: #7AA874; }
+  .account-since { font-size: 12.5px; color: var(--color-ink-muted); margin: 0 0 var(--space-4); }
+
   @media (max-width: 900px) {
     .dash-shell { grid-template-columns: 1fr; }
     .dash-side {
@@ -199,6 +216,7 @@
       white-space: nowrap;
     }
     .dash-stats { grid-template-columns: 1fr; }
+    .chat-panel { height: calc(100dvh - 250px); min-height: 360px; }
   }
 </style>
 </head>
@@ -330,6 +348,12 @@
       </div>
 
       <section class="dash-panel account-panel">
+        <div class="account-status" id="accountStatus">
+          <span class="account-status-dot"></span>
+          <span id="accountStatusText"></span>
+        </div>
+        <p class="account-since" id="accountSince"></p>
+
         <form id="accountForm">
           <div class="field">
             <label for="accEmail" data-i18n="dash.account.email">E-mail</label>
@@ -338,6 +362,10 @@
           <div class="field">
             <label for="accName" data-i18n="dash.account.name">Naam</label>
             <input type="text" id="accName" autocomplete="name">
+          </div>
+          <div class="field">
+            <label for="accPhone" data-i18n="dash.account.phone">Telefoonnummer</label>
+            <input type="tel" id="accPhone" autocomplete="tel">
           </div>
           <div class="field">
             <label for="accCompany" data-i18n="dash.account.company">Bedrijf</label>
@@ -563,14 +591,27 @@
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('full_name, company, is_member_active, has_seen_tour')
+      .select('full_name, company, phone, is_member_active, has_seen_tour, created_at')
       .eq('id', userId)
       .single();
 
     memberName = profile?.full_name || '';
     document.getElementById('accEmail').value = session.user.email || '';
     document.getElementById('accName').value = profile?.full_name || '';
+    document.getElementById('accPhone').value = profile?.phone || '';
     document.getElementById('accCompany').value = profile?.company || '';
+
+    const statusEl = document.getElementById('accountStatus');
+    statusEl.classList.toggle('is-active', !!profile?.is_member_active);
+    document.getElementById('accountStatusText').textContent = profile?.is_member_active
+      ? t('dash.account.status.active')
+      : t('dash.account.status.inactive');
+
+    if (profile?.created_at) {
+      const lang = window.SolaceI18n ? window.SolaceI18n.lang : 'nl';
+      const since = new Intl.DateTimeFormat(lang === 'nl' ? 'nl-NL' : 'en-GB', { month: 'long', year: 'numeric' }).format(new Date(profile.created_at));
+      document.getElementById('accountSince').textContent = t('dash.account.since').replace('{date}', since);
+    }
 
     document.getElementById('chatLocked').hidden = !!profile?.is_member_active;
     document.getElementById('chatActive').hidden = !profile?.is_member_active;
@@ -611,9 +652,10 @@
     if (!session) return;
 
     const full_name = document.getElementById('accName').value.trim();
+    const phone = document.getElementById('accPhone').value.trim();
     const company = document.getElementById('accCompany').value.trim();
 
-    await supabase.from('profiles').update({ full_name, company }).eq('id', session.user.id);
+    await supabase.from('profiles').update({ full_name, phone, company }).eq('id', session.user.id);
 
     memberName = full_name;
     document.getElementById('welcomeHeading').textContent =
@@ -650,6 +692,24 @@
 
   function hideTyping() {
     document.getElementById('chatTyping')?.remove();
+  }
+
+  // On mobile, the on-screen keyboard can cover the input row or push the
+  // latest messages out of view. Keep the input in view and the log
+  // scrolled to the bottom whenever the keyboard opens/closes.
+  chatInput.addEventListener('focus', () => {
+    setTimeout(() => {
+      chatInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }, 300);
+  });
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+      if (document.activeElement === chatInput) {
+        chatInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        chatLog.scrollTop = chatLog.scrollHeight;
+      }
+    });
   }
 
   chatForm.addEventListener('submit', async (e) => {
