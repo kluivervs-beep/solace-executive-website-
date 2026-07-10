@@ -48,6 +48,8 @@
   .dash-nav a svg { width: 17px; height: 17px; flex-shrink: 0; }
   .dash-nav a.is-active { background: rgba(180, 146, 61, 0.12); color: var(--color-gold-light); }
   .dash-nav a:hover { color: var(--color-ink); }
+  .nav-badge { width: 7px; height: 7px; border-radius: 50%; background: var(--color-gold); flex-shrink: 0; }
+  .nav-badge[hidden] { display: none; }
 
   .dash-side-foot { margin-top: auto; padding-top: var(--space-4); border-top: 1px solid var(--color-border); }
   .dash-side-foot a { font-size: 12.5px; color: var(--color-ink-muted); }
@@ -243,7 +245,7 @@
 
     <nav class="dash-nav">
       <a class="is-active" data-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg><span data-i18n="dash.nav.dashboard">Dashboard</span></a>
-      <a data-view="requests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span data-i18n="dash.nav.requests">Aanvragen</span></a>
+      <a data-view="requests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span data-i18n="dash.nav.requests">Aanvragen</span><span class="nav-badge" id="requestsBadge" hidden></span></a>
       <a data-view="concierge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.1-3.8 3.8-5.8 7-5.8s5.9 2 7 5.8"/></svg><span data-i18n="dash.nav.concierge">Concierge</span></a>
       <a data-view="account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i18n="dash.nav.account">Account</span></a>
     </nav>
@@ -365,6 +367,14 @@
             <input type="email" id="accEmail" disabled>
           </div>
           <div class="field">
+            <label for="accTitle" data-i18n="dash.account.title.label">Aanhef</label>
+            <select id="accTitle">
+              <option value="" data-i18n="dash.account.title.none">Geen voorkeur</option>
+              <option value="dhr" data-i18n="dash.account.title.dhr">De heer</option>
+              <option value="mevr" data-i18n="dash.account.title.mevr">Mevrouw</option>
+            </select>
+          </div>
+          <div class="field">
             <label for="accName" data-i18n="dash.account.name">Naam</label>
             <input type="text" id="accName" autocomplete="name">
           </div>
@@ -450,6 +460,14 @@
   function showView(name) {
     views.forEach((v) => { v.hidden = v.dataset.view !== name; });
     navLinks.forEach((a) => a.classList.toggle('is-active', a.dataset.view === name));
+    if (name === 'requests') markRequestsSeen();
+  }
+
+  async function markRequestsSeen() {
+    const badge = document.getElementById('requestsBadge');
+    if (badge.hidden) return;
+    badge.hidden = true;
+    await supabase.rpc('mark_requests_seen');
   }
 
   navLinks.forEach((a) => {
@@ -596,13 +614,14 @@
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('full_name, company, phone, is_member_active, has_seen_tour, created_at')
+      .select('full_name, company, phone, title, is_member_active, has_seen_tour, created_at')
       .eq('id', userId)
       .single();
 
     memberName = profile?.full_name || '';
     document.getElementById('accEmail').value = session.user.email || '';
     document.getElementById('accName').value = profile?.full_name || '';
+    document.getElementById('accTitle').value = profile?.title || '';
     document.getElementById('accPhone').value = profile?.phone || '';
     document.getElementById('accCompany').value = profile?.company || '';
 
@@ -623,7 +642,7 @@
 
     const { data: requests, error } = await supabase
       .from('requests')
-      .select('service, status, created_at')
+      .select('service, status, created_at, seen_by_member')
       .eq('member_id', userId)
       .order('created_at', { ascending: false });
 
@@ -636,6 +655,9 @@
 
     allRequests = requests || [];
     renderAll();
+
+    const hasUnseen = allRequests.some((r) => r.seen_by_member === false);
+    document.getElementById('requestsBadge').hidden = !hasUnseen;
 
     animateCount(document.getElementById('statReview'), allRequests.filter((r) => r.status === 'review').length);
     animateCount(document.getElementById('statConfirmed'), allRequests.filter((r) => r.status === 'confirmed').length);
@@ -657,10 +679,11 @@
     if (!session) return;
 
     const full_name = document.getElementById('accName').value.trim();
+    const title = document.getElementById('accTitle').value;
     const phone = document.getElementById('accPhone').value.trim();
     const company = document.getElementById('accCompany').value.trim();
 
-    await supabase.from('profiles').update({ full_name, phone, company }).eq('id', session.user.id);
+    await supabase.from('profiles').update({ full_name, title, phone, company }).eq('id', session.user.id);
 
     memberName = full_name;
     document.getElementById('welcomeHeading').textContent =

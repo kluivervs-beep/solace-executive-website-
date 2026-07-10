@@ -17,7 +17,7 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const MODEL = 'claude-sonnet-5';
 const MAX_TOOL_ROUNDS = 3;
 
-const SYSTEM_PROMPT = `You are the AI concierge for Solace Executive, a private concierge service for executive transport, private jets, and yacht charters, serving busy professionals and entrepreneurs.
+const BASE_SYSTEM_PROMPT = `You are the AI concierge for Solace Executive, a private concierge service for executive transport, private jets, and yacht charters, serving busy professionals and entrepreneurs.
 
 Speak with warmth, precision, and discretion. Never salesy, never robotic.
 
@@ -34,6 +34,26 @@ Once you have a clear picture, briefly summarize it back to the member, then cal
 Keep replies short: 2-4 sentences. Never invent prices, availability, or confirm bookings — only the human team does that. If asked about cost, explain that an accurate quote depends on the specifics you're gathering, and the team will provide one once the request is logged.
 
 Reply in the same language the member writes in (Dutch or English).`;
+
+function buildAddressInstruction(fullName: string | null | undefined, title: string | null | undefined): string {
+  const hour = Number(
+    new Intl.DateTimeFormat('nl-NL', { hour: 'numeric', hour12: false, timeZone: 'Europe/Amsterdam' }).format(
+      new Date()
+    )
+  );
+  const greetingNL = hour < 12 ? 'Goedemorgen' : hour < 18 ? 'Goedemiddag' : 'Goedenavond';
+  const greetingEN = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+
+  if (!fullName) {
+    return `It is currently ${greetingEN.toLowerCase()} in Amsterdam. You don't know the member's name, so open the conversation with a warm time-appropriate greeting (e.g. "${greetingNL}" / "${greetingEN}") without a name.`;
+  }
+
+  const surname = fullName.trim().split(/\s+/).slice(-1)[0];
+  const addressNL = title === 'dhr' ? `de heer ${surname}` : title === 'mevr' ? `mevrouw ${surname}` : fullName;
+  const addressEN = title === 'dhr' ? `Mr. ${surname}` : title === 'mevr' ? `Ms. ${surname}` : fullName;
+
+  return `It is currently ${greetingEN.toLowerCase()} in Amsterdam. When you open the conversation, greet the member by name using a time-appropriate greeting: "${greetingNL}, ${addressNL}" in Dutch, or "${greetingEN}, ${addressEN}" in English — match whichever language they write in. Only use the full greeting once, at the start of the conversation; after that, no need to repeat their name every message.`;
+}
 
 const TOOLS = [
   {
@@ -90,6 +110,14 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'content-type': 'application/json' },
       });
     }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name, title')
+      .eq('id', memberId)
+      .single();
+
+    const SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}\n\n${buildAddressInstruction(profile?.full_name, profile?.title)}`;
 
     const conversation = [...messages];
     let finalText = '';

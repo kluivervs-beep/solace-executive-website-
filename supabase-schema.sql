@@ -87,3 +87,58 @@ set search_path = public, auth
 as $$
   select id from auth.users where email = lookup_email limit 1;
 $$;
+
+-- Phone number (shown on Account) and salutation preference ('dhr',
+-- 'mevr', or null for no preference), used by the AI concierge to
+-- address the member properly.
+alter table public.profiles
+  add column phone text,
+  add column title text;
+
+-- Track status changes on requests so members can be notified (email
+-- + in-dashboard badge) when staff update their request.
+alter table public.requests
+  add column updated_at timestamptz not null default now(),
+  add column seen_by_member boolean not null default true;
+
+create or replace function public.mark_request_status_changed()
+returns trigger as $$
+begin
+  if new.status is distinct from old.status then
+    new.updated_at = now();
+    new.seen_by_member = false;
+  end if;
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger requests_status_change_trigger
+  before update on public.requests
+  for each row execute procedure public.mark_request_status_changed();
+
+-- Lets a member mark their own requests as seen (e.g. when they open
+-- the Aanvragen tab) without granting them general UPDATE rights.
+create or replace function public.mark_requests_seen()
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  update public.requests set seen_by_member = true
+  where member_id = auth.uid() and seen_by_member = false;
+$$;
+
+-- Lets the request-status-notify edge function (service role) look up
+-- a member's email + name from their profile id, to send the "your
+-- request was updated" email.
+create or replace function public.get_member_contact(member_uuid uuid)
+returns table(email text, full_name text)
+language sql
+security definer
+set search_path = public, auth
+as $$
+  select u.email, p.full_name
+  from auth.users u
+  join public.profiles p on p.id = u.id
+  where u.id = member_uuid;
+$$;
