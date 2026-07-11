@@ -262,3 +262,34 @@ begin
   values (auth.uid(), reward_uuid, v_cost);
 end;
 $$;
+
+-- One-time bonus for filling in a complete profile (phone, title and
+-- company all set), to encourage members to give the concierge team
+-- what they need. profile_complete_bonus_claimed prevents it firing
+-- again if a field is later cleared and re-filled.
+alter table public.profiles
+  add column profile_complete_bonus_claimed boolean not null default false;
+
+-- This runs AFTER update (not before) and issues its own explicit
+-- UPDATE for the claimed flag, rather than mutating NEW directly: a
+-- before-trigger here would get overwritten by the outer UPDATE,
+-- silently discarding the points_balance change made by the
+-- point_transactions insert below.
+create or replace function public.award_points_on_profile_complete()
+returns trigger as $$
+begin
+  if not new.profile_complete_bonus_claimed
+     and coalesce(new.phone, '') <> ''
+     and coalesce(new.title, '') <> ''
+     and coalesce(new.company, '') <> '' then
+    update public.profiles set profile_complete_bonus_claimed = true where id = new.id;
+    insert into public.point_transactions (member_id, amount, reason)
+    values (new.id, 100, 'Profiel compleet');
+  end if;
+  return new;
+end;
+$$ language plpgsql security definer set search_path = public;
+
+create trigger award_points_on_profile_complete_trigger
+  after update on public.profiles
+  for each row execute procedure public.award_points_on_profile_complete();

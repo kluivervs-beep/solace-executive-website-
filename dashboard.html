@@ -215,18 +215,49 @@
   .account-status.is-active .account-status-dot { background: #7AA874; }
   .account-since { font-size: 12.5px; color: var(--color-ink-muted); margin: 0 0 var(--space-4); }
 
-  .rewards-balance { padding: var(--space-4) var(--space-3); text-align: center; }
-  .rewards-balance-num { font-family: var(--font-display); font-size: 52px; color: var(--color-gold-light); line-height: 1; }
-  .rewards-balance-label { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ink-muted); margin-top: 6px; }
-  .rewards-tier { font-size: 13.5px; font-weight: 500; color: var(--color-ink); margin-top: var(--space-2); }
-  .rewards-progress { max-width: 360px; margin: var(--space-3) auto 0; }
+  .member-card {
+    position: relative;
+    border-radius: 18px;
+    padding: 26px 26px 24px;
+    background: linear-gradient(135deg, #1B2A36 0%, #101B24 55%, #0B141B 100%);
+    border: 1px solid var(--color-gold-dim);
+    overflow: hidden;
+    box-shadow: 0 24px 44px -26px rgba(0, 0, 0, 0.7);
+  }
+  .member-card::before {
+    content: '';
+    position: absolute;
+    top: -70%;
+    right: -25%;
+    width: 65%;
+    height: 220%;
+    background: radial-gradient(circle, rgba(180, 146, 61, 0.16), transparent 62%);
+    pointer-events: none;
+  }
+  .member-card-top { display: flex; align-items: center; gap: 10px; position: relative; }
+  .member-card-mark { width: 28px; height: 28px; }
+  .member-card-brand { font-family: var(--font-display); font-size: 13px; letter-spacing: 0.14em; color: var(--color-ink); line-height: 1.35; }
+  .member-card-brand small { font-family: var(--font-sans); font-size: 8px; letter-spacing: 0.26em; color: var(--color-gold); }
+  .member-card-tier { font-family: var(--font-display); font-size: 25px; color: var(--color-gold-light); margin-top: 30px; position: relative; }
+  .member-card-bottom { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 24px; position: relative; }
+  .member-card-label { font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ink-muted); }
+  .member-card-name { font-size: 14px; color: var(--color-ink); margin-top: 3px; }
+  .member-card-balance { text-align: right; }
+  .member-card-num { font-family: var(--font-display); font-size: 30px; color: var(--color-ink); line-height: 1; }
+
+  .rewards-teaser { max-width: 420px; margin: 0 auto; text-align: center; }
+  .member-card--locked { opacity: 0.72; filter: saturate(0.7); }
+  .rewards-teaser-copy { font-size: 13.5px; color: var(--color-ink-muted); line-height: 1.65; margin-top: var(--space-3); }
+
+  .rewards-progress { max-width: 360px; margin: var(--space-3) auto 0; text-align: center; }
   .rewards-progress-bar { height: 4px; border-radius: 2px; background: var(--color-border); overflow: hidden; }
   .rewards-progress-fill { height: 100%; background: var(--color-gold); border-radius: 2px; transition: width 0.5s ease; }
   .rewards-progress-label { font-size: 11.5px; color: var(--color-ink-muted); margin-top: 8px; }
 
   .rewards-earn-list { list-style: none; padding: var(--space-3); }
-  .rewards-earn-list li { font-size: 13.5px; color: var(--color-ink-muted); padding: 8px 0; border-bottom: 1px solid var(--color-border); }
+  .rewards-earn-list li { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); font-size: 13.5px; color: var(--color-ink-muted); padding: 10px 0; border-bottom: 1px solid var(--color-border); }
   .rewards-earn-list li:last-child { border-bottom: none; }
+  .rewards-earn-points { color: var(--color-gold-light); font-weight: 600; font-size: 12.5px; flex-shrink: 0; }
 
   .rewards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); padding: var(--space-3); }
   .reward-card { border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-3); display: flex; flex-direction: column; gap: 6px; }
@@ -302,7 +333,7 @@
       <a data-view="requests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span data-i18n="dash.nav.requests">Aanvragen</span><span class="nav-badge" id="requestsBadge" hidden></span></a>
       <a data-view="concierge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.1-3.8 3.8-5.8 7-5.8s5.9 2 7 5.8"/></svg><span data-i18n="dash.nav.concierge">Concierge</span></a>
       <a data-view="account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i18n="dash.nav.account">Account</span></a>
-      <a data-view="rewards" id="navRewards" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.4 5.3 5.6.6-4.2 3.9 1.2 5.6-4.6-2.9-4.6 2.9 1.2-5.6-4.2-3.9 5.6-.6z"/></svg><span data-i18n="dash.nav.rewards">Beloningen</span><span class="nav-beta">BETA</span></a>
+      <a data-view="rewards" id="navRewards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.4 5.3 5.6.6-4.2 3.9 1.2 5.6-4.6-2.9-4.6 2.9 1.2-5.6-4.2-3.9 5.6-.6z"/></svg><span data-i18n="dash.nav.rewards">Beloningen</span><span class="nav-beta" id="navRewardsBadge">BETA</span></a>
     </nav>
 
     <div class="dash-side-foot">
@@ -458,34 +489,81 @@
         </div>
       </div>
 
-      <section class="dash-panel rewards-balance">
-        <div class="rewards-balance-num" id="rewardsBalance">0</div>
-        <div class="rewards-balance-label" data-i18n="dash.rewards.balance.label">punten</div>
-        <div class="rewards-tier" id="rewardsTier"></div>
+      <div class="rewards-teaser" id="rewardsTeaser" hidden>
+        <div class="member-card member-card--locked">
+          <div class="member-card-top">
+            <img src="assets/icons/monogram.svg" alt="" class="member-card-mark">
+            <span class="member-card-brand">SOLACE<br><small>EXECUTIVE</small></span>
+          </div>
+          <div class="member-card-tier" data-i18n="dash.rewards.teaser.card">Solace Points</div>
+          <div class="member-card-bottom">
+            <div>
+              <div class="member-card-label" data-i18n="dash.rewards.teaser.label">STATUS</div>
+              <div class="member-card-name" data-i18n="dash.rewards.teaser.comingsoon">Binnenkort beschikbaar</div>
+            </div>
+          </div>
+        </div>
+        <p class="rewards-teaser-copy" data-i18n="dash.rewards.teaser.body">We werken achter de schermen aan een nieuw beloningsprogramma voor leden: punten sparen bij elke aanvraag en inwisselen voor exclusieve extra's. Zodra het klaar is, hoort u het als eerste, hier en per e-mail.</p>
+      </div>
+
+      <div id="rewardsLive" hidden>
+        <div class="member-card">
+          <div class="member-card-top">
+            <img src="assets/icons/monogram.svg" alt="" class="member-card-mark">
+            <span class="member-card-brand">SOLACE<br><small>EXECUTIVE</small></span>
+          </div>
+          <div class="member-card-tier" id="rewardsTier"></div>
+          <div class="member-card-bottom">
+            <div>
+              <div class="member-card-label" data-i18n="dash.rewards.card.name">LID</div>
+              <div class="member-card-name" id="rewardsCardName">&mdash;</div>
+            </div>
+            <div class="member-card-balance">
+              <div class="member-card-num" id="rewardsBalance">0</div>
+              <div class="member-card-label" data-i18n="dash.rewards.balance.label">punten</div>
+            </div>
+          </div>
+        </div>
+
         <div class="rewards-progress">
           <div class="rewards-progress-bar"><div class="rewards-progress-fill" id="rewardsProgressFill"></div></div>
           <p class="rewards-progress-label" id="rewardsProgressLabel"></p>
         </div>
-      </section>
 
-      <section class="dash-panel">
-        <div class="dash-panel-head">
-          <h2 data-i18n="dash.rewards.earn.title">Zo verdient u punten</h2>
-        </div>
-        <ul class="rewards-earn-list">
-          <li data-i18n="dash.rewards.earn.completed">Elke voltooide aanvraag: 150 punten</li>
-        </ul>
-      </section>
+        <section class="dash-panel">
+          <div class="dash-panel-head">
+            <h2 data-i18n="dash.rewards.earn.title">Zo verdient u punten</h2>
+          </div>
+          <ul class="rewards-earn-list">
+            <li>
+              <span data-i18n="dash.rewards.earn.completed">Elke voltooide aanvraag</span>
+              <span class="rewards-earn-points">+150</span>
+            </li>
+            <li>
+              <span data-i18n="dash.rewards.earn.profile">Compleet profiel (eenmalig)</span>
+              <span class="rewards-earn-points">+100</span>
+            </li>
+            <li>
+              <span data-i18n="dash.rewards.earn.referral">Een vriend brengt u aan als lid</span>
+              <span class="rewards-earn-points">+500</span>
+            </li>
+            <li>
+              <span data-i18n="dash.rewards.earn.anniversary">Lidmaatschapsjubileum, elk jaar</span>
+              <span class="rewards-earn-points">+300</span>
+            </li>
+          </ul>
+        </section>
 
-      <section class="dash-panel">
-        <div class="dash-panel-head">
-          <h2 data-i18n="dash.rewards.catalog.title">Beloningen inwisselen</h2>
-        </div>
-        <div class="rewards-grid" id="rewardsGrid">
-          <div class="skeleton-row"></div>
-          <div class="skeleton-row"></div>
-        </div>
-      </section>
+        <section class="dash-panel">
+          <div class="dash-panel-head">
+            <h2 data-i18n="dash.rewards.catalog.title">Beloningen inwisselen</h2>
+          </div>
+          <div class="rewards-grid" id="rewardsGrid">
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+          </div>
+        </section>
+      </div>
     </section>
 
   </main>
@@ -496,6 +574,11 @@
   import { supabase } from './supabase-client.js';
 
   const t = (key) => (window.SolaceI18n ? window.SolaceI18n.t(key) : key);
+
+  // Flip to true and deploy when Solace Points is ready for every
+  // member (not just beta_features accounts). Also trigger the
+  // announce-rewards-launch edge function once, to email everyone.
+  const REWARDS_LIVE = false;
 
   const STATUS_CLASS = { review: 'req-status--review', confirmed: 'req-status--done', done: 'req-status--done' };
   const STATUS_RANK = { review: 0, confirmed: 1, done: 2 };
@@ -560,6 +643,7 @@
     const balance = profile.points_balance || 0;
     const lifetime = profile.points_lifetime || 0;
     animateCount(document.getElementById('rewardsBalance'), balance);
+    document.getElementById('rewardsCardName').textContent = memberName || '—';
 
     let current = TIERS[0];
     let next = null;
@@ -867,8 +951,20 @@
     document.getElementById('chatLocked').hidden = !!profile?.is_member_active;
     document.getElementById('chatActive').hidden = !profile?.is_member_active;
 
+    const rewardsUnlocked = !!profile?.beta_features || REWARDS_LIVE;
+    document.getElementById('rewardsTeaser').hidden = rewardsUnlocked;
+    document.getElementById('rewardsLive').hidden = !rewardsUnlocked;
+    const rewardsBadge = document.getElementById('navRewardsBadge');
     if (profile?.beta_features) {
-      document.getElementById('navRewards').hidden = false;
+      rewardsBadge.textContent = 'BETA';
+      rewardsBadge.hidden = false;
+    } else if (REWARDS_LIVE) {
+      rewardsBadge.hidden = true;
+    } else {
+      rewardsBadge.textContent = t('dash.rewards.badge.soon');
+      rewardsBadge.hidden = false;
+    }
+    if (rewardsUnlocked) {
       renderRewardsBalance(profile);
       loadRewardsCatalog();
     }
