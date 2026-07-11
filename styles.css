@@ -844,7 +844,8 @@ input, textarea, select {
 .mini-cards { display: flex; gap: var(--space-3); margin-top: 6px; }
 .mini-card {
   position: relative;
-  width: 168px;
+  flex: 0 1 168px;
+  min-width: 0;
   aspect-ratio: 1.6 / 1;
   border-radius: 12px;
   padding: 14px 15px;
