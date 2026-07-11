@@ -43,8 +43,10 @@ function buildAddressInstruction(fullName: string | null | undefined, title: str
       new Date()
     )
   );
-  const greetingNL = hour < 12 ? 'Goedemorgen' : hour < 18 ? 'Goedemiddag' : 'Goedenavond';
-  const greetingEN = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  // Hours just after midnight still read as "evening" to a person, not
+  // "morning" — nobody says "good morning" to someone awake at 00:30.
+  const greetingNL = hour < 5 ? 'Goedenavond' : hour < 12 ? 'Goedemorgen' : hour < 18 ? 'Goedemiddag' : 'Goedenavond';
+  const greetingEN = hour < 5 ? 'Good evening' : hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
   if (!fullName) {
     return `It is currently ${greetingEN.toLowerCase()} in Amsterdam. You don't know the member's name, so open the conversation with a warm time-appropriate greeting (e.g. "${greetingNL}" / "${greetingEN}") without a name.`;
