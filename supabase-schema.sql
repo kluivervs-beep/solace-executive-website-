@@ -334,3 +334,49 @@ create policy "Members can view their own concierge messages"
 create policy "Members can insert their own concierge messages"
   on public.concierge_messages for insert
   with check (auth.uid() = member_id);
+
+-- Freeform notes the AI Concierge saves about a member's stated
+-- preferences (home airport, recurring requests, etc.), so future
+-- conversations already know them.
+alter table public.profiles add column concierge_notes text;
+
+-- Lets staff (and the notification email subject) spot time-sensitive
+-- requests immediately, without reading every request in full.
+alter table public.requests add column is_urgent boolean not null default false;
+
+-- Same redemption logic as redeem_reward(), but takes the member id as
+-- an explicit argument instead of relying on auth.uid() — used by the
+-- concierge-chat edge function (which calls with the service role, so
+-- there is no authenticated browser session / auth.uid() to read).
+-- Locked down to service_role only: a member must never be able to
+-- call this directly and redeem on someone else's behalf.
+create or replace function public.redeem_reward_for_member(member_uuid uuid, reward_uuid uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_cost integer;
+  v_balance integer;
+begin
+  select cost_points into v_cost from public.rewards where id = reward_uuid and active = true;
+  if v_cost is null then
+    raise exception 'Reward not found or inactive';
+  end if;
+
+  select points_balance into v_balance from public.profiles where id = member_uuid;
+  if v_balance < v_cost then
+    raise exception 'Insufficient points';
+  end if;
+
+  insert into public.point_transactions (member_id, amount, reason)
+  values (member_uuid, -v_cost, 'Beloning ingewisseld via AI Concierge');
+
+  insert into public.reward_redemptions (member_id, reward_id, points_spent)
+  values (member_uuid, reward_uuid, v_cost);
+end;
+$$;
+
+revoke execute on function public.redeem_reward_for_member(uuid, uuid) from public, anon, authenticated;
+grant execute on function public.redeem_reward_for_member(uuid, uuid) to service_role;
