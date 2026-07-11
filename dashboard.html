@@ -223,13 +223,29 @@
     margin: 0 auto;
     border-radius: 18px;
     padding: 22px 24px;
-    background: linear-gradient(150deg, #263847 0%, #16222C 48%, #0A1218 100%);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    background: linear-gradient(150deg, #2B3E4D 0%, #16222C 48%, #090F14 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     overflow: hidden;
-    box-shadow: 0 30px 50px -24px rgba(0, 0, 0, 0.8);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+      0 36px 60px -26px rgba(0, 0, 0, 0.9);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+  }
+  .member-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      98deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+    pointer-events: none;
   }
   .member-card-top { display: flex; align-items: center; gap: 9px; position: relative; }
   .member-card-mark { width: 24px; height: 24px; flex-shrink: 0; }
