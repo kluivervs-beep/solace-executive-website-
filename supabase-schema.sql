@@ -380,3 +380,6 @@ $$;
 
 revoke execute on function public.redeem_reward_for_member(uuid, uuid) from public, anon, authenticated;
 grant execute on function public.redeem_reward_for_member(uuid, uuid) to service_role;
+
+-- A couple more personal fields for the Account tab.
+alter table public.profiles add column birthday date, add column city text;

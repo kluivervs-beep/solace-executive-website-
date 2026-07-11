@@ -195,6 +195,10 @@
 
   .account-panel { padding: var(--space-4); max-width: 440px; }
   .account-panel .field input:disabled { opacity: 0.6; cursor: not-allowed; }
+  .account-panel-title { font-family: var(--font-display); font-size: 18px; font-weight: 500; color: var(--color-ink); margin-bottom: var(--space-3); }
+  .field-hint { font-size: 11.5px; color: var(--color-ink-muted); margin-top: 5px; }
+  .field-error { font-size: 12.5px; color: #E08167; margin: -6px 0 var(--space-2); display: none; }
+  .field-error.is-visible { display: block; }
   .account-saved { color: var(--color-gold-light); font-size: 13px; margin-left: 12px; display: none; }
   .account-saved.is-visible { display: inline; }
 
@@ -530,7 +534,8 @@
         <form id="accountForm">
           <div class="field">
             <label for="accEmail" data-i18n="dash.account.email">E-mail</label>
-            <input type="email" id="accEmail" disabled>
+            <input type="email" id="accEmail" autocomplete="email">
+            <p class="field-hint" data-i18n="dash.account.email.hint">Wijzigen? U ontvangt een bevestigingslink op het nieuwe adres.</p>
           </div>
           <div class="field">
             <label for="accTitle" data-i18n="dash.account.title.label">Aanhef</label>
@@ -552,8 +557,33 @@
             <label for="accCompany" data-i18n="dash.account.company">Bedrijf</label>
             <input type="text" id="accCompany" autocomplete="organization">
           </div>
+          <div class="field">
+            <label for="accBirthday" data-i18n="dash.account.birthday">Geboortedatum</label>
+            <input type="date" id="accBirthday">
+          </div>
+          <div class="field">
+            <label for="accCity" data-i18n="dash.account.city">Woonplaats</label>
+            <input type="text" id="accCity" autocomplete="address-level2">
+          </div>
           <button type="submit" class="btn btn-primary" data-i18n="dash.account.save">Opslaan</button>
           <span class="account-saved" id="accountSaved" data-i18n="dash.account.saved">Opgeslagen.</span>
+        </form>
+      </section>
+
+      <section class="dash-panel account-panel">
+        <h2 class="account-panel-title" data-i18n="dash.account.password.title">Wachtwoord wijzigen</h2>
+        <form id="passwordForm">
+          <div class="field">
+            <label for="accNewPassword" data-i18n="dash.account.password.new">Nieuw wachtwoord</label>
+            <input type="password" id="accNewPassword" autocomplete="new-password" minlength="8">
+          </div>
+          <div class="field">
+            <label for="accNewPasswordConfirm" data-i18n="dash.account.password.confirm">Bevestig nieuw wachtwoord</label>
+            <input type="password" id="accNewPasswordConfirm" autocomplete="new-password" minlength="8">
+          </div>
+          <p class="field-error" id="passwordError" hidden></p>
+          <button type="submit" class="btn btn-primary" data-i18n="dash.account.password.save">Wachtwoord opslaan</button>
+          <span class="account-saved" id="passwordSaved" data-i18n="dash.account.password.saved">Gewijzigd.</span>
         </form>
       </section>
     </section>
@@ -1055,7 +1085,7 @@
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('full_name, company, phone, title, is_member_active, has_seen_tour, created_at, beta_features, points_balance, points_lifetime')
+      .select('full_name, company, phone, title, is_member_active, has_seen_tour, created_at, beta_features, points_balance, points_lifetime, birthday, city')
       .eq('id', userId)
       .single();
 
@@ -1065,6 +1095,8 @@
     document.getElementById('accTitle').value = profile?.title || '';
     document.getElementById('accPhone').value = profile?.phone || '';
     document.getElementById('accCompany').value = profile?.company || '';
+    document.getElementById('accBirthday').value = profile?.birthday || '';
+    document.getElementById('accCity').value = profile?.city || '';
 
     const statusEl = document.getElementById('accountStatus');
     statusEl.classList.toggle('is-active', !!profile?.is_member_active);
@@ -1125,13 +1157,55 @@
     const title = document.getElementById('accTitle').value;
     const phone = document.getElementById('accPhone').value.trim();
     const company = document.getElementById('accCompany').value.trim();
+    const birthday = document.getElementById('accBirthday').value || null;
+    const city = document.getElementById('accCity').value.trim();
+    const email = document.getElementById('accEmail').value.trim();
 
-    await supabase.from('profiles').update({ full_name, title, phone, company }).eq('id', session.user.id);
+    await supabase.from('profiles').update({ full_name, title, phone, company, birthday, city }).eq('id', session.user.id);
+
+    // Email lives on the auth user, not the profiles table, and changing
+    // it triggers Supabase's own confirmation-link flow — the address
+    // only actually changes once the member clicks that link.
+    if (email && email !== session.user.email) {
+      await supabase.auth.updateUser({ email });
+    }
 
     memberName = full_name;
     document.getElementById('welcomeHeading').textContent =
       memberName ? t('dash.welcome.name').replace('{name}', memberName) : t('dash.welcome');
     const saved = document.getElementById('accountSaved');
+    saved.classList.add('is-visible');
+    setTimeout(() => saved.classList.remove('is-visible'), 2000);
+  });
+
+  document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errorEl = document.getElementById('passwordError');
+    errorEl.classList.remove('is-visible');
+
+    const newPassword = document.getElementById('accNewPassword').value;
+    const confirmPassword = document.getElementById('accNewPasswordConfirm').value;
+
+    if (newPassword.length < 8) {
+      errorEl.textContent = t('dash.account.password.tooshort');
+      errorEl.classList.add('is-visible');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      errorEl.textContent = t('dash.account.password.mismatch');
+      errorEl.classList.add('is-visible');
+      return;
+    }
+
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) {
+      errorEl.textContent = t('dash.account.password.error');
+      errorEl.classList.add('is-visible');
+      return;
+    }
+
+    document.getElementById('passwordForm').reset();
+    const saved = document.getElementById('passwordSaved');
     saved.classList.add('is-visible');
     setTimeout(() => saved.classList.remove('is-visible'), 2000);
   });

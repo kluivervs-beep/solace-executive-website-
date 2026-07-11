@@ -84,6 +84,16 @@
     display: none;
   }
   .login-error.is-visible { display: block; }
+  .login-success {
+    font-size: 13px;
+    color: #9AC79A;
+    margin-bottom: var(--space-3);
+    display: none;
+  }
+  .login-success.is-visible { display: block; }
+  .login-forgot-link { text-align: center; margin-top: var(--space-3); font-size: 13px; }
+  .login-forgot-link a { color: var(--color-gold-light); text-decoration: underline; text-underline-offset: 3px; }
+  .login-forgot-sub { color: var(--color-ink-muted); font-size: 13.5px; line-height: 1.6; margin-bottom: var(--space-3); }
 </style>
 </head>
 <body>
@@ -125,7 +135,23 @@
       </div>
     </form>
 
-    <p class="login-back" data-i18n-html="login.back">Wachtwoord vergeten of nog geen lid? <a href="index.html#lidmaatschap">Neem contact op</a></p>
+    <p class="login-forgot-link"><a href="#" id="forgotLink" data-i18n="login.forgot.link">Wachtwoord vergeten?</a></p>
+
+    <form id="forgotForm" novalidate hidden>
+      <p class="login-forgot-sub" data-i18n="login.forgot.sub">Vul uw e-mailadres in, dan sturen we u een link om een nieuw wachtwoord in te stellen.</p>
+      <p class="login-error" id="forgotError" role="alert"></p>
+      <p class="login-success" id="forgotSuccess" data-i18n="login.forgot.success">Check uw inbox voor de reset-link.</p>
+      <div class="field">
+        <label for="forgotEmail" data-i18n="login.email">E-mail</label>
+        <input type="email" id="forgotEmail" name="forgotEmail" autocomplete="email" required placeholder="naam@voorbeeld.nl">
+      </div>
+      <div class="login-actions">
+        <button type="submit" class="btn btn-primary btn-wide" id="forgotSubmit" data-i18n="login.forgot.submit">Verstuur reset-link</button>
+      </div>
+      <p class="login-forgot-link"><a href="#" id="backToLoginLink" data-i18n="login.forgot.back">&larr; Terug naar inloggen</a></p>
+    </form>
+
+    <p class="login-back" data-i18n-html="login.back">Nog geen lid? <a href="index.html#lidmaatschap">Neem contact op</a></p>
   </div>
 </div>
 
@@ -163,6 +189,56 @@
     }
 
     window.location.href = 'dashboard.html';
+  });
+
+  // --- Forgot password ---
+  const forgotLink = document.getElementById('forgotLink');
+  const backToLoginLink = document.getElementById('backToLoginLink');
+  const forgotForm = document.getElementById('forgotForm');
+  const forgotError = document.getElementById('forgotError');
+  const forgotSuccess = document.getElementById('forgotSuccess');
+  const forgotSubmit = document.getElementById('forgotSubmit');
+
+  forgotLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    form.hidden = true;
+    document.querySelector('.login-forgot-link').hidden = true;
+    forgotForm.hidden = false;
+  });
+
+  backToLoginLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    forgotForm.hidden = true;
+    forgotError.classList.remove('is-visible');
+    forgotSuccess.classList.remove('is-visible');
+    form.hidden = false;
+    document.querySelector('.login-forgot-link').hidden = false;
+  });
+
+  forgotForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    forgotError.classList.remove('is-visible');
+    forgotSuccess.classList.remove('is-visible');
+    forgotSubmit.disabled = true;
+    forgotSubmit.textContent = t('login.submitting');
+
+    const email = document.getElementById('forgotEmail').value.trim();
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password.html`,
+    });
+
+    forgotSubmit.disabled = false;
+    forgotSubmit.textContent = t('login.forgot.submit');
+
+    if (error) {
+      forgotError.textContent = t('login.forgot.error');
+      forgotError.classList.add('is-visible');
+      return;
+    }
+
+    forgotSuccess.classList.add('is-visible');
+    forgotForm.querySelector('.field').hidden = true;
+    forgotSubmit.hidden = true;
   });
 </script>
 
