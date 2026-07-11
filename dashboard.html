@@ -658,10 +658,7 @@
 
   const t = (key) => (window.SolaceI18n ? window.SolaceI18n.t(key) : key);
 
-  // Flip to true and deploy when Solace Points is ready for every
-  // member (not just beta_features accounts). Also trigger the
-  // announce-rewards-launch edge function once, to email everyone.
-  const REWARDS_LIVE = false;
+  const REWARDS_LIVE = true;
 
   const STATUS_CLASS = { review: 'req-status--review', confirmed: 'req-status--done', done: 'req-status--done' };
   const STATUS_RANK = { review: 0, confirmed: 1, done: 2 };
