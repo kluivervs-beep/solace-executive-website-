@@ -223,10 +223,13 @@
     margin: 0 auto;
     border-radius: 18px;
     padding: 22px 24px;
-    background: linear-gradient(135deg, #1B2A36 0%, #101B24 55%, #0B141B 100%);
-    border: 1px solid var(--color-gold-dim);
+    background: linear-gradient(150deg, #2A3E51 0%, #17232E 48%, #080D12 100%);
+    border: 1px solid rgba(158, 190, 214, 0.14);
     overflow: hidden;
-    box-shadow: 0 24px 44px -26px rgba(0, 0, 0, 0.7);
+    box-shadow:
+      inset 0 1px 0 rgba(210, 226, 240, 0.14),
+      inset 0 0 0 1px rgba(0, 0, 0, 0.3),
+      0 30px 50px -24px rgba(0, 0, 0, 0.8);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -234,11 +237,23 @@
   .member-card::before {
     content: '';
     position: absolute;
-    top: -70%;
-    right: -25%;
-    width: 65%;
-    height: 220%;
-    background: radial-gradient(circle, rgba(180, 146, 61, 0.16), transparent 62%);
+    inset: 0;
+    background: linear-gradient(115deg,
+      transparent 32%,
+      rgba(180, 202, 224, 0.05) 42%,
+      rgba(200, 218, 236, 0.16) 49%,
+      rgba(180, 202, 224, 0.05) 56%,
+      transparent 66%);
+    pointer-events: none;
+  }
+  .member-card::after {
+    content: '';
+    position: absolute;
+    top: -60%;
+    right: -20%;
+    width: 55%;
+    height: 180%;
+    background: radial-gradient(circle, rgba(180, 146, 61, 0.1), transparent 65%);
     pointer-events: none;
   }
   .member-card-top { display: flex; align-items: center; gap: 9px; position: relative; }
