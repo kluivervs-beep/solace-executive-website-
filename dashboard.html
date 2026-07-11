@@ -50,6 +50,7 @@
   .dash-nav a:hover { color: var(--color-ink); }
   .nav-badge { width: 7px; height: 7px; border-radius: 50%; background: var(--color-gold); flex-shrink: 0; }
   .nav-badge[hidden] { display: none; }
+  .nav-beta { margin-left: auto; font-size: 9px; letter-spacing: 0.08em; color: var(--color-gold); border: 1px solid var(--color-gold-dim); border-radius: 3px; padding: 1px 5px; flex-shrink: 0; }
 
   .dash-side-foot { margin-top: auto; padding-top: var(--space-4); border-top: 1px solid var(--color-border); }
   .dash-side-foot a { font-size: 12.5px; color: var(--color-ink-muted); }
@@ -67,6 +68,7 @@
   .dash-stat .label { font-size: 12px; color: var(--color-ink-muted); margin-top: 4px; }
 
   .dash-panel { background: var(--color-bg-elevated); border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
+  .dash-view .dash-panel + .dash-panel { margin-top: var(--space-4); }
   .dash-panel-head { padding: var(--space-3) var(--space-3) var(--space-2); border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; }
   .dash-panel-head h2 { font-family: var(--font-display); font-size: 18px; font-weight: 500; color: var(--color-ink); }
   .dash-panel-head span { font-size: 11px; color: var(--color-ink-muted); }
@@ -213,6 +215,45 @@
   .account-status.is-active .account-status-dot { background: #7AA874; }
   .account-since { font-size: 12.5px; color: var(--color-ink-muted); margin: 0 0 var(--space-4); }
 
+  .rewards-balance { padding: var(--space-4) var(--space-3); text-align: center; }
+  .rewards-balance-num { font-family: var(--font-display); font-size: 52px; color: var(--color-gold-light); line-height: 1; }
+  .rewards-balance-label { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ink-muted); margin-top: 6px; }
+  .rewards-tier { font-size: 13.5px; font-weight: 500; color: var(--color-ink); margin-top: var(--space-2); }
+  .rewards-progress { max-width: 360px; margin: var(--space-3) auto 0; }
+  .rewards-progress-bar { height: 4px; border-radius: 2px; background: var(--color-border); overflow: hidden; }
+  .rewards-progress-fill { height: 100%; background: var(--color-gold); border-radius: 2px; transition: width 0.5s ease; }
+  .rewards-progress-label { font-size: 11.5px; color: var(--color-ink-muted); margin-top: 8px; }
+
+  .rewards-earn-list { list-style: none; padding: var(--space-3); }
+  .rewards-earn-list li { font-size: 13.5px; color: var(--color-ink-muted); padding: 8px 0; border-bottom: 1px solid var(--color-border); }
+  .rewards-earn-list li:last-child { border-bottom: none; }
+
+  .rewards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); padding: var(--space-3); }
+  .reward-card { border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-3); display: flex; flex-direction: column; gap: 6px; }
+  .reward-card h3 { font-family: var(--font-display); font-size: 17px; font-weight: 500; color: var(--color-ink); }
+  .reward-card p { font-size: 12.5px; color: var(--color-ink-muted); line-height: 1.55; flex-grow: 1; }
+  .reward-card-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+  .reward-cost { font-size: 12.5px; color: var(--color-gold-light); font-weight: 500; }
+  .reward-redeem-btn {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--color-gold-dim);
+    background: none;
+    color: var(--color-gold-light);
+    cursor: pointer;
+    transition: background-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
+  }
+  .reward-redeem-btn:hover:not(:disabled) { background: var(--color-gold); color: var(--color-bg); }
+  .reward-redeem-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .reward-redeem-btn.is-done { border-color: rgba(122, 168, 116, 0.4); color: #9AC79A; }
+
+  @media (max-width: 640px) {
+    .rewards-grid { grid-template-columns: 1fr; }
+  }
+
   @media (max-width: 900px) {
     .dash-shell { grid-template-columns: 1fr; }
     .dash-side {
@@ -261,6 +302,7 @@
       <a data-view="requests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span data-i18n="dash.nav.requests">Aanvragen</span><span class="nav-badge" id="requestsBadge" hidden></span></a>
       <a data-view="concierge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.1-3.8 3.8-5.8 7-5.8s5.9 2 7 5.8"/></svg><span data-i18n="dash.nav.concierge">Concierge</span></a>
       <a data-view="account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i18n="dash.nav.account">Account</span></a>
+      <a data-view="rewards" id="navRewards" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.4 5.3 5.6.6-4.2 3.9 1.2 5.6-4.6-2.9-4.6 2.9 1.2-5.6-4.2-3.9 5.6-.6z"/></svg><span data-i18n="dash.nav.rewards">Beloningen</span><span class="nav-beta">BETA</span></a>
     </nav>
 
     <div class="dash-side-foot">
@@ -408,6 +450,44 @@
       </section>
     </section>
 
+    <section class="dash-view" data-view="rewards" hidden>
+      <div class="dash-welcome">
+        <div>
+          <p class="eyebrow" data-i18n="dash.rewards.eyebrow">BELONINGEN</p>
+          <h1 data-i18n="dash.rewards.title">Uw Solace Punten.</h1>
+        </div>
+      </div>
+
+      <section class="dash-panel rewards-balance">
+        <div class="rewards-balance-num" id="rewardsBalance">0</div>
+        <div class="rewards-balance-label" data-i18n="dash.rewards.balance.label">punten</div>
+        <div class="rewards-tier" id="rewardsTier"></div>
+        <div class="rewards-progress">
+          <div class="rewards-progress-bar"><div class="rewards-progress-fill" id="rewardsProgressFill"></div></div>
+          <p class="rewards-progress-label" id="rewardsProgressLabel"></p>
+        </div>
+      </section>
+
+      <section class="dash-panel">
+        <div class="dash-panel-head">
+          <h2 data-i18n="dash.rewards.earn.title">Zo verdient u punten</h2>
+        </div>
+        <ul class="rewards-earn-list">
+          <li data-i18n="dash.rewards.earn.completed">Elke voltooide aanvraag: 150 punten</li>
+        </ul>
+      </section>
+
+      <section class="dash-panel">
+        <div class="dash-panel-head">
+          <h2 data-i18n="dash.rewards.catalog.title">Beloningen inwisselen</h2>
+        </div>
+        <div class="rewards-grid" id="rewardsGrid">
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+        </div>
+      </section>
+    </section>
+
   </main>
 </div>
 
@@ -467,6 +547,107 @@
       if (progress < 1) requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
+  }
+
+  // --- Solace Points (beta) ---
+  const TIERS = [
+    { key: 'member', min: 0 },
+    { key: 'distinguished', min: 2500 },
+    { key: 'elite', min: 7500 },
+  ];
+
+  function renderRewardsBalance(profile) {
+    const balance = profile.points_balance || 0;
+    const lifetime = profile.points_lifetime || 0;
+    animateCount(document.getElementById('rewardsBalance'), balance);
+
+    let current = TIERS[0];
+    let next = null;
+    for (let i = 0; i < TIERS.length; i += 1) {
+      if (lifetime >= TIERS[i].min) current = TIERS[i];
+      else { next = TIERS[i]; break; }
+    }
+
+    document.getElementById('rewardsTier').textContent = t('dash.rewards.tier.' + current.key);
+
+    const fill = document.getElementById('rewardsProgressFill');
+    const label = document.getElementById('rewardsProgressLabel');
+    if (next) {
+      const span = next.min - current.min;
+      const progress = Math.min(1, (lifetime - current.min) / span);
+      fill.style.width = (progress * 100) + '%';
+      label.textContent = t('dash.rewards.tier.progress')
+        .replace('{points}', next.min - lifetime)
+        .replace('{tier}', t('dash.rewards.tier.' + next.key));
+    } else {
+      fill.style.width = '100%';
+      label.textContent = t('dash.rewards.tier.maxed');
+    }
+  }
+
+  async function loadRewardsCatalog() {
+    const grid = document.getElementById('rewardsGrid');
+    const { data: rewards, error } = await supabase
+      .from('rewards')
+      .select('id, title, description, cost_points')
+      .eq('active', true)
+      .order('sort_order');
+
+    if (error || !rewards?.length) {
+      grid.innerHTML = `<div class="request-empty">${t('dash.rewards.catalog.empty')}</div>`;
+      return;
+    }
+
+    const { data: { session } } = await supabase.auth.getSession();
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('points_balance')
+      .eq('id', session.user.id)
+      .single();
+    const balance = profile?.points_balance || 0;
+
+    grid.innerHTML = rewards.map((r) => `
+      <div class="reward-card">
+        <h3>${r.title}</h3>
+        <p>${r.description || ''}</p>
+        <div class="reward-card-foot">
+          <span class="reward-cost">${r.cost_points} ${t('dash.rewards.balance.label')}</span>
+          <button type="button" class="reward-redeem-btn" data-reward-id="${r.id}" data-cost="${r.cost_points}" ${balance < r.cost_points ? 'disabled' : ''}>${t('dash.rewards.redeem')}</button>
+        </div>
+      </div>
+    `).join('');
+
+    grid.querySelectorAll('.reward-redeem-btn').forEach((btn) => {
+      btn.addEventListener('click', () => redeemReward(btn));
+    });
+  }
+
+  async function redeemReward(btn) {
+    btn.disabled = true;
+    const rewardId = btn.dataset.rewardId;
+    const { error } = await supabase.rpc('redeem_reward', { reward_uuid: rewardId });
+
+    if (error) {
+      btn.disabled = false;
+      alert(t('dash.rewards.redeem.error'));
+      return;
+    }
+
+    btn.textContent = t('dash.rewards.redeem.confirm');
+    btn.classList.add('is-done');
+
+    const { data: { session } } = await supabase.auth.getSession();
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('points_balance, points_lifetime')
+      .eq('id', session.user.id)
+      .single();
+    if (profile) {
+      renderRewardsBalance(profile);
+      document.querySelectorAll('.reward-redeem-btn:not(.is-done)').forEach((other) => {
+        other.disabled = Number(other.dataset.cost) > profile.points_balance;
+      });
+    }
   }
 
   // --- View switching (Dashboard / Aanvragen / Concierge / Account) ---
@@ -657,7 +838,7 @@
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('full_name, company, phone, title, is_member_active, has_seen_tour, created_at')
+      .select('full_name, company, phone, title, is_member_active, has_seen_tour, created_at, beta_features, points_balance, points_lifetime')
       .eq('id', userId)
       .single();
 
@@ -685,6 +866,12 @@
 
     document.getElementById('chatLocked').hidden = !!profile?.is_member_active;
     document.getElementById('chatActive').hidden = !profile?.is_member_active;
+
+    if (profile?.beta_features) {
+      document.getElementById('navRewards').hidden = false;
+      renderRewardsBalance(profile);
+      loadRewardsCatalog();
+    }
 
     const { data: requests, error } = await supabase
       .from('requests')

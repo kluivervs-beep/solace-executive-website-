@@ -445,4 +445,21 @@
     if (successMsg && !successMsg.hidden) successMsg.hidden = true;
     if (formErrorMsg && !formErrorMsg.hidden) formErrorMsg.hidden = true;
   });
+
+  /* ---------------------------------------------------------------------
+     Membership benefits: interactive tabs
+  --------------------------------------------------------------------- */
+  const benefitsTabs = document.querySelectorAll('.benefits-tab');
+  benefitsTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab;
+      benefitsTabs.forEach((t) => {
+        t.classList.toggle('is-active', t === tab);
+        t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+      });
+      document.querySelectorAll('.benefits-tab-panel').forEach((panel) => {
+        panel.classList.toggle('is-active', panel.dataset.panel === target);
+      });
+    });
+  });
 })();

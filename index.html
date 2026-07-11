@@ -282,31 +282,56 @@
       <p class="eyebrow reveal" data-i18n="benefits.eyebrow">LIDMAATSCHAP</p>
       <h2 class="section-title reveal" data-i18n="benefits.title">Wat u krijgt als lid.</h2>
 
-      <div class="benefits-grid">
-        <div class="benefit-card reveal">
-          <svg class="benefit-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-clock"/></svg>
-          <h3 data-i18n="benefits.speed.title">Snellere respons</h3>
-          <p data-i18n="benefits.speed.desc">Leden krijgen voorrang: doorgaans reactie binnen enkele uren, niet dagen.</p>
+      <div class="benefits-tabs reveal">
+        <div class="benefits-tab-list" role="tablist">
+          <button type="button" class="benefits-tab is-active" data-tab="speed" role="tab" aria-selected="true">
+            <span class="benefits-tab-num">01</span>
+            <span data-i18n="benefits.speed.title">Snellere respons</span>
+          </button>
+          <button type="button" class="benefits-tab" data-tab="contact" role="tab" aria-selected="false">
+            <span class="benefits-tab-num">02</span>
+            <span data-i18n="benefits.contact.title">Vaste contactpersoon</span>
+          </button>
+          <button type="button" class="benefits-tab" data-tab="concierge" role="tab" aria-selected="false">
+            <span class="benefits-tab-num">03</span>
+            <span data-i18n="benefits.concierge.title">AI Concierge</span>
+          </button>
+          <button type="button" class="benefits-tab" data-tab="early" role="tab" aria-selected="false">
+            <span class="benefits-tab-num">04</span>
+            <span data-i18n="benefits.early.title">Vroege toegang</span>
+          </button>
+          <button type="button" class="benefits-tab" data-tab="flex" role="tab" aria-selected="false">
+            <span class="benefits-tab-num">05</span>
+            <span data-i18n="benefits.flex.title">Flexibiliteit</span>
+          </button>
         </div>
-        <div class="benefit-card reveal">
-          <svg class="benefit-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-headset"/></svg>
-          <h3 data-i18n="benefits.contact.title">Vaste contactpersoon</h3>
-          <p data-i18n="benefits.contact.desc">Eén aanspreekpunt dat u en uw voorkeuren kent, voor elk verzoek.</p>
-        </div>
-        <div class="benefit-card reveal">
-          <svg class="benefit-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-chat"/></svg>
-          <h3 data-i18n="benefits.concierge.title">AI Concierge</h3>
-          <p data-i18n="benefits.concierge.desc">Chat direct met uw persoonlijke concierge, dag en nacht, voor snelle vragen en aanvragen.</p>
-        </div>
-        <div class="benefit-card reveal">
-          <svg class="benefit-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-star"/></svg>
-          <h3 data-i18n="benefits.early.title">Vroege toegang</h3>
-          <p data-i18n="benefits.early.desc">Als eerste op de hoogte van nieuwe bestemmingen en vlootpartners.</p>
-        </div>
-        <div class="benefit-card reveal">
-          <svg class="benefit-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-flex"/></svg>
-          <h3 data-i18n="benefits.flex.title">Flexibiliteit</h3>
-          <p data-i18n="benefits.flex.desc">Kosteloos wijzigen of annuleren binnen de gestelde termijn.</p>
+
+        <div class="benefits-tab-panels">
+          <div class="benefits-tab-panel is-active" data-panel="speed">
+            <svg class="benefit-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-clock"/></svg>
+            <h3 data-i18n="benefits.speed.title">Snellere respons</h3>
+            <p data-i18n="benefits.speed.desc">Leden krijgen voorrang: doorgaans reactie binnen enkele uren, niet dagen.</p>
+          </div>
+          <div class="benefits-tab-panel" data-panel="contact">
+            <svg class="benefit-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-headset"/></svg>
+            <h3 data-i18n="benefits.contact.title">Vaste contactpersoon</h3>
+            <p data-i18n="benefits.contact.desc">Eén aanspreekpunt dat u en uw voorkeuren kent, voor elk verzoek.</p>
+          </div>
+          <div class="benefits-tab-panel" data-panel="concierge">
+            <svg class="benefit-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-chat"/></svg>
+            <h3 data-i18n="benefits.concierge.title">AI Concierge</h3>
+            <p data-i18n="benefits.concierge.desc">Chat direct met uw persoonlijke concierge, dag en nacht, voor snelle vragen en aanvragen.</p>
+          </div>
+          <div class="benefits-tab-panel" data-panel="early">
+            <svg class="benefit-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-star"/></svg>
+            <h3 data-i18n="benefits.early.title">Vroege toegang</h3>
+            <p data-i18n="benefits.early.desc">Als eerste op de hoogte van nieuwe bestemmingen en vlootpartners.</p>
+          </div>
+          <div class="benefits-tab-panel" data-panel="flex">
+            <svg class="benefit-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-flex"/></svg>
+            <h3 data-i18n="benefits.flex.title">Flexibiliteit</h3>
+            <p data-i18n="benefits.flex.desc">Kosteloos wijzigen of annuleren binnen de gestelde termijn.</p>
+          </div>
         </div>
       </div>
 
