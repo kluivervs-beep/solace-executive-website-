@@ -293,3 +293,10 @@ $$ language plpgsql security definer set search_path = public;
 create trigger award_points_on_profile_complete_trigger
   after update on public.profiles
   for each row execute procedure public.award_points_on_profile_complete();
+
+-- English variants for the rewards catalog, so cards translate when a
+-- member switches language. Optional: staff can leave these blank and
+-- the dashboard falls back to the Dutch title/description.
+alter table public.rewards
+  add column title_en text,
+  add column description_en text;

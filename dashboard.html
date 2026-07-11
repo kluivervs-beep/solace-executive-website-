@@ -631,8 +631,8 @@
               <span class="rewards-earn-points">+500</span>
             </li>
             <li>
-              <span data-i18n="dash.rewards.earn.anniversary">Lidmaatschapsjubileum, elk jaar</span>
-              <span class="rewards-earn-points">+300</span>
+              <span data-i18n="dash.rewards.earn.anniversary">Lidmaatschapsjubileum, elk jaar meer</span>
+              <span class="rewards-earn-points">300+</span>
             </li>
           </ul>
         </section>
@@ -755,18 +755,30 @@
     });
   }
 
+  let rewardsCache = null;
+
   async function loadRewardsCatalog() {
     const grid = document.getElementById('rewardsGrid');
     const { data: rewards, error } = await supabase
       .from('rewards')
-      .select('id, title, description, cost_points')
+      .select('id, title, title_en, description, description_en, cost_points')
       .eq('active', true)
       .order('sort_order');
 
     if (error || !rewards?.length) {
+      rewardsCache = null;
       grid.innerHTML = `<div class="request-empty">${t('dash.rewards.catalog.empty')}</div>`;
       return;
     }
+
+    rewardsCache = rewards;
+    renderRewardsCatalog();
+  }
+
+  async function renderRewardsCatalog() {
+    if (!rewardsCache) return;
+    const grid = document.getElementById('rewardsGrid');
+    const lang = window.SolaceI18n ? window.SolaceI18n.lang : 'nl';
 
     const { data: { session } } = await supabase.auth.getSession();
     const { data: profile } = await supabase
@@ -776,16 +788,20 @@
       .single();
     const balance = profile?.points_balance || 0;
 
-    grid.innerHTML = rewards.map((r) => `
+    grid.innerHTML = rewardsCache.map((r) => {
+      const title = (lang === 'en' && r.title_en) ? r.title_en : r.title;
+      const description = (lang === 'en' && r.description_en) ? r.description_en : (r.description || '');
+      return `
       <div class="reward-card">
-        <h3>${r.title}</h3>
-        <p>${r.description || ''}</p>
+        <h3>${title}</h3>
+        <p>${description}</p>
         <div class="reward-card-foot">
           <span class="reward-cost">${r.cost_points} ${t('dash.rewards.balance.label')}</span>
           <button type="button" class="reward-redeem-btn" data-reward-id="${r.id}" data-cost="${r.cost_points}" ${balance < r.cost_points ? 'disabled' : ''}>${t('dash.rewards.redeem')}</button>
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
 
     grid.querySelectorAll('.reward-redeem-btn').forEach((btn) => {
       btn.addEventListener('click', () => redeemReward(btn));
@@ -898,7 +914,7 @@
   // with setTimeout so it always runs after i18n.js's own click handler,
   // regardless of listener registration order.
   document.querySelectorAll('.lang-btn').forEach((btn) => {
-    btn.addEventListener('click', () => setTimeout(renderAll, 0));
+    btn.addEventListener('click', () => setTimeout(() => { renderAll(); renderRewardsCatalog(); }, 0));
   });
 
   document.querySelectorAll('.chip').forEach((chip) => {
