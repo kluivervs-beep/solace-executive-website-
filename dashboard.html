@@ -1052,16 +1052,17 @@
 
     document.getElementById('chatLocked').hidden = !!profile?.is_member_active;
     document.getElementById('chatActive').hidden = !profile?.is_member_active;
+    if (profile?.is_member_active) loadChatHistory(userId);
 
     const rewardsUnlocked = !!profile?.beta_features || REWARDS_LIVE;
     document.getElementById('rewardsTeaser').hidden = rewardsUnlocked;
     document.getElementById('rewardsLive').hidden = !rewardsUnlocked;
     const rewardsBadge = document.getElementById('navRewardsBadge');
-    if (profile?.beta_features) {
+    if (REWARDS_LIVE) {
+      rewardsBadge.hidden = true;
+    } else if (profile?.beta_features) {
       rewardsBadge.textContent = 'BETA';
       rewardsBadge.hidden = false;
-    } else if (REWARDS_LIVE) {
-      rewardsBadge.hidden = true;
     } else {
       rewardsBadge.textContent = t('dash.rewards.badge.soon');
       rewardsBadge.hidden = false;
@@ -1131,6 +1132,28 @@
   const chatSend = document.getElementById('chatSend');
   let chatHistory = [];
 
+  async function loadChatHistory(userId) {
+    const { data: messages } = await supabase
+      .from('concierge_messages')
+      .select('role, content')
+      .eq('member_id', userId)
+      .order('created_at', { ascending: true });
+
+    if (messages && messages.length) {
+      chatLog.innerHTML = '';
+      messages.forEach((m) => {
+        addBubble(m.content, m.role === 'user' ? 'user' : 'ai');
+        chatHistory.push({ role: m.role, content: m.content });
+      });
+    }
+  }
+
+  async function saveChatMessage(role, content) {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    await supabase.from('concierge_messages').insert({ member_id: session.user.id, role, content });
+  }
+
   function addBubble(text, kind) {
     const el = document.createElement('div');
     el.className = `chat-bubble chat-bubble--${kind}`;
@@ -1178,6 +1201,7 @@
 
     addBubble(text, 'user');
     chatHistory.push({ role: 'user', content: text });
+    saveChatMessage('user', text);
     chatInput.value = '';
     chatInput.disabled = true;
     chatSend.disabled = true;
@@ -1195,6 +1219,7 @@
       } else {
         addBubble(data.reply, 'ai');
         chatHistory.push({ role: 'assistant', content: data.reply });
+        saveChatMessage('assistant', data.reply);
       }
     } catch (err) {
       hideTyping();

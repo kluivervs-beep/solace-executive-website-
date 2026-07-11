@@ -300,3 +300,37 @@ create trigger award_points_on_profile_complete_trigger
 alter table public.rewards
   add column title_en text,
   add column description_en text;
+
+-- Welcome bonus: every new member starts with 200 Solace Points.
+-- Re-defines handle_new_user() (only new signups get this; it does not
+-- retroactively credit existing members).
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+  insert into public.profiles (id, full_name)
+  values (new.id, new.raw_user_meta_data->>'full_name');
+  insert into public.point_transactions (member_id, amount, reason)
+  values (new.id, 200, 'Welkomstbonus');
+  return new;
+end;
+$$ language plpgsql security definer set search_path = public;
+
+-- AI Concierge chat history, so a page refresh doesn't lose the
+-- conversation. Loaded on dashboard init, appended to as messages send.
+create table public.concierge_messages (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid references public.profiles(id) on delete cascade not null,
+  role text not null,
+  content text not null,
+  created_at timestamptz default now()
+);
+
+alter table public.concierge_messages enable row level security;
+
+create policy "Members can view their own concierge messages"
+  on public.concierge_messages for select
+  using (auth.uid() = member_id);
+
+create policy "Members can insert their own concierge messages"
+  on public.concierge_messages for insert
+  with check (auth.uid() = member_id);
