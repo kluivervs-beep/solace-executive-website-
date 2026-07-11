@@ -264,6 +264,11 @@ Deno.serve(async (req) => {
 
     const conversation = [...messages];
     let finalText = '';
+    // Guards against Claude calling the same logging tool twice within
+    // one exchange (e.g. re-confirming after an earlier round already
+    // succeeded), which would otherwise create duplicate request rows.
+    let requestLogged = false;
+    let changeRequestLogged = false;
 
     for (let round = 0; round < MAX_TOOL_ROUNDS; round += 1) {
       const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
@@ -306,22 +311,29 @@ Deno.serve(async (req) => {
       let toolResultContent = 'Done.';
 
       if (toolUseBlock.name === 'log_request') {
-        const { service, notes, urgent } = toolUseBlock.input as {
-          service: string;
-          notes: string;
-          urgent?: boolean;
-        };
-        const { error: insertError } = await supabase.from('requests').insert({
-          member_id: memberId,
-          service,
-          notes,
-          status: 'review',
-          is_urgent: !!urgent,
-        });
-        toolResultContent = insertError
-          ? `Could not log the request: ${insertError.message}`
-          : 'Request logged for the team to review.';
-        await notifyStaff(service, notes, memberEmail, !!urgent);
+        if (requestLogged) {
+          toolResultContent = 'Already logged earlier in this conversation. Do not log it again, just tell the member it is taken care of.';
+        } else {
+          const { service, notes, urgent } = toolUseBlock.input as {
+            service: string;
+            notes: string;
+            urgent?: boolean;
+          };
+          const { error: insertError } = await supabase.from('requests').insert({
+            member_id: memberId,
+            service,
+            notes,
+            status: 'review',
+            is_urgent: !!urgent,
+          });
+          toolResultContent = insertError
+            ? `Could not log the request: ${insertError.message}`
+            : 'Request logged for the team to review.';
+          if (!insertError) {
+            requestLogged = true;
+            await notifyStaff(service, notes, memberEmail, !!urgent);
+          }
+        }
       } else if (toolUseBlock.name === 'check_request_status') {
         const { data: reqs } = await supabase
           .from('requests')
@@ -375,22 +387,29 @@ Deno.serve(async (req) => {
           }
         }
       } else if (toolUseBlock.name === 'flag_change_request') {
-        const { original_service, change_details } = toolUseBlock.input as {
-          original_service: string;
-          change_details: string;
-        };
-        const service = `Wijziging/annulering: ${original_service}`;
-        const { error: insertError } = await supabase.from('requests').insert({
-          member_id: memberId,
-          service,
-          notes: change_details,
-          status: 'review',
-          is_urgent: true,
-        });
-        toolResultContent = insertError
-          ? `Could not log the change request: ${insertError.message}`
-          : 'Change request logged for the team.';
-        await notifyStaff(service, change_details, memberEmail, true);
+        if (changeRequestLogged) {
+          toolResultContent = 'Already logged earlier in this conversation. Do not log it again, just tell the member it is taken care of.';
+        } else {
+          const { original_service, change_details } = toolUseBlock.input as {
+            original_service: string;
+            change_details: string;
+          };
+          const service = `Wijziging/annulering: ${original_service}`;
+          const { error: insertError } = await supabase.from('requests').insert({
+            member_id: memberId,
+            service,
+            notes: change_details,
+            status: 'review',
+            is_urgent: true,
+          });
+          toolResultContent = insertError
+            ? `Could not log the change request: ${insertError.message}`
+            : 'Change request logged for the team.';
+          if (!insertError) {
+            changeRequestLogged = true;
+            await notifyStaff(service, change_details, memberEmail, true);
+          }
+        }
       } else if (toolUseBlock.name === 'update_member_preferences') {
         const { preference_summary } = toolUseBlock.input as { preference_summary: string };
         const { data: p } = await supabase.from('profiles').select('concierge_notes').eq('id', memberId).single();

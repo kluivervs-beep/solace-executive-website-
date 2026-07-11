@@ -910,6 +910,37 @@
     renderFilteredRequests();
   }
 
+  // Re-fetches the member's requests and re-renders everything driven by
+  // them (lists, badge, stat counts). Used on init, and again after the
+  // AI Concierge logs or changes a request, so it shows up immediately
+  // without the member having to refresh the page themselves.
+  async function refreshRequests() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    const { data: requests, error } = await supabase
+      .from('requests')
+      .select('service, status, created_at, seen_by_member')
+      .eq('member_id', session.user.id)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      const failMsg = `<div class="request-empty">${t('dash.error.load')}</div>`;
+      document.getElementById('requestListRecent').innerHTML = failMsg;
+      document.getElementById('requestListFull').innerHTML = failMsg;
+      return;
+    }
+
+    allRequests = requests || [];
+    renderAll();
+
+    const hasUnseen = allRequests.some((r) => r.seen_by_member === false);
+    document.getElementById('requestsBadge').hidden = !hasUnseen;
+
+    animateCount(document.getElementById('statReview'), allRequests.filter((r) => r.status === 'review').length);
+    animateCount(document.getElementById('statConfirmed'), allRequests.filter((r) => r.status === 'confirmed').length);
+  }
+
   // Re-render dynamic (JS-generated) text after a language switch. Deferred
   // with setTimeout so it always runs after i18n.js's own click handler,
   // regardless of listener registration order.
@@ -1072,27 +1103,7 @@
       loadRewardsCatalog();
     }
 
-    const { data: requests, error } = await supabase
-      .from('requests')
-      .select('service, status, created_at, seen_by_member')
-      .eq('member_id', userId)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      const failMsg = `<div class="request-empty">${t('dash.error.load')}</div>`;
-      document.getElementById('requestListRecent').innerHTML = failMsg;
-      document.getElementById('requestListFull').innerHTML = failMsg;
-      return;
-    }
-
-    allRequests = requests || [];
-    renderAll();
-
-    const hasUnseen = allRequests.some((r) => r.seen_by_member === false);
-    document.getElementById('requestsBadge').hidden = !hasUnseen;
-
-    animateCount(document.getElementById('statReview'), allRequests.filter((r) => r.status === 'review').length);
-    animateCount(document.getElementById('statConfirmed'), allRequests.filter((r) => r.status === 'confirmed').length);
+    await refreshRequests();
 
     if (!profile?.has_seen_tour) {
       setTimeout(startTour, 700);
@@ -1220,6 +1231,10 @@
         addBubble(data.reply, 'ai');
         chatHistory.push({ role: 'assistant', content: data.reply });
         saveChatMessage('assistant', data.reply);
+        // The concierge may have logged/changed a request or redeemed a
+        // reward on the member's behalf — refresh so it shows up right
+        // away instead of only after a manual page reload.
+        refreshRequests();
       }
     } catch (err) {
       hideTyping();
