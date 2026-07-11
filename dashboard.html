@@ -258,14 +258,69 @@
   .member-card-balance { text-align: right; }
   .member-card-num { font-family: var(--font-display); font-size: 28px; color: var(--color-ink); line-height: 1; }
 
+  .member-card--elite {
+    background: linear-gradient(150deg, #EEF3F8 0%, #D3DEE8 45%, #A9BAC9 100%);
+    border-color: rgba(11, 20, 27, 0.14);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.7),
+      inset 0 -1px 0 rgba(11, 20, 27, 0.12),
+      0 36px 60px -26px rgba(0, 0, 0, 0.55);
+  }
+  .member-card--elite::before {
+    background-image:
+      radial-gradient(circle at 16% 28%, rgba(255, 255, 255, 0.95) 0px, transparent 1.6px),
+      radial-gradient(circle at 64% 14%, rgba(255, 255, 255, 0.95) 0px, transparent 1.6px),
+      radial-gradient(circle at 42% 58%, rgba(255, 255, 255, 0.85) 0px, transparent 1.3px),
+      radial-gradient(circle at 86% 66%, rgba(255, 255, 255, 0.85) 0px, transparent 1.3px),
+      radial-gradient(circle at 27% 84%, rgba(255, 255, 255, 0.75) 0px, transparent 1.1px),
+      radial-gradient(circle at 76% 42%, rgba(255, 255, 255, 0.75) 0px, transparent 1.1px),
+      radial-gradient(circle at 8% 55%, rgba(255, 255, 255, 0.6) 0px, transparent 1px);
+  }
+  .member-card--elite .member-card-brand,
+  .member-card--elite .member-card-name,
+  .member-card--elite .member-card-num { color: #16232E; }
+  .member-card--elite .member-card-label { color: rgba(22, 35, 46, 0.55); }
+  .member-card--elite .member-card-tier { color: #8A6A1E; }
+
   .rewards-teaser { max-width: 420px; margin: 0 auto; text-align: center; }
   .member-card--locked { opacity: 0.72; filter: saturate(0.7); }
   .rewards-teaser-copy { font-size: 13.5px; color: var(--color-ink-muted); line-height: 1.65; margin-top: var(--space-3); }
 
   .rewards-progress { max-width: 360px; margin: var(--space-3) auto 0; text-align: center; }
-  .rewards-progress-bar { height: 4px; border-radius: 2px; background: var(--color-border); overflow: hidden; }
-  .rewards-progress-fill { height: 100%; background: var(--color-gold); border-radius: 2px; transition: width 0.5s ease; }
-  .rewards-progress-label { font-size: 11.5px; color: var(--color-ink-muted); margin-top: 8px; }
+  .rewards-progress-label { font-size: 11.5px; color: var(--color-ink-muted); margin-top: 10px; }
+
+  .tier-track { display: flex; align-items: center; }
+  .tier-track-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-bg-elevated-2);
+    border: 1.5px solid var(--color-border);
+    flex-shrink: 0;
+    transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease, width 0.3s ease, height 0.3s ease;
+  }
+  .tier-track-dot.is-filled { background: var(--color-gold); border-color: var(--color-gold); }
+  .tier-track-dot.is-current {
+    width: 14px;
+    height: 14px;
+    box-shadow: 0 0 0 4px rgba(180, 146, 61, 0.22);
+  }
+  .tier-track-seg {
+    flex: 1;
+    height: 3px;
+    margin: 0 6px;
+    border-radius: 2px;
+    background: var(--color-border);
+    overflow: hidden;
+  }
+  .tier-track-seg-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--color-gold-dim), var(--color-gold));
+    box-shadow: 0 0 6px rgba(180, 146, 61, 0.45);
+    transition: width 0.6s ease;
+  }
 
   .rewards-earn-list { list-style: none; padding: var(--space-3); }
   .rewards-earn-list li { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); font-size: 13.5px; color: var(--color-ink-muted); padding: 10px 0; border-bottom: 1px solid var(--color-border); }
@@ -539,7 +594,13 @@
         </div>
 
         <div class="rewards-progress">
-          <div class="rewards-progress-bar"><div class="rewards-progress-fill" id="rewardsProgressFill"></div></div>
+          <div class="tier-track">
+            <div class="tier-track-dot is-filled" data-tier-key="member"></div>
+            <div class="tier-track-seg"><div class="tier-track-seg-fill" id="tierSegFill1"></div></div>
+            <div class="tier-track-dot" id="tierDotDistinguished" data-tier-key="distinguished"></div>
+            <div class="tier-track-seg"><div class="tier-track-seg-fill" id="tierSegFill2"></div></div>
+            <div class="tier-track-dot" id="tierDotElite" data-tier-key="elite"></div>
+          </div>
           <p class="rewards-progress-label" id="rewardsProgressLabel"></p>
         </div>
 
@@ -666,20 +727,26 @@
     }
 
     document.getElementById('rewardsTier').textContent = t('dash.rewards.tier.' + current.key);
+    document.querySelector('#rewardsLive .member-card').classList.toggle('member-card--elite', current.key === 'elite');
 
-    const fill = document.getElementById('rewardsProgressFill');
     const label = document.getElementById('rewardsProgressLabel');
     if (next) {
-      const span = next.min - current.min;
-      const progress = Math.min(1, (lifetime - current.min) / span);
-      fill.style.width = (progress * 100) + '%';
       label.textContent = t('dash.rewards.tier.progress')
         .replace('{points}', next.min - lifetime)
         .replace('{tier}', t('dash.rewards.tier.' + next.key));
     } else {
-      fill.style.width = '100%';
       label.textContent = t('dash.rewards.tier.maxed');
     }
+
+    const seg1 = Math.min(1, Math.max(0, (lifetime - TIERS[0].min) / (TIERS[1].min - TIERS[0].min)));
+    const seg2 = Math.min(1, Math.max(0, (lifetime - TIERS[1].min) / (TIERS[2].min - TIERS[1].min)));
+    document.getElementById('tierSegFill1').style.width = (seg1 * 100) + '%';
+    document.getElementById('tierSegFill2').style.width = (seg2 * 100) + '%';
+    document.getElementById('tierDotDistinguished').classList.toggle('is-filled', lifetime >= TIERS[1].min);
+    document.getElementById('tierDotElite').classList.toggle('is-filled', lifetime >= TIERS[2].min);
+    document.querySelectorAll('.tier-track-dot').forEach((dot) => {
+      dot.classList.toggle('is-current', dot.dataset.tierKey === current.key);
+    });
   }
 
   async function loadRewardsCatalog() {
