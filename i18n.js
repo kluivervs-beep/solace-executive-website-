@@ -137,6 +137,8 @@
       'welcome.title': 'Wachtwoord instellen',
       'welcome.sub': 'Stel een wachtwoord in zodat u voortaan snel kunt inloggen.',
       'welcome.skip': 'Overslaan, naar dashboard',
+      'welcome.name.placeholder': 'Voornaam Achternaam',
+      'welcome.error.name': 'Vul uw naam in.',
 
       'dash.meta.title': 'Dashboard | Solace Executive',
       'dash.nav.dashboard': 'Dashboard',
@@ -389,6 +391,8 @@
       'welcome.title': 'Set password',
       'welcome.sub': 'Set a password so you can log in quickly from now on.',
       'welcome.skip': 'Skip, go to dashboard',
+      'welcome.name.placeholder': 'First name Last name',
+      'welcome.error.name': 'Please enter your name.',
 
       'dash.meta.title': 'Dashboard | Solace Executive',
       'dash.nav.dashboard': 'Dashboard',

@@ -97,6 +97,10 @@
 
     <form id="welcomeForm" novalidate>
       <div class="field">
+        <label for="fullName" data-i18n="dash.account.name">Naam</label>
+        <input type="text" id="fullName" name="fullName" autocomplete="name" required data-i18n="welcome.name.placeholder" data-i18n-attr="placeholder" placeholder="Voornaam Achternaam">
+      </div>
+      <div class="field">
         <label for="newPassword" data-i18n="reset.new">Nieuw wachtwoord</label>
         <input type="password" id="newPassword" name="newPassword" autocomplete="new-password" required minlength="8" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
       </div>
@@ -128,9 +132,15 @@
     e.preventDefault();
     errorEl.classList.remove('is-visible');
 
+    const fullName = document.getElementById('fullName').value.trim();
     const newPassword = document.getElementById('newPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
 
+    if (!fullName) {
+      errorEl.textContent = t('welcome.error.name');
+      errorEl.classList.add('is-visible');
+      return;
+    }
     if (newPassword.length < 8) {
       errorEl.textContent = t('reset.error.tooshort');
       errorEl.classList.add('is-visible');
@@ -153,6 +163,11 @@
       submitBtn.disabled = false;
       submitBtn.textContent = t('reset.submit');
       return;
+    }
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      await supabase.from('profiles').update({ full_name: fullName }).eq('id', session.user.id);
     }
 
     form.hidden = true;
