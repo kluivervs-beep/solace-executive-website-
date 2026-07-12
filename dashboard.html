@@ -137,6 +137,8 @@
   .chat-log { flex: 1; overflow-y: auto; padding: var(--space-3); display: flex; flex-direction: column; gap: 12px; }
   .chat-row { display: flex; align-items: flex-end; gap: 8px; align-self: flex-start; max-width: 85%; }
   .chat-avatar { width: 24px; height: 24px; border-radius: 50%; background: var(--color-bg-elevated-2); border: 1px solid var(--color-border); padding: 4px; flex-shrink: 0; }
+  .chat-avatar--photo { padding: 0; object-fit: cover; }
+  .chat-founder-name { font-size: 11.5px; font-weight: 600; color: var(--color-gold-light); margin-bottom: 3px; }
   .chat-bubble { max-width: 85%; padding: 10px 14px; border-radius: 14px; font-size: 13px; line-height: 1.5; }
   .chat-bubble strong { color: var(--color-gold-light); font-weight: 600; }
   .chat-row .chat-bubble { max-width: 100%; }
@@ -510,6 +512,13 @@
         </div>
         <div id="chatActive">
           <div class="chat-log" id="chatLog">
+            <div class="chat-row chat-row--ai" id="founderWelcomeRow">
+              <img src="assets/team/kluiver.jpg" alt="" class="chat-avatar chat-avatar--photo">
+              <div class="chat-bubble chat-bubble--ai">
+                <div class="chat-founder-name" data-i18n="dash.concierge.founder.name">Kluiver van Spronsen, oprichter</div>
+                <span id="founderWelcomeText"></span>
+              </div>
+            </div>
             <div class="chat-row chat-row--ai">
               <img src="assets/icons/monogram.svg" alt="" class="chat-avatar">
               <div class="chat-bubble chat-bubble--ai" data-i18n-html="dash.concierge.msg1"><strong>Goedemiddag.</strong> Waarmee kan ik u vandaag helpen?</div>
@@ -982,7 +991,7 @@
   // with setTimeout so it always runs after i18n.js's own click handler,
   // regardless of listener registration order.
   document.querySelectorAll('.lang-btn').forEach((btn) => {
-    btn.addEventListener('click', () => setTimeout(() => { renderAll(); renderRewardsCatalog(); }, 0));
+    btn.addEventListener('click', () => setTimeout(() => { renderAll(); renderRewardsCatalog(); renderFounderWelcome(); }, 0));
   });
 
   document.querySelectorAll('.chip').forEach((chip) => {
@@ -1120,6 +1129,8 @@
       }
     }
 
+    renderFounderWelcome();
+
     document.getElementById('chatLocked').hidden = !!profile?.is_member_active;
     document.getElementById('chatActive').hidden = !profile?.is_member_active;
     if (profile?.is_member_active) loadChatHistory(userId);
@@ -1223,6 +1234,13 @@
   const chatInput = document.getElementById('chatInput');
   const chatSend = document.getElementById('chatSend');
   let chatHistory = [];
+
+  function renderFounderWelcome() {
+    const textEl = document.getElementById('founderWelcomeText');
+    if (!textEl) return;
+    const firstName = memberName ? memberName.trim().split(/\s+/)[0] : '';
+    textEl.textContent = t('dash.concierge.founder.welcome').replace('{name}', firstName || t('dash.concierge.founder.fallbackName'));
+  }
 
   async function loadChatHistory(userId) {
     const { data: messages } = await supabase
