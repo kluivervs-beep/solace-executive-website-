@@ -121,8 +121,6 @@
         <button type="submit" class="btn btn-primary btn-wide" id="welcomeSubmit" data-i18n="reset.submit">Wachtwoord opslaan</button>
       </div>
     </form>
-
-    <p class="login-back"><a href="dashboard.html" id="skipLink" data-i18n="welcome.skip">Overslaan, naar dashboard</a></p>
   </div>
 </div>
 
@@ -134,7 +132,6 @@
   const errorEl = document.getElementById('welcomeError');
   const successEl = document.getElementById('welcomeSuccess');
   const submitBtn = document.getElementById('welcomeSubmit');
-  const skipLink = document.getElementById('skipLink');
   const t = (key) => (window.SolaceI18n ? window.SolaceI18n.t(key) : key);
 
   // The invite link carries a one-time token in the URL rather than
@@ -155,12 +152,6 @@
     verified = true;
     return true;
   }
-
-  skipLink.addEventListener('click', async (e) => {
-    e.preventDefault();
-    await ensureSession();
-    window.location.href = 'dashboard.html';
-  });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
