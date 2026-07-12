@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Private Jets | Solace Executive</title>
-<meta name="description" content="Privéjetcharter op korte termijn, wereldwijde toegang tot vlootpartners. Lidmaatschap op aanvraag bij Solace Executive.">
+<title data-i18n="jetslp.meta.title">Private Jets | Solace Executive</title>
+<meta name="description" content="Privéjetcharter op korte termijn, wereldwijde toegang tot vlootpartners. Lidmaatschap op aanvraag bij Solace Executive." data-i18n="jetslp.meta.description" data-i18n-attr="content">
 <meta name="theme-color" content="#0F1B24">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Private Jets | Solace Executive">
@@ -46,6 +46,15 @@
     height: 100%;
     object-fit: cover;
     filter: brightness(0.6) saturate(1.05);
+    animation: lpKenBurns 22s ease-out forwards;
+    transform-origin: 55% 45%;
+  }
+  @keyframes lpKenBurns {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lp-hero img { animation: none; }
   }
   .lp-hero .scrim {
     position: absolute;
@@ -168,43 +177,67 @@
   <img src="assets/photos/jets.jpg" alt="">
   <div class="scrim"></div>
   <div class="lp-hero-content">
-    <p class="lp-eyebrow">Membership &middot; By Application</p>
-    <h1 class="lp-title">Private Jets.</h1>
-    <p class="lp-sub">Charter op korte termijn. Wereldwijde toegang tot vlootpartners, cabine ingericht naar wens.</p>
-    <a href="index.html#lidmaatschap" class="btn btn-primary">Word lid</a>
-    <p class="lp-hint">Wij beoordelen elke aanvraag persoonlijk. Reactie doorgaans binnen 24 uur.</p>
+    <p class="lp-eyebrow reveal" data-i18n="intake.eyebrow">LIDMAATSCHAP &middot; OP AANVRAAG</p>
+    <h1 class="lp-title reveal" data-i18n="jetslp.title">Private Jets.</h1>
+    <p class="lp-sub reveal" data-i18n="jetslp.sub">Charter op korte termijn. Wereldwijde toegang tot vlootpartners, cabine ingericht naar wens.</p>
+    <a href="index.html#lidmaatschap" class="btn btn-primary reveal" data-i18n="jetslp.cta">Word lid</a>
+    <p class="lp-hint reveal" data-i18n="jetslp.hint">Wij beoordelen elke aanvraag persoonlijk. Reactie doorgaans binnen 24 uur.</p>
   </div>
 </section>
 
 <section class="lp-features">
-  <div class="lp-feature">
+  <div class="lp-feature reveal">
     <p class="num">01</p>
-    <h3>Op korte termijn</h3>
-    <p>Een aanvraag vandaag, meestal al morgen aan boord. Geen vaste routes of dienstregeling.</p>
+    <h3 data-i18n="jetslp.feature1.title">Op korte termijn</h3>
+    <p data-i18n="jetslp.feature1.body">Een aanvraag vandaag, meestal al morgen aan boord. Geen vaste routes of dienstregeling.</p>
   </div>
-  <div class="lp-feature">
+  <div class="lp-feature reveal">
     <p class="num">02</p>
-    <h3>Wereldwijd netwerk</h3>
-    <p>Toegang tot een select netwerk van vlootpartners, ongeacht bestemming.</p>
+    <h3 data-i18n="jetslp.feature2.title">Wereldwijd netwerk</h3>
+    <p data-i18n="jetslp.feature2.body">Toegang tot een select netwerk van vlootpartners, ongeacht bestemming.</p>
   </div>
-  <div class="lp-feature">
+  <div class="lp-feature reveal">
     <p class="num">03</p>
-    <h3>Naar wens ingericht</h3>
-    <p>Cabine, catering en tijden stemmen wij vooraf persoonlijk met u af.</p>
+    <h3 data-i18n="jetslp.feature3.title">Naar wens ingericht</h3>
+    <p data-i18n="jetslp.feature3.body">Cabine, catering en tijden stemmen wij vooraf persoonlijk met u af.</p>
   </div>
 </section>
 
 <section class="lp-closing">
-  <h2>Nog vragen, of liever het volledige aanbod bekijken?</h2>
-  <p>Solace Executive regelt naast privéjets ook jachtcharters en executive transport.</p>
-  <a href="index.html" class="btn btn-outline">Bekijk alle diensten</a>
+  <h2 class="reveal" data-i18n="jetslp.closing.title">Nog vragen, of liever het volledige aanbod bekijken?</h2>
+  <p class="reveal" data-i18n="jetslp.closing.body">Solace Executive regelt naast privéjets ook jachtcharters en executive transport.</p>
+  <a href="index.html" class="btn btn-outline reveal" data-i18n="jetslp.closing.cta">Bekijk alle diensten</a>
 </section>
 
 <footer class="lp-footer">
   <a href="index.html">&copy; <span id="year"></span> Solace Executive</a>
 </footer>
 
-<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="i18n.js"></script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (window.gsap && window.ScrollTrigger && !reducedMotion) {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('.reveal').forEach((el, i) => {
+      gsap.from(el, {
+        opacity: 0,
+        y: 20,
+        duration: 0.55,
+        ease: 'power1.out',
+        delay: (i % 6) * 0.04,
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 88%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    });
+  }
+</script>
 
 </body>
 </html>
