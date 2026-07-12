@@ -1,4 +1,7 @@
 User-agent: *
 Disallow: /login.html
 Disallow: /dashboard.html
+Disallow: /reset-password.html
 Allow: /
+
+Sitemap: https://solaceexecutive.com/sitemap.xml
