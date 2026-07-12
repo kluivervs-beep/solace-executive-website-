@@ -114,7 +114,7 @@
       </div>
     </form>
 
-    <p class="login-back"><a href="dashboard.html" data-i18n="welcome.skip">Overslaan, naar dashboard</a></p>
+    <p class="login-back"><a href="dashboard.html" id="skipLink" data-i18n="welcome.skip">Overslaan, naar dashboard</a></p>
   </div>
 </div>
 
@@ -126,7 +126,33 @@
   const errorEl = document.getElementById('welcomeError');
   const successEl = document.getElementById('welcomeSuccess');
   const submitBtn = document.getElementById('welcomeSubmit');
+  const skipLink = document.getElementById('skipLink');
   const t = (key) => (window.SolaceI18n ? window.SolaceI18n.t(key) : key);
+
+  // The invite link carries a one-time token in the URL rather than
+  // logging the member in on page load. Some mail apps (Apple Mail's
+  // privacy protection, corporate link scanners) silently open links to
+  // scan them, which would burn a token meant to be used only once.
+  // Deferring verifyOtp until the member actually submits the form means
+  // a background scan of the link can't invalidate it before they do.
+  const params = new URLSearchParams(window.location.search);
+  const tokenHash = params.get('token_hash');
+  const otpType = params.get('type') || 'invite';
+  let verified = false;
+
+  async function ensureSession() {
+    if (verified || !tokenHash) return true;
+    const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: otpType });
+    if (error) return false;
+    verified = true;
+    return true;
+  }
+
+  skipLink.addEventListener('click', async (e) => {
+    e.preventDefault();
+    await ensureSession();
+    window.location.href = 'dashboard.html';
+  });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -154,6 +180,15 @@
 
     submitBtn.disabled = true;
     submitBtn.textContent = t('reset.submitting');
+
+    const sessionOk = await ensureSession();
+    if (!sessionOk) {
+      errorEl.textContent = t('reset.error.generic');
+      errorEl.classList.add('is-visible');
+      submitBtn.disabled = false;
+      submitBtn.textContent = t('reset.submit');
+      return;
+    }
 
     const { error } = await supabase.auth.updateUser({ password: newPassword });
 
