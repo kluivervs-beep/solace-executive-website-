@@ -133,6 +133,10 @@
       'reset.error.tooshort': 'Wachtwoord moet minstens 8 tekens zijn.',
       'reset.error.mismatch': 'Wachtwoorden komen niet overeen.',
       'reset.error.generic': 'Wijzigen mislukt. Vraag eventueel een nieuwe link aan.',
+      'welcome.meta.title': 'Wachtwoord instellen | Solace Executive',
+      'welcome.title': 'Wachtwoord instellen',
+      'welcome.sub': 'Stel een wachtwoord in zodat u voortaan snel kunt inloggen.',
+      'welcome.skip': 'Overslaan, naar dashboard',
 
       'dash.meta.title': 'Dashboard | Solace Executive',
       'dash.nav.dashboard': 'Dashboard',
@@ -379,6 +383,10 @@
       'reset.error.tooshort': 'Password must be at least 8 characters.',
       'reset.error.mismatch': 'Passwords do not match.',
       'reset.error.generic': 'Could not change password. Try requesting a new link.',
+      'welcome.meta.title': 'Set password | Solace Executive',
+      'welcome.title': 'Set password',
+      'welcome.sub': 'Set a password so you can log in quickly from now on.',
+      'welcome.skip': 'Skip, go to dashboard',
 
       'dash.meta.title': 'Dashboard | Solace Executive',
       'dash.nav.dashboard': 'Dashboard',

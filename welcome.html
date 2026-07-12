@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="welcome.meta.title">Wachtwoord instellen | Solace Executive</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(180,146,61,0.10), transparent 60%),
+      linear-gradient(180deg, #0B141B 0%, #0F1B24 55%, #0C161D 100%);
+    padding: var(--space-4);
+  }
+  .login-wrap { width: 100%; max-width: 420px; }
+  .login-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: var(--space-6);
+  }
+  .login-brand img { width: 34px; height: 34px; }
+  .login-brand .brand-word { display: flex; flex-direction: column; line-height: 1; }
+  .login-brand .brand-name { font-family: var(--font-display); font-size: 19px; letter-spacing: 0.16em; color: var(--color-ink); }
+  .login-brand .brand-sub { font-family: var(--font-sans); font-size: 9px; letter-spacing: 0.32em; color: var(--color-gold); margin-top: 3px; }
+
+  .login-card {
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+  }
+  .login-card h1 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--color-ink);
+    margin-bottom: 8px;
+  }
+  .login-card > p {
+    color: var(--color-ink-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: var(--space-4);
+  }
+  .login-actions { display: flex; flex-direction: column; gap: 10px; margin-top: var(--space-3); }
+  .login-back {
+    text-align: center;
+    margin-top: var(--space-4);
+    font-size: 13px;
+    color: var(--color-ink-muted);
+  }
+  .login-back a { color: var(--color-gold-light); text-decoration: underline; text-underline-offset: 3px; }
+  .login-error {
+    font-size: 13px;
+    color: #E08167;
+    margin-bottom: var(--space-3);
+    display: none;
+  }
+  .login-error.is-visible { display: block; }
+  .login-success {
+    font-size: 13px;
+    color: #9AC79A;
+    margin-bottom: var(--space-3);
+    display: none;
+  }
+  .login-success.is-visible { display: block; }
+</style>
+</head>
+<body>
+
+<div class="login-wrap">
+  <a href="index.html" class="login-brand" aria-label="Solace Executive">
+    <img src="assets/icons/monogram.svg" alt="">
+    <span class="brand-word">
+      <span class="brand-name">SOLACE</span>
+      <span class="brand-sub">EXECUTIVE</span>
+    </span>
+  </a>
+
+  <div class="login-card">
+    <h1 data-i18n="welcome.title">Wachtwoord instellen</h1>
+    <p data-i18n="welcome.sub">Stel een wachtwoord in zodat u voortaan snel kunt inloggen.</p>
+
+    <p class="login-error" id="welcomeError" role="alert"></p>
+    <p class="login-success" id="welcomeSuccess" data-i18n="reset.success">Gelukt. U wordt doorgestuurd&hellip;</p>
+
+    <form id="welcomeForm" novalidate>
+      <div class="field">
+        <label for="newPassword" data-i18n="reset.new">Nieuw wachtwoord</label>
+        <input type="password" id="newPassword" name="newPassword" autocomplete="new-password" required minlength="8" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+      </div>
+      <div class="field">
+        <label for="confirmPassword" data-i18n="reset.confirm">Bevestig nieuw wachtwoord</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" required minlength="8" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+      </div>
+
+      <div class="login-actions">
+        <button type="submit" class="btn btn-primary btn-wide" id="welcomeSubmit" data-i18n="reset.submit">Wachtwoord opslaan</button>
+      </div>
+    </form>
+
+    <p class="login-back"><a href="dashboard.html" data-i18n="welcome.skip">Overslaan, naar dashboard</a></p>
+  </div>
+</div>
+
+<script src="i18n.js"></script>
+<script type="module">
+  import { supabase } from './supabase-client.js';
+
+  const form = document.getElementById('welcomeForm');
+  const errorEl = document.getElementById('welcomeError');
+  const successEl = document.getElementById('welcomeSuccess');
+  const submitBtn = document.getElementById('welcomeSubmit');
+  const t = (key) => (window.SolaceI18n ? window.SolaceI18n.t(key) : key);
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.classList.remove('is-visible');
+
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (newPassword.length < 8) {
+      errorEl.textContent = t('reset.error.tooshort');
+      errorEl.classList.add('is-visible');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      errorEl.textContent = t('reset.error.mismatch');
+      errorEl.classList.add('is-visible');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = t('reset.submitting');
+
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+    if (error) {
+      errorEl.textContent = t('reset.error.generic');
+      errorEl.classList.add('is-visible');
+      submitBtn.disabled = false;
+      submitBtn.textContent = t('reset.submit');
+      return;
+    }
+
+    form.hidden = true;
+    successEl.classList.add('is-visible');
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1800);
+  });
+</script>
+
+</body>
+</html>
