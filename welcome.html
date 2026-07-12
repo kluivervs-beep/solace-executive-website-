@@ -75,6 +75,8 @@
     display: none;
   }
   .login-success.is-visible { display: block; }
+  .field-row { display: flex; gap: 12px; }
+  .field-row .field { flex: 1; min-width: 0; }
 </style>
 </head>
 <body>
@@ -96,9 +98,15 @@
     <p class="login-success" id="welcomeSuccess" data-i18n="reset.success">Gelukt. U wordt doorgestuurd&hellip;</p>
 
     <form id="welcomeForm" novalidate>
-      <div class="field">
-        <label for="fullName" data-i18n="dash.account.name">Naam</label>
-        <input type="text" id="fullName" name="fullName" autocomplete="name" required data-i18n="welcome.name.placeholder" data-i18n-attr="placeholder" placeholder="Voornaam Achternaam">
+      <div class="field-row">
+        <div class="field">
+          <label for="firstName" data-i18n="welcome.firstName">Voornaam</label>
+          <input type="text" id="firstName" name="firstName" autocomplete="given-name" required>
+        </div>
+        <div class="field">
+          <label for="lastName" data-i18n="welcome.lastName">Achternaam</label>
+          <input type="text" id="lastName" name="lastName" autocomplete="family-name" required>
+        </div>
       </div>
       <div class="field">
         <label for="newPassword" data-i18n="reset.new">Nieuw wachtwoord</label>
@@ -158,11 +166,13 @@
     e.preventDefault();
     errorEl.classList.remove('is-visible');
 
-    const fullName = document.getElementById('fullName').value.trim();
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const fullName = `${firstName} ${lastName}`.trim();
     const newPassword = document.getElementById('newPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
 
-    if (!fullName) {
+    if (!firstName || !lastName) {
       errorEl.textContent = t('welcome.error.name');
       errorEl.classList.add('is-visible');
       return;
