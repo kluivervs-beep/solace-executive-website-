@@ -947,6 +947,13 @@
   let allRequests = [];
   let activeFilter = 'all';
   let memberName = '';
+  let isFirstVisit = false;
+
+  function welcomeKey() {
+    return isFirstVisit
+      ? (memberName ? 'dash.welcome.first.name' : 'dash.welcome.first')
+      : (memberName ? 'dash.welcome.name' : 'dash.welcome');
+  }
   let showAllDone = false;
   const DONE_COLLAPSE_THRESHOLD = 3;
 
@@ -981,7 +988,7 @@
 
   function renderAll() {
     document.getElementById('welcomeHeading').textContent =
-      memberName ? t('dash.welcome.name').replace('{name}', memberName) : t('dash.welcome');
+      memberName ? t(welcomeKey()).replace('{name}', memberName) : t(welcomeKey());
     renderRequestList(document.getElementById('requestListRecent'), allRequests.slice(0, 3), t('dash.empty.none'));
     renderFilteredRequests();
   }
@@ -1136,6 +1143,7 @@
       .single();
 
     memberName = profile?.full_name || '';
+    isFirstVisit = !profile?.has_seen_tour;
     document.getElementById('accEmail').value = session.user.email || '';
     document.getElementById('accName').value = profile?.full_name || '';
     document.getElementById('accTitle').value = profile?.title || '';
@@ -1220,7 +1228,7 @@
 
     memberName = full_name;
     document.getElementById('welcomeHeading').textContent =
-      memberName ? t('dash.welcome.name').replace('{name}', memberName) : t('dash.welcome');
+      memberName ? t(welcomeKey()).replace('{name}', memberName) : t(welcomeKey());
     const saved = document.getElementById('accountSaved');
     saved.classList.add('is-visible');
     setTimeout(() => saved.classList.remove('is-visible'), 2000);
