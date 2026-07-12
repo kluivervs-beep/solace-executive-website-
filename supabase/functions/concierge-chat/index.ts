@@ -260,7 +260,25 @@ Deno.serve(async (req) => {
       ? `\n\nKnown preferences for this member, from past conversations:\n${profile.concierge_notes}`
       : '';
 
-    const SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}\n\n${buildAddressInstruction(profile?.full_name, profile?.title)}${notesContext}${rewardsContext}`;
+    // A member's chat history spans many separate calls to this function
+    // (one per message), so the requestLogged guard below only catches
+    // duplicates within a single call. Surface any very recent request so
+    // the model doesn't re-log the same trip as the member fills in more
+    // detail across several messages.
+    const { data: recentRequest } = await supabase
+      .from('requests')
+      .select('service, created_at')
+      .eq('member_id', memberId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const recentRequestContext =
+      recentRequest && Date.now() - new Date(recentRequest.created_at).getTime() < 30 * 60 * 1000
+        ? `\n\nA request was already logged a few minutes ago in this conversation: "${recentRequest.service}". If the member is just adding more detail to that same request, do not call log_request again, simply acknowledge it. Only call log_request again if they are clearly describing a separate, distinct booking.`
+        : '';
+
+    const SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}\n\n${buildAddressInstruction(profile?.full_name, profile?.title)}${notesContext}${rewardsContext}${recentRequestContext}`;
 
     const conversation = [...messages];
     let finalText = '';

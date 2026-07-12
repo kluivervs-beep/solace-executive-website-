@@ -145,6 +145,31 @@
   .chat-bubble--ai { background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-ink); border-bottom-left-radius: 2px; }
   .chat-bubble--user { background: var(--color-gold); color: #1B1405; align-self: flex-end; border-bottom-right-radius: 2px; }
   .chat-bubble--error { background: rgba(192, 86, 63, 0.12); border: 1px solid rgba(192, 86, 63, 0.4); color: #E08167; border-bottom-left-radius: 2px; }
+
+  @keyframes chat-bubble-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .chat-row, .chat-bubble--user, .chat-quick-actions { animation: chat-bubble-in 0.32s ease-out both; }
+  #founderWelcomeRow { animation-delay: 0s; }
+  #welcomeMsgRow { animation-delay: 0.12s; }
+  .chat-quick-actions { animation-delay: 0.24s; }
+  @media (prefers-reduced-motion: reduce) {
+    .chat-row, .chat-bubble--user, .chat-quick-actions { animation: none; }
+  }
+
+  .chat-quick-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 2px 0 4px 32px; }
+  .chat-quick-chip {
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    color: var(--color-ink);
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .chat-quick-chip:hover { border-color: var(--color-gold); color: var(--color-gold-light); }
   .chat-typing { display: flex; gap: 4px; padding: 12px 14px; }
   .chat-typing span { width: 5px; height: 5px; border-radius: 50%; background: var(--color-ink-muted); animation: chat-typing-bounce 1.1s ease-in-out infinite; }
   .chat-typing span:nth-child(2) { animation-delay: 0.15s; }
@@ -519,9 +544,14 @@
                 <span id="founderWelcomeText"></span>
               </div>
             </div>
-            <div class="chat-row chat-row--ai">
+            <div class="chat-row chat-row--ai" id="welcomeMsgRow">
               <img src="assets/icons/monogram.svg" alt="" class="chat-avatar">
               <div class="chat-bubble chat-bubble--ai" data-i18n-html="dash.concierge.msg1"><strong>Goedemiddag.</strong> Waarmee kan ik u vandaag helpen?</div>
+            </div>
+            <div class="chat-quick-actions" id="quickActionsRow">
+              <button type="button" class="chat-quick-chip" data-quick="newRequest" data-i18n="dash.concierge.quick.newRequest">Nieuwe aanvraag</button>
+              <button type="button" class="chat-quick-chip" data-quick="points" data-i18n="dash.concierge.quick.points">Punten checken</button>
+              <button type="button" class="chat-quick-chip" data-quick="status" data-i18n="dash.concierge.quick.status">Status aanvraag</button>
             </div>
           </div>
           <form class="chat-input-row" id="chatForm">
@@ -1239,7 +1269,7 @@
     const textEl = document.getElementById('founderWelcomeText');
     if (!textEl) return;
     const firstName = memberName ? memberName.trim().split(/\s+/)[0] : '';
-    textEl.textContent = t('dash.concierge.founder.welcome').replace('{name}', firstName || t('dash.concierge.founder.fallbackName'));
+    textEl.innerHTML = t('dash.concierge.founder.welcome').replace('{name}', firstName || t('dash.concierge.founder.fallbackName'));
   }
 
   async function loadChatHistory(userId) {
@@ -1326,10 +1356,27 @@
     });
   }
 
+  const quickActionMessages = {
+    newRequest: 'dash.concierge.quick.newRequestMsg',
+    points: 'dash.concierge.quick.pointsMsg',
+    status: 'dash.concierge.quick.statusMsg',
+  };
+  document.querySelectorAll('.chat-quick-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const msgKey = quickActionMessages[chip.dataset.quick];
+      if (!msgKey) return;
+      chatInput.value = t(msgKey);
+      document.getElementById('quickActionsRow')?.remove();
+      chatForm.requestSubmit();
+    });
+  });
+
   chatForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const text = chatInput.value.trim();
     if (!text) return;
+
+    document.getElementById('quickActionsRow')?.remove();
 
     addBubble(text, 'user');
     chatHistory.push({ role: 'user', content: text });
