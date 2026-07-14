@@ -57,7 +57,9 @@
   .lp-header .brand-name { font-family: var(--font-display); font-size: 18px; letter-spacing: 0.16em; color: var(--color-ink); }
   .lp-header .brand-sub { font-family: var(--font-sans); font-size: 9px; letter-spacing: 0.32em; color: var(--color-gold); margin-top: 3px; }
   .lp-header-right { display: flex; align-items: center; gap: 12px; }
+  .lp-sound-wrap { position: relative; }
   .lp-sound-toggle {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -71,6 +73,39 @@
     transition: border-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
   }
   .lp-sound-toggle:hover { border-color: var(--color-gold); color: var(--color-gold-light); }
+  .lp-sound-toggle.is-hinting::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid var(--color-gold-light);
+    animation: lpSoundPulse 2.2s ease-out infinite;
+  }
+  @keyframes lpSoundPulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+  .lp-sound-hint {
+    position: absolute;
+    top: 46px;
+    right: 0;
+    white-space: nowrap;
+    background: rgba(15,27,36,0.92);
+    border: 1px solid var(--color-border);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    padding: 7px 12px;
+    border-radius: 6px;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    pointer-events: none;
+  }
+  .lp-sound-hint.is-visible { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .lp-sound-toggle.is-hinting::after { animation: none; }
+  }
 
   .lp-hero-main {
     flex: 1;
@@ -204,10 +239,13 @@
           <button type="button" class="lang-btn" data-lang="nl">NL</button>
           <button type="button" class="lang-btn" data-lang="en">EN</button>
         </div>
-        <button type="button" id="soundToggle" class="lp-sound-toggle" aria-label="Geluid aan">
-          <svg id="soundIconOff" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
-          <svg id="soundIconOn" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
-        </button>
+        <div class="lp-sound-wrap">
+          <button type="button" id="soundToggle" class="lp-sound-toggle is-hinting" aria-label="Geluid aan">
+            <svg id="soundIconOff" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+            <svg id="soundIconOn" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+          </button>
+          <span class="lp-sound-hint" id="soundHint" data-i18n="jetslp.soundhint">Speel muziek af</span>
+        </div>
       </div>
       <audio id="heroAudio" src="assets/audio/hero-theme.mp3" loop></audio>
     </header>
@@ -282,14 +320,22 @@
   }
 
   // Muted by default (browsers block autoplaying audio with sound), the
-  // member can turn it on themselves via the speaker button.
+  // member can turn it on themselves via the speaker button. A brief
+  // pulse + tooltip point it out once, so it isn't missed.
   const heroAudio = document.getElementById('heroAudio');
   const soundToggle = document.getElementById('soundToggle');
+  const soundHint = document.getElementById('soundHint');
   const soundIconOff = document.getElementById('soundIconOff');
   const soundIconOn = document.getElementById('soundIconOn');
   let soundOn = false;
+
+  setTimeout(() => soundHint.classList.add('is-visible'), 1200);
+  setTimeout(() => soundHint.classList.remove('is-visible'), 5200);
+
   soundToggle.addEventListener('click', () => {
     soundOn = !soundOn;
+    soundToggle.classList.remove('is-hinting');
+    soundHint.classList.remove('is-visible');
     if (soundOn) {
       heroAudio.volume = 0.5;
       heroAudio.play().catch(() => {});

@@ -158,6 +158,7 @@
       'jetslp.closing.title': 'Nog vragen, of liever het volledige aanbod bekijken?',
       'jetslp.closing.body': 'Solace Executive regelt naast privéjets ook jachtcharters en executive transport.',
       'jetslp.closing.cta': 'Bekijk alle diensten',
+      'jetslp.soundhint': 'Speel muziek af',
 
       'carlp.meta.title': 'Autotransport | Solace Executive',
       'carlp.meta.description': 'Wij halen uw auto op bij u thuis en leveren hem af op de gewenste locatie. Lidmaatschap op aanvraag bij Solace Executive.',
@@ -448,6 +449,7 @@
       'jetslp.closing.title': 'Any questions, or prefer to see everything we offer?',
       'jetslp.closing.body': 'Besides private jets, Solace Executive also arranges yacht charters and executive transport.',
       'jetslp.closing.cta': 'View all services',
+      'jetslp.soundhint': 'Play music',
 
       'carlp.meta.title': 'Car Transport | Solace Executive',
       'carlp.meta.description': 'We pick up your car at your home and deliver it to your chosen location. Membership by application at Solace Executive.',
