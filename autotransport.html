@@ -25,22 +25,12 @@
     min-height: 640px;
     overflow: hidden;
   }
-  .lp-hero-full img {
+  .lp-video {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: brightness(0.58) saturate(1.05);
-    animation: lpKenBurns 22s ease-out forwards;
-    transform-origin: 55% 45%;
-  }
-  @keyframes lpKenBurns {
-    from { transform: scale(1); }
-    to { transform: scale(1.1); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .lp-hero-full img { animation: none; }
   }
   .lp-hero-scrim {
     position: absolute;
@@ -194,7 +184,9 @@
 <body>
 
 <section class="lp-hero-full">
-  <img src="assets/photos/transport.jpg" alt="">
+  <video class="lp-video" autoplay muted loop playsinline>
+    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_3GDxptFdcZ9neNjISi6FBjozjrB/hf_20260715_153223_4a1a3f97-b90b-409e-baec-e05d4eebdf49.mp4" type="video/mp4">
+  </video>
   <div class="lp-hero-scrim"></div>
   <div class="lp-hero-inner">
     <header class="lp-header">
