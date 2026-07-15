@@ -18,34 +18,20 @@
 <link rel="stylesheet" href="styles.css">
 <style>
   body { background: #0F1B24; }
-  .lp-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--space-4) var(--space-4) 0;
-  }
-  .lp-header .brand { display: flex; align-items: center; gap: 12px; }
-  .lp-header .brand-mark { width: 34px; height: 34px; }
-  .lp-header .brand-word { display: flex; flex-direction: column; line-height: 1; }
-  .lp-header .brand-name { font-family: var(--font-display); font-size: 18px; letter-spacing: 0.16em; color: var(--color-ink); }
-  .lp-header .brand-sub { font-family: var(--font-sans); font-size: 9px; letter-spacing: 0.32em; color: var(--color-gold); margin-top: 3px; }
 
-  .lp-hero {
+  .lp-hero-full {
     position: relative;
-    margin: var(--space-4);
-    border-radius: var(--radius-md);
-    overflow: hidden;
+    height: 100vh;
     min-height: 640px;
-    display: flex;
-    align-items: flex-end;
+    overflow: hidden;
   }
-  .lp-hero img {
+  .lp-hero-full img {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: brightness(0.6) saturate(1.05);
+    filter: brightness(0.58) saturate(1.05);
     animation: lpKenBurns 22s ease-out forwards;
     transform-origin: 55% 45%;
   }
@@ -54,17 +40,35 @@
     to { transform: scale(1.1); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .lp-hero img { animation: none; }
+    .lp-hero-full img { animation: none; }
   }
-  .lp-hero .scrim {
+  .lp-hero-scrim {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(15,27,36,0.15) 0%, rgba(15,27,36,0.3) 45%, rgba(15,27,36,0.94) 100%);
+    background: linear-gradient(180deg, rgba(15,27,36,0.55) 0%, rgba(15,27,36,0.22) 35%, rgba(15,27,36,0.4) 62%, rgba(15,27,36,0.9) 100%);
   }
+  .lp-hero-inner {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+  }
+
+  .lp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4);
+  }
+  .lp-header .brand { display: flex; align-items: center; gap: 12px; }
+  .lp-header .brand-mark { width: 34px; height: 34px; }
+  .lp-header .brand-word { display: flex; flex-direction: column; line-height: 1; }
+  .lp-header .brand-name { font-family: var(--font-display); font-size: 18px; letter-spacing: 0.16em; color: var(--color-ink); }
+  .lp-header .brand-sub { font-family: var(--font-sans); font-size: 9px; letter-spacing: 0.32em; color: var(--color-gold); margin-top: 3px; }
+  .lp-header-right { display: flex; align-items: center; gap: 12px; }
+
   .lp-badge {
-    position: absolute;
-    top: var(--space-4);
-    right: var(--space-4);
     font-family: var(--font-sans);
     font-size: 11px;
     font-weight: 600;
@@ -73,41 +77,52 @@
     background: var(--color-gold-light);
     padding: 7px 16px;
     border-radius: 999px;
+    align-self: center;
+  }
+
+  .lp-hero-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--space-4) var(--space-6);
   }
   .lp-hero-content {
-    position: relative;
-    padding: var(--space-5);
-    max-width: 640px;
+    text-align: center;
+    max-width: 680px;
   }
   .lp-eyebrow {
     font-family: var(--font-sans);
     font-size: 12px;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.28em;
     text-transform: uppercase;
     color: var(--color-gold-light);
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
-  .lp-title {
+  .lp-title-stack { margin: 0 0 22px; }
+  .lp-title-line {
+    display: block;
     font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(44px, 7vw, 72px);
-    line-height: 1.03;
-    color: var(--color-ink);
-    margin-bottom: 18px;
+    font-weight: 400;
+    font-size: clamp(46px, 8vw, 96px);
+    line-height: 0.98;
+    letter-spacing: -0.01em;
   }
+  .lp-title-line--muted { color: rgba(245,241,230,0.5); }
+  .lp-title-line--bright { color: var(--color-ink); margin-top: -0.1em; }
   .lp-sub {
     font-family: var(--font-sans);
     font-size: 17px;
     line-height: 1.6;
     color: rgba(245,241,230,0.82);
-    margin-bottom: var(--space-4);
-    max-width: 520px;
+    margin: 0 auto var(--space-5);
+    max-width: 480px;
   }
-  .lp-hint {
-    font-family: var(--font-sans);
-    font-size: 13px;
-    color: rgba(245,241,230,0.5);
-    margin-top: 14px;
+  .lp-hero-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
   }
 
   .lp-features {
@@ -170,40 +185,52 @@
 
   @media (max-width: 720px) {
     .lp-features { grid-template-columns: 1fr; }
-    .lp-hero { min-height: 560px; }
+    .lp-hero-full { min-height: 560px; }
+    .lp-hero-actions { flex-direction: column; width: 100%; }
+    .lp-hero-actions .btn { width: 100%; }
   }
 </style>
 </head>
 <body>
 
-<header class="lp-header">
-  <a href="index.html" class="brand" aria-label="Solace Executive homepage">
-    <img src="assets/icons/monogram.svg" alt="" class="brand-mark">
-    <span class="brand-word">
-      <span class="brand-name">SOLACE</span>
-      <span class="brand-sub">EXECUTIVE</span>
-    </span>
-  </a>
-  <div class="lang-switch" role="group" aria-label="Taal / Language">
-    <button type="button" class="lang-btn" data-lang="nl">NL</button>
-    <button type="button" class="lang-btn" data-lang="en">EN</button>
-  </div>
-</header>
-
-<section class="lp-hero">
+<section class="lp-hero-full">
   <img src="assets/photos/transport.jpg" alt="">
-  <div class="scrim"></div>
-  <span class="lp-badge" data-i18n="carlp.badge">NIEUW</span>
-  <div class="lp-hero-content">
-    <p class="lp-eyebrow reveal" data-i18n="intake.eyebrow">LIDMAATSCHAP &middot; OP AANVRAAG</p>
-    <h1 class="lp-title reveal" data-i18n="carlp.title">Autotransport.</h1>
-    <p class="lp-sub reveal" data-i18n="carlp.sub">Wij halen uw auto op bij u thuis en leveren hem af op de gewenste locatie.</p>
-    <a href="index.html#lidmaatschap" class="btn btn-primary reveal" data-i18n="carlp.cta">Word lid</a>
-    <p class="lp-hint reveal" data-i18n="carlp.hint">Wij beoordelen elke aanvraag persoonlijk. Reactie doorgaans binnen 24 uur.</p>
+  <div class="lp-hero-scrim"></div>
+  <div class="lp-hero-inner">
+    <header class="lp-header">
+      <a href="index.html" class="brand" aria-label="Solace Executive homepage">
+        <img src="assets/icons/monogram.svg" alt="" class="brand-mark">
+        <span class="brand-word">
+          <span class="brand-name">SOLACE</span>
+          <span class="brand-sub">EXECUTIVE</span>
+        </span>
+      </a>
+      <div class="lp-header-right">
+        <span class="lp-badge" data-i18n="carlp.badge">NIEUW</span>
+        <div class="lang-switch" role="group" aria-label="Taal / Language">
+          <button type="button" class="lang-btn" data-lang="nl">NL</button>
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
+    </header>
+    <div class="lp-hero-main">
+      <div class="lp-hero-content">
+        <p class="lp-eyebrow reveal" data-i18n="intake.eyebrow">LIDMAATSCHAP &middot; OP AANVRAAG</p>
+        <h1 class="lp-title-stack">
+          <span class="lp-title-line lp-title-line--muted reveal" data-i18n="carlp.title">Autotransport.</span>
+          <span class="lp-title-line lp-title-line--bright reveal" data-i18n="carlp.title2">Zonder gedoe.</span>
+        </h1>
+        <p class="lp-sub reveal" data-i18n="carlp.sub">Wij halen uw auto op bij u thuis en leveren hem af op de gewenste locatie.</p>
+        <div class="lp-hero-actions reveal">
+          <a href="#lp-features" class="btn btn-outline" data-i18n="carlp.discover">Ontdek</a>
+          <a href="index.html#lidmaatschap" class="btn btn-primary" data-i18n="carlp.cta">Word lid</a>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
-<section class="lp-features">
+<section class="lp-features" id="lp-features">
   <div class="lp-feature reveal">
     <p class="num">01</p>
     <h3 data-i18n="carlp.feature1.title">Ophalen bij u thuis</h3>
