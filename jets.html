@@ -73,6 +73,7 @@
     transition: border-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
   }
   .lp-sound-toggle:hover { border-color: var(--color-gold); color: var(--color-gold-light); }
+  .lp-sound-toggle svg[hidden] { display: none; }
   .lp-sound-toggle.is-hinting::after {
     content: '';
     position: absolute;
@@ -339,13 +340,13 @@
     if (soundOn) {
       heroAudio.volume = 0.5;
       heroAudio.play().catch(() => {});
-      soundIconOff.hidden = true;
-      soundIconOn.hidden = false;
+      soundIconOff.setAttribute('hidden', '');
+      soundIconOn.removeAttribute('hidden');
       soundToggle.setAttribute('aria-label', 'Geluid uit');
     } else {
       heroAudio.pause();
-      soundIconOff.hidden = false;
-      soundIconOn.hidden = true;
+      soundIconOff.removeAttribute('hidden');
+      soundIconOn.setAttribute('hidden', '');
       soundToggle.setAttribute('aria-label', 'Geluid aan');
     }
   });
