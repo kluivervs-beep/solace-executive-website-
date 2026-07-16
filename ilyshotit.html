@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who did? — Photography &amp; Video | ilyshotit</title>
+<meta name="description" content="Building footballers' brands on &amp; off the pitch. Photography &amp; video by ilyshotit.">
+<meta name="theme-color" content="#0a0a0a">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Who did? — Photography &amp; Video">
+<meta property="og:description" content="Building footballers' brands on &amp; off the pitch.">
+<meta property="og:image" content="assets/photos/ilyshotit/work-6.jpg">
+<link rel="icon" type="image/jpeg" href="assets/photos/ilyshotit/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --text: #f5f5f5;
+    --muted: #888888;
+    --stroke: rgba(255,255,255,0.1);
+    --accent-1: #89AACC;
+    --accent-2: #4E85BF;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+  .display { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; }
+  a { color: inherit; text-decoration: none; }
+  .accent-gradient { background: linear-gradient(90deg, var(--accent-1) 0%, var(--accent-2) 100%); }
+
+  /* Loading screen */
+  #loader {
+    position: fixed; inset: 0; z-index: 9999; background: var(--bg);
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 32px; transition: opacity 0.5s ease, visibility 0.5s ease;
+  }
+  #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  .loader-top { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3em; }
+  .loader-mid { flex: 1; display: flex; align-items: center; justify-content: center; }
+  .loader-word { font-size: clamp(32px, 8vw, 72px); color: rgba(245,245,245,0.8); }
+  .loader-bottom { display: flex; justify-content: flex-end; }
+  .loader-count { font-family: 'Instrument Serif', serif; font-style: italic; font-size: clamp(56px, 15vw, 140px); font-variant-numeric: tabular-nums; }
+  .loader-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: rgba(255,255,255,0.08); }
+  .loader-bar-fill { height: 100%; width: 0%; transform-origin: left; box-shadow: 0 0 8px rgba(137,170,204,0.35); transition: width 0.1s linear; }
+
+  /* Navbar */
+  .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 500; display: flex; justify-content: center; padding: 18px 16px; }
+  .navbar-pill {
+    display: inline-flex; align-items: center; gap: 4px; border-radius: 999px;
+    backdrop-filter: blur(12px); border: 1px solid var(--stroke); background: rgba(20,20,20,0.7);
+    padding: 6px; transition: box-shadow 0.3s;
+  }
+  .navbar-pill.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,0.3); }
+  .nav-logo { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; display: block; }
+  .nav-logo img { width: 100%; height: 100%; object-fit: cover; }
+  .nav-divider { width: 1px; height: 18px; background: var(--stroke); margin: 0 6px; }
+  .nav-link { font-size: 13px; color: var(--muted); border-radius: 999px; padding: 8px 14px; transition: color 0.2s, background 0.2s; }
+  .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+  .nav-ig {
+    font-size: 13px; border-radius: 999px; padding: 8px 16px; display: inline-flex; align-items: center; gap: 6px;
+    background: var(--text); color: var(--bg); font-weight: 500; transition: transform 0.2s;
+  }
+  .nav-ig:hover { transform: scale(1.04); }
+
+  /* Hero */
+  .hero { position: relative; height: 100vh; min-height: 640px; overflow: hidden; }
+  .hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 60% 30%; filter: brightness(0.55) saturate(0.9); }
+  .hero-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,10,10,0.5) 0%, rgba(10,10,10,0.25) 40%, rgba(10,10,10,0.55) 75%, var(--bg) 100%); }
+  .hero-inner { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 20px; }
+  .hero-eyebrow { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 28px; }
+  .hero-name { font-size: clamp(52px, 11vw, 130px); line-height: 0.92; margin-bottom: 22px; }
+  .hero-role { font-size: clamp(16px, 2.4vw, 20px); color: rgba(245,245,245,0.75); margin-bottom: 36px; max-width: 520px; }
+  .hero-role .role-word { display: inline-block; }
+  .hero-actions { display: inline-flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+  .btn { border-radius: 999px; font-size: 14px; padding: 14px 30px; font-weight: 500; transition: transform 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+  .btn:hover { transform: scale(1.05); }
+  .btn-solid { background: var(--text); color: var(--bg); }
+  .btn-outline { border: 1.5px solid var(--stroke); color: var(--text); }
+  .scroll-cue { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .scroll-cue-label { font-size: 10px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; }
+  .scroll-line { width: 1px; height: 36px; background: var(--stroke); position: relative; overflow: hidden; }
+  .scroll-line::after { content: ''; position: absolute; top: -100%; left: 0; width: 100%; height: 100%; background: var(--text); animation: scrollDown 1.6s ease-in-out infinite; }
+  @keyframes scrollDown { 0% { top: -100%; } 100% { top: 100%; } }
+
+  /* Section shared */
+  section.block { padding: 90px 24px; max-width: 1200px; margin: 0 auto; }
+  .block-header { margin-bottom: 44px; }
+  .eyebrow-row { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .eyebrow-line { width: 30px; height: 1px; background: var(--stroke); }
+  .eyebrow-text { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); }
+  .block-heading { font-size: clamp(30px, 4.5vw, 48px); line-height: 1.05; margin-bottom: 14px; }
+  .block-sub { font-size: 15px; color: var(--muted); max-width: 480px; }
+
+  /* Work grid */
+  .work-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 18px; }
+  .work-card { position: relative; border-radius: 20px; overflow: hidden; border: 1px solid var(--stroke); background: var(--surface); aspect-ratio: 4/5; }
+  .work-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease, ease); }
+  .work-card:hover img { transform: scale(1.06); }
+  .work-card .label { position: absolute; left: 16px; bottom: 16px; font-size: 13px; background: rgba(10,10,10,0.6); backdrop-filter: blur(6px); padding: 7px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.14); opacity: 0; transform: translateY(6px); transition: opacity 0.3s, transform 0.3s; }
+  .work-card:hover .label { opacity: 1; transform: translateY(0); }
+  .work-card:nth-child(1) { grid-column: span 7; }
+  .work-card:nth-child(2) { grid-column: span 5; }
+  .work-card:nth-child(3) { grid-column: span 5; }
+  .work-card:nth-child(4) { grid-column: span 7; }
+  .work-card:nth-child(5) { grid-column: span 12; aspect-ratio: 16/7; }
+  @media (max-width: 720px) {
+    .work-card, .work-card:nth-child(1), .work-card:nth-child(2), .work-card:nth-child(3), .work-card:nth-child(4), .work-card:nth-child(5) {
+      grid-column: span 12; aspect-ratio: 4/5;
+    }
+  }
+
+  /* Stats */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; border-top: 1px solid var(--stroke); border-bottom: 1px solid var(--stroke); padding: 48px 0; }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Instrument Serif', serif; font-style: italic; font-size: clamp(34px, 5vw, 56px); }
+  .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.15em; margin-top: 8px; }
+
+  /* Footer / contact */
+  .footer-block { text-align: center; padding: 100px 24px 60px; }
+  .footer-heading { font-size: clamp(30px, 5vw, 56px); margin-bottom: 28px; }
+  .footer-cta { display: inline-flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-bottom: 60px; }
+  .powered-by {
+    display: inline-flex; align-items: center; gap: 10px; border: 1px solid var(--stroke); border-radius: 999px;
+    padding: 8px 16px 8px 8px; font-size: 12px; color: var(--muted); transition: border-color 0.2s, color 0.2s;
+  }
+  .powered-by:hover { border-color: rgba(212,190,140,0.4); color: var(--text); }
+  .powered-by img { width: 22px; height: 22px; border-radius: 50%; }
+  .footer-bottom { border-top: 1px solid var(--stroke); padding-top: 28px; margin-top: 40px; display: flex; justify-content: center; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #4ADE80; box-shadow: 0 0 0 0 rgba(74,222,128,0.6); animation: pulseDot 2s infinite; }
+  @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(74,222,128,0.5); } 70% { box-shadow: 0 0 0 8px rgba(74,222,128,0); } 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); } }
+
+  .reveal { opacity: 0; }
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="loader-top">Photography &amp; Video</div>
+  <div class="loader-mid"><div class="loader-word display" id="loaderWord">Design</div></div>
+  <div class="loader-bottom"><div class="loader-count display" id="loaderCount">000</div></div>
+  <div class="loader-bar"><div class="loader-bar-fill accent-gradient" id="loaderBarFill"></div></div>
+</div>
+
+<header class="navbar">
+  <div class="navbar-pill" id="navPill">
+    <a href="#top" class="nav-logo"><img src="assets/photos/ilyshotit/logo.jpg" alt="Who did? logo"></a>
+    <div class="nav-divider"></div>
+    <a href="#work" class="nav-link">Werk</a>
+    <a href="#contact" class="nav-link">Contact</a>
+    <div class="nav-divider"></div>
+    <a href="https://www.instagram.com/ilyshotit" target="_blank" rel="noopener" class="nav-ig">Instagram ↗</a>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <img src="assets/photos/ilyshotit/work-2.jpg" alt="">
+  <div class="hero-scrim"></div>
+  <div class="hero-inner">
+    <p class="hero-eyebrow reveal" id="r1">Photography &amp; Video</p>
+    <h1 class="hero-name display reveal" id="r2">Who did?</h1>
+    <p class="hero-role reveal" id="r3">Building <span class="role-word display" id="roleWord">footballers'</span> brands on &amp; off the pitch.</p>
+    <div class="hero-actions reveal" id="r4">
+      <a href="#work" class="btn btn-solid">Bekijk werk</a>
+      <a href="https://www.instagram.com/ilyshotit" target="_blank" rel="noopener" class="btn btn-outline">Neem contact op ↗</a>
+    </div>
+  </div>
+  <div class="scroll-cue">
+    <span class="scroll-cue-label">Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<section class="block" id="work">
+  <div class="block-header reveal">
+    <div class="eyebrow-row"><div class="eyebrow-line"></div><span class="eyebrow-text">Selected Work</span></div>
+    <h2 class="block-heading">Featured <span class="display">projects</span></h2>
+    <p class="block-sub">Een selectie van campagnes en content voor voetballers en clubs, van shoot tot publicatie.</p>
+  </div>
+  <div class="work-grid">
+    <div class="work-card reveal"><img src="assets/photos/ilyshotit/work-2.jpg" alt="Street portrait"><span class="label">Bekijk — <span class="display">Off the Pitch</span></span></div>
+    <div class="work-card reveal"><img src="assets/photos/ilyshotit/work-6.jpg" alt="Portrait close-up"><span class="label">Bekijk — <span class="display">Portrait</span></span></div>
+    <div class="work-card reveal"><img src="assets/photos/ilyshotit/work-5.jpg" alt="Behind the scenes"><span class="label">Bekijk — <span class="display">Behind the Scenes</span></span></div>
+    <div class="work-card reveal"><img src="assets/photos/ilyshotit/work-4.jpg" alt="Training candid"><span class="label">Bekijk — <span class="display">Training Day</span></span></div>
+    <div class="work-card reveal"><img src="assets/photos/ilyshotit/work-7.jpg" alt="Lifestyle"><span class="label">Bekijk — <span class="display">Lifestyle</span></span></div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="stats reveal">
+    <div class="stat"><div class="stat-num display">14</div><div class="stat-label">Projecten</div></div>
+    <div class="stat"><div class="stat-num display">1.3K+</div><div class="stat-label">Volgers</div></div>
+    <div class="stat"><div class="stat-num display">100%</div><div class="stat-label">Op maat</div></div>
+  </div>
+</section>
+
+<section class="footer-block" id="contact">
+  <div class="reveal">
+    <div class="eyebrow-row" style="justify-content:center;"><div class="eyebrow-line"></div><span class="eyebrow-text">Get in touch</span><div class="eyebrow-line"></div></div>
+    <h2 class="footer-heading">Laten we iets <span class="display">moois</span> maken.</h2>
+    <div class="footer-cta">
+      <a href="https://www.instagram.com/ilyshotit" target="_blank" rel="noopener" class="btn btn-solid">Stuur een DM op Instagram ↗</a>
+    </div>
+    <a href="index.html" class="powered-by">
+      <img src="assets/icons/monogram.svg" alt="Solace Executive">
+      Aanbevolen door Solace Executive
+    </a>
+  </div>
+  <div class="footer-bottom">
+    <span class="dot"></span>
+    <span>Beschikbaar voor nieuwe projecten</span>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+  // Loading counter
+  (function () {
+    const loader = document.getElementById('loader');
+    const countEl = document.getElementById('loaderCount');
+    const barFill = document.getElementById('loaderBarFill');
+    const wordEl = document.getElementById('loaderWord');
+    const words = ['Design', 'Create', 'Inspire'];
+    let wi = 0;
+    const wordTimer = setInterval(() => {
+      wi = (wi + 1) % words.length;
+      wordEl.textContent = words[wi];
+    }, 900);
+
+    const duration = 2200;
+    const start = Date.now();
+    const tickTimer = setInterval(() => {
+      const t = Math.min(1, (Date.now() - start) / duration);
+      const count = Math.floor(t * 100);
+      countEl.textContent = String(count).padStart(3, '0');
+      barFill.style.width = (t * 100) + '%';
+      if (t >= 1) {
+        clearInterval(tickTimer);
+        clearInterval(wordTimer);
+        setTimeout(() => {
+          loader.classList.add('hidden');
+          runEntrance();
+        }, 300);
+      }
+    }, 30);
+  })();
+
+  function runEntrance() {
+    if (!window.gsap) return;
+    gsap.timeline({ ease: 'power3.out' })
+      .to('#r2', { opacity: 1, y: 0, duration: 1 })
+      .to(['#r1', '#r3', '#r4'], { opacity: 1, y: 0, duration: 0.8, stagger: 0.12 }, '-=0.6');
+    // Failsafe: if the tab is backgrounded and rAF-driven tweens stall, force the reveal.
+    setTimeout(() => {
+      document.querySelectorAll('.hero .reveal').forEach(el => { el.style.opacity = 1; el.style.transform = 'none'; });
+    }, 2500);
+  }
+  if (window.gsap) {
+    gsap.set('#r2', { y: 40 });
+    gsap.set(['#r1', '#r3', '#r4'], { y: 16 });
+  }
+
+  // Rotating role word
+  const roles = ["footballers'", "athletes'", "clubs'", "creators'"];
+  let ri = 0;
+  setInterval(() => {
+    ri = (ri + 1) % roles.length;
+    const el = document.getElementById('roleWord');
+    el.style.opacity = 0;
+    setTimeout(() => { el.textContent = roles[ri]; el.style.opacity = 1; }, 250);
+  }, 2400);
+  document.getElementById('roleWord').style.transition = 'opacity 0.25s ease';
+
+  // Navbar scroll shadow
+  const navPill = document.getElementById('navPill');
+  window.addEventListener('scroll', () => {
+    navPill.classList.toggle('scrolled', window.scrollY > 80);
+  });
+
+  // Reveal on scroll
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (window.gsap && window.ScrollTrigger && !reducedMotion) {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('.block .reveal, .footer-block .reveal').forEach((el) => {
+      gsap.fromTo(el, { opacity: 0, y: 24 }, {
+        opacity: 1, y: 0, duration: 0.7, ease: 'power2.out',
+        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' },
+      });
+    });
+  } else {
+    document.querySelectorAll('.block .reveal, .footer-block .reveal').forEach(el => el.style.opacity = 1);
+  }
+</script>
+
+</body>
+</html>
