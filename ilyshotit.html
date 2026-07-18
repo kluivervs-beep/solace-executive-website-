@@ -52,10 +52,13 @@
   .loader-bar-fill { height: 100%; width: 0%; transform-origin: left; box-shadow: 0 0 8px rgba(137,170,204,0.35); transition: width 0.1s linear; }
 
   /* Navbar */
-  .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 500; display: flex; justify-content: center; padding: 18px 16px; }
+  .navbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 500; display: flex; justify-content: center; padding: 18px 16px;
+    transform: translateZ(0); -webkit-transform: translateZ(0);
+  }
   .navbar-pill {
     display: inline-flex; align-items: center; gap: 4px; border-radius: 999px;
-    backdrop-filter: blur(12px); border: 1px solid var(--stroke); background: rgba(20,20,20,0.7);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid var(--stroke); background: rgba(20,20,20,0.7);
     padding: 6px; transition: box-shadow 0.3s;
   }
   .navbar-pill.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,0.3); }
