@@ -105,8 +105,10 @@
   .work-card { position: relative; border-radius: 20px; overflow: hidden; border: 1px solid var(--stroke); background: var(--surface); aspect-ratio: 4/5; }
   .work-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
   .work-card:hover img { transform: scale(1.06); }
-  .work-card .label { position: absolute; left: 16px; bottom: 16px; font-size: 13px; background: rgba(15,27,36,0.7); backdrop-filter: blur(6px); padding: 7px 14px; border-radius: 999px; border: 1px solid var(--stroke); opacity: 0; transform: translateY(6px); transition: opacity 0.3s, transform 0.3s; }
-  .work-card:hover .label { opacity: 1; transform: translateY(0); }
+  .work-card .card-info { position: absolute; left: 0; right: 0; bottom: 0; padding: 20px 20px 18px; background: linear-gradient(180deg, rgba(15,27,36,0) 0%, rgba(15,27,36,0.75) 55%, rgba(15,27,36,0.94) 100%); }
+  .work-card .card-name { font-size: clamp(17px, 2vw, 21px); color: var(--text); margin-bottom: 9px; }
+  .work-card .card-specs { display: flex; flex-wrap: wrap; gap: 7px; }
+  .work-card .spec-chip { font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--gold-light); background: rgba(212,190,140,0.1); border: 1px solid var(--stroke); padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
   .work-card:nth-child(4n+1) { grid-column: span 7; }
   .work-card:nth-child(4n+2) { grid-column: span 5; }
   .work-card:nth-child(4n+3) { grid-column: span 5; }
@@ -188,17 +190,23 @@
     <p class="block-sub">A selection from our curated collection: supercars, convertibles and executive SUVs, always immaculately kept.</p>
   </div>
   <div class="work-grid">
-    <div class="work-card reveal"><img src="assets/photos/fleet/ferrari-portofino.jpg" alt="Ferrari Portofino"><span class="label">Ferrari <span class="display">Portofino</span></span></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/porsche-gt3.jpg" alt="Porsche 911 GT3"><span class="label">Porsche <span class="display">911 GT3</span></span></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/audi-rs3.jpg" alt="Audi RS3"><span class="label">Audi <span class="display">RS3</span></span></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/ferrari-f8.jpg" alt="Ferrari F8 Spider"><span class="label">Ferrari <span class="display">F8 Spider</span></span></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/lambo-huracan.jpg" alt="Lamborghini Huracan"><span class="label">Lamborghini <span class="display">Huracán</span></span></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/lambo-urus.jpg" alt="Lamborghini Urus"><span class="label">Lamborghini <span class="display">Urus</span></span></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/ferrari-roma.jpg" alt="Ferrari Roma Spyder"><span class="label">Ferrari <span class="display">Roma Spyder</span></span></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/range-rover.jpg" alt="Range Rover"><span class="label">Range <span class="display">Rover</span></span></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/range-rover-sport.jpg" alt="Range Rover Sport"><span class="label">Range Rover <span class="display">Sport</span></span></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/mercedes-a45.jpg" alt="Mercedes-AMG A45"><span class="label">Mercedes-AMG <span class="display">A45</span></span></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/mercedes-vclass.jpg" alt="Mercedes V-Class"><span class="label">Mercedes <span class="display">V-Class</span> · Group Travel</span></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/ferrari-f8.jpg" alt="Ferrari F8 Spider"><div class="card-info"><div class="card-name">Ferrari <span class="display">F8 Spider</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">2 Seats</span><span class="spec-chip">720 HP</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/ferrari-portofino.jpg" alt="Ferrari Portofino"><div class="card-info"><div class="card-name">Ferrari <span class="display">Portofino</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">4 Seats</span><span class="spec-chip">600 HP</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/ferrari-roma.jpg" alt="Ferrari Roma Spider"><div class="card-info"><div class="card-name">Ferrari <span class="display">Roma Spider</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">2 Seats</span><span class="spec-chip">620 HP</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/lambo-huracan.jpg" alt="Lamborghini Huracan"><div class="card-info"><div class="card-name">Lamborghini <span class="display">Huracán</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">2 Seats</span><span class="spec-chip">580 HP</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/lambo-huracan-evo.jpg" alt="Lamborghini Huracan EVO Spyder"><div class="card-info"><div class="card-name">Lamborghini <span class="display">Huracán EVO Spyder</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">2 Seats</span><span class="spec-chip">640 HP</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/porsche-gt3.jpg" alt="Porsche 911 GT3"><div class="card-info"><div class="card-name">Porsche <span class="display">911 GT3</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">2 Seats</span><span class="spec-chip">510 HP</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/porsche-boxster.jpg" alt="Porsche 718 Boxster"><div class="card-info"><div class="card-name">Porsche <span class="display">718 Boxster</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">2 Seats</span><span class="spec-chip">300 HP</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/audi-rs3.jpg" alt="Audi RS3"><div class="card-info"><div class="card-name">Audi <span class="display">RS3</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">4 Seats</span><span class="spec-chip">400 HP</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/abarth-695.jpg" alt="Abarth 695 Competizione"><div class="card-info"><div class="card-name">Abarth <span class="display">695 Competizione</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Manual</span><span class="spec-chip">4 Seats</span><span class="spec-chip">180 HP</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/bmw-serie4.jpg" alt="BMW 4 Series Coupe"><div class="card-info"><div class="card-name">BMW <span class="display">4 Series Coupé</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">4 Seats</span><span class="spec-chip">374 HP</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/mercedes-a45s.jpg" alt="Mercedes-AMG A45 S"><div class="card-info"><div class="card-name">Mercedes-AMG <span class="display">A45 S</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">4 Seats</span><span class="spec-chip">421 HP</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/mercedes-sl43.jpg" alt="Mercedes-AMG SL 43"><div class="card-info"><div class="card-name">Mercedes-AMG <span class="display">SL 43</span></div><div class="card-specs"><span class="spec-chip">Hybrid</span><span class="spec-chip">Automatic</span><span class="spec-chip">2 Seats</span><span class="spec-chip">381 HP</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/range-rover-l460.jpg" alt="Range Rover"><div class="card-info"><div class="card-name">Range <span class="display">Rover</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">5 Seats</span><span class="spec-chip">530 HP</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/range-rover-sport.jpg" alt="Range Rover Sport"><div class="card-info"><div class="card-name">Range Rover <span class="display">Sport</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">5 Seats</span><span class="spec-chip">530 HP</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/mercedes-gle63.jpg" alt="Mercedes-AMG GLE 63 S"><div class="card-info"><div class="card-name">Mercedes-AMG <span class="display">GLE 63 S</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">5 Seats</span><span class="spec-chip">612 HP</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/land-rover-defender.jpg" alt="Land Rover Defender 110"><div class="card-info"><div class="card-name">Land Rover <span class="display">Defender 110</span></div><div class="card-specs"><span class="spec-chip">Hybrid</span><span class="spec-chip">Automatic</span><span class="spec-chip">5 Seats</span><span class="spec-chip">300 HP</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/mercedes-vclass.jpg" alt="Mercedes V-Class"><div class="card-info"><div class="card-name">Mercedes <span class="display">V-Class</span></div><div class="card-specs"><span class="spec-chip">Diesel</span><span class="spec-chip">Automatic</span><span class="spec-chip">8 Seats</span><span class="spec-chip">190 HP</span></div></div></div>
   </div>
   <p class="block-sub reveal" style="margin-top: 28px;">Not seeing what you're after? Our collection is always growing. Ask us for the full list.</p>
 </section>
@@ -229,7 +237,7 @@
 
 <section class="block">
   <div class="stats reveal">
-    <div class="stat"><div class="stat-num display">11+</div><div class="stat-label">Vehicles</div></div>
+    <div class="stat"><div class="stat-num display">17+</div><div class="stat-label">Vehicles</div></div>
     <div class="stat"><div class="stat-num display">24/7</div><div class="stat-label">On Request</div></div>
     <div class="stat"><div class="stat-num display">100%</div><div class="stat-label">Europe-wide Delivery</div></div>
   </div>
