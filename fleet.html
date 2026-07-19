@@ -73,6 +73,13 @@
     background: var(--gold-light); color: var(--bg); font-weight: 600; transition: transform 0.2s;
   }
   .nav-cta:hover { transform: scale(1.04); }
+  @media (max-width: 480px) {
+    .navbar { padding: 14px 12px; }
+    .nav-logo { width: 28px; height: 28px; }
+    .nav-divider { margin: 0 3px; }
+    .nav-link, .nav-cta { font-size: 12px; padding: 7px 10px; white-space: nowrap; }
+    .nav-link-secondary { display: none; }
+  }
 
   /* Hero */
   .hero { position: relative; height: 100vh; min-height: 640px; overflow: hidden; }
@@ -162,7 +169,7 @@
     <a href="index.html" class="nav-logo"><img src="assets/icons/monogram.svg" alt="Solace Executive"></a>
     <div class="nav-divider"></div>
     <a href="#fleet" class="nav-link">Fleet</a>
-    <a href="#how" class="nav-link">How it Works</a>
+    <a href="#how" class="nav-link nav-link-secondary">How it Works</a>
     <div class="nav-divider"></div>
     <a href="https://wa.me/31644917512?text=Hallo%2C%20ik%20wil%20graag%20een%20auto%20reserveren%20via%20Solace%20Executive." target="_blank" rel="noopener" class="nav-cta">WhatsApp ↗</a>
   </div>
