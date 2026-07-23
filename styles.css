@@ -249,25 +249,19 @@ input, textarea, select {
   -webkit-transform: translateZ(0);
 }
 
-.header-inner {
+/* Reusable frosted-glass surface: blurred, luminous, hairline gradient
+   border. Use on floating panels (nav, modals, elevated cards) — not
+   on flat in-flow content, where it reads as a bug rather than a material. */
+.liquid-glass {
   position: relative;
   overflow: hidden;
-  width: 100%;
-  max-width: var(--container-max);
-  margin: 0 auto;
-  padding: 12px 20px;
-  border-radius: 999px;
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
   background: rgba(245, 241, 230, 0.05);
   background-blend-mode: luminosity;
   -webkit-backdrop-filter: blur(16px) saturate(1.3);
   backdrop-filter: blur(16px) saturate(1.3);
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12);
-  transition: box-shadow var(--dur-base) var(--ease-out);
 }
-.header-inner::before {
+.liquid-glass::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -286,6 +280,18 @@ input, textarea, select {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
+}
+
+.header-inner {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 12px 20px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  transition: box-shadow var(--dur-base) var(--ease-out);
 }
 .site-header.is-scrolled .header-inner {
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 10px 30px rgba(0, 0, 0, 0.28);
@@ -1114,9 +1120,6 @@ input, textarea, select {
   backdrop-filter: blur(3px);
 }
 .intake-modal-panel {
-  position: relative;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   max-width: 780px;
   width: 100%;
@@ -1444,8 +1447,6 @@ body.modal-open { overflow: hidden; }
 }
 
 .whatsapp-card {
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--space-4);
 }
