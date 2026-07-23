@@ -738,6 +738,7 @@ input, textarea, select {
 .service-visual--yachts .service-visual-photo {
   filter: saturate(1.12) sepia(0.18) hue-rotate(-6deg) brightness(1.04);
 }
+.service-visual--lifestyle { --v-a: rgba(216, 189, 124, 0.55); --v-b: rgba(15, 27, 36, 0.7); }
 
 .service-card h3 {
   font-family: var(--font-display);
@@ -753,17 +754,36 @@ input, textarea, select {
   line-height: 1.65;
   padding: 0 var(--space-4);
 }
+.service-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: var(--space-2) var(--space-4) 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-gold-light);
+  text-decoration: none;
+  transition: gap var(--dur-base) var(--ease-out);
+}
+.service-link:hover { gap: 8px; }
 
 .service-card--cta {
-  padding: var(--space-5) var(--space-4) var(--space-4);
+  grid-column: 1 / -1;
+  flex-direction: row;
+  padding: var(--space-4) var(--space-5);
   background: var(--color-bg-elevated-2);
-  justify-content: center;
-  align-items: flex-start;
-  gap: var(--space-2);
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
 }
 .service-card--cta h3,
 .service-card--cta p { padding: 0; }
-.service-card--cta h3 { color: var(--color-gold-light); }
+.service-card--cta h3 { color: var(--color-gold-light); margin-bottom: 4px; }
+.service-card--cta .btn { flex-shrink: 0; }
+@media (max-width: 640px) {
+  .service-card--cta { flex-direction: column; align-items: flex-start; }
+}
 
 /* ==========================================================================
    Membership benefits
