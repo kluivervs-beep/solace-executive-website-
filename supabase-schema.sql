@@ -421,3 +421,14 @@ create policy "admins can update opportunities"
 create policy "admins can delete opportunities"
   on public.opportunities for delete
   using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin));
+
+-- Booking detail fields staff fill in for confirmed requests, shown in the
+-- app as a "Tonight's Setup"-style overview once a booking is locked in.
+alter table public.requests
+  add column if not exists arrival_info text,
+  add column if not exists venue_info text,
+  add column if not exists dress_code text;
+
+create policy "admins can update requests"
+  on public.requests for update
+  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin));
