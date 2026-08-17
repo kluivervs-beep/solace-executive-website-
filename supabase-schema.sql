@@ -383,3 +383,41 @@ grant execute on function public.redeem_reward_for_member(uuid, uuid) to service
 
 -- A couple more personal fields for the Account tab.
 alter table public.profiles add column birthday date, add column city text;
+
+-- "Member Playbook" opportunities: staff-curated exclusive items shown on
+-- the app's Home screen (new partners, priority windows, early access).
+-- Members only ever see active=true rows; admins manage the full set
+-- (including inactive drafts) via the dashboard's Playbook tab.
+create table public.opportunities (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  title_en text,
+  description text,
+  description_en text,
+  tag text not null default 'NEW',
+  active boolean not null default true,
+  sort_order integer not null default 0,
+  created_at timestamptz default now()
+);
+
+alter table public.opportunities enable row level security;
+
+create policy "Members can view active opportunities"
+  on public.opportunities for select
+  using (auth.role() = 'authenticated' and active = true);
+
+create policy "admins can read all opportunities"
+  on public.opportunities for select
+  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin));
+
+create policy "admins can insert opportunities"
+  on public.opportunities for insert
+  with check (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin));
+
+create policy "admins can update opportunities"
+  on public.opportunities for update
+  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin));
+
+create policy "admins can delete opportunities"
+  on public.opportunities for delete
+  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin));
