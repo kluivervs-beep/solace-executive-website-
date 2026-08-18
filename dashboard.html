@@ -476,7 +476,7 @@
       <a data-view="rewards" id="navRewards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.4 5.3 5.6.6-4.2 3.9 1.2 5.6-4.6-2.9-4.6 2.9 1.2-5.6-4.2-3.9 5.6-.6z"/></svg><span data-i18n="dash.nav.rewards">Beloningen</span><span class="nav-beta" id="navRewardsBadge">BETA</span></a>
       <a data-view="inbox" id="navInbox" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8l9 6 9-6M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/></svg><span>Inbox</span><span class="nav-badge" id="inboxBadge" hidden></span></a>
       <a data-view="playbook" id="navPlaybook" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.4 5.3 5.6.6-4.2 3.9 1.2 5.6-4.6-2.9-4.6 2.9 1.2-5.6-4.2-3.9 5.6-.6z"/></svg><span>Playbook</span></a>
-      <a data-view="bookings" id="navBookings" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg><span>Bookings</span></a>
+      <a data-view="bookings" id="navBookings" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg><span>Beheer</span><span class="nav-badge" id="beheerBadge" hidden></span></a>
     </nav>
 
     <div class="dash-side-foot">
@@ -680,20 +680,20 @@
     <section class="dash-view" data-view="bookings" hidden>
       <div class="dash-welcome">
         <div>
-          <p class="eyebrow">BEVESTIGDE BOEKINGEN</p>
-          <h1>Details voor het lid.</h1>
+          <p class="eyebrow">AANVRAGEN BEHEREN</p>
+          <h1>Bevestig, wijzig, vul details in.</h1>
         </div>
       </div>
 
       <section class="dash-panel playbook-panel">
         <div class="dash-panel-head">
           <div>
-            <h2>Bevestigde aanvragen</h2>
-            <p class="dash-panel-sub">Vul aankomst, locatie en dresscode in zodra dit bekend is. Het lid ziet dit direct in de app zodra u opslaat.</p>
+            <h2>Openstaande aanvragen</h2>
+            <p class="dash-panel-sub">Wijzig de status om het lid direct bij te werken. Bij "Bevestigd" krijgt het lid automatisch een pushmelding, en kunt u aankomst/locatie/dresscode invullen.</p>
           </div>
         </div>
         <div id="bookingsList">
-          <p class="inbox-empty" id="bookingsEmpty">Geen bevestigde aanvragen.</p>
+          <p class="inbox-empty" id="bookingsEmpty">Geen openstaande aanvragen.</p>
         </div>
       </section>
     </section>
@@ -1056,9 +1056,41 @@
     views.forEach((v) => { v.hidden = v.dataset.view !== name; });
     navLinks.forEach((a) => a.classList.toggle('is-active', a.dataset.view === name));
     if (name === 'requests') markRequestsSeen();
-    if (name === 'inbox') loadInboxMembers();
+    if (name === 'inbox') { loadInboxMembers(); markAdminInboxSeen(); }
     if (name === 'playbook') loadPlaybook();
-    if (name === 'bookings') loadBookings();
+    if (name === 'bookings') { loadBookings(); markAdminBookingsSeen(); }
+  }
+
+  // --- Admin attention badges: since staff email notifications land in
+  // spam and get missed, the dashboard itself tracks "last checked" per
+  // admin (in localStorage, since there's currently one admin browser)
+  // and shows a badge whenever something newer than that exists.
+  function markAdminInboxSeen() {
+    localStorage.setItem('solace_admin_seen_inbox', new Date().toISOString());
+    document.getElementById('inboxBadge').hidden = true;
+  }
+  function markAdminBookingsSeen() {
+    localStorage.setItem('solace_admin_seen_bookings', new Date().toISOString());
+    document.getElementById('beheerBadge').hidden = true;
+  }
+
+  async function checkAdminNotifications() {
+    const seenInbox = localStorage.getItem('solace_admin_seen_inbox') || '1970-01-01';
+    const seenBookings = localStorage.getItem('solace_admin_seen_bookings') || '1970-01-01';
+
+    const { count: newMessages } = await supabase
+      .from('concierge_messages')
+      .select('id', { count: 'exact', head: true })
+      .eq('role', 'user')
+      .gt('created_at', seenInbox);
+    document.getElementById('inboxBadge').hidden = !newMessages;
+
+    const { count: newRequests } = await supabase
+      .from('requests')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'review')
+      .gt('created_at', seenBookings);
+    document.getElementById('beheerBadge').hidden = !newRequests;
   }
 
   // --- Inbox (admin only): see every member's concierge conversation and
@@ -1146,11 +1178,11 @@
     openInboxThread(inboxSelectedMemberId, document.getElementById('inboxThreadName').textContent);
   });
 
-  async function notifyMemberPush(memberId, messageText) {
+  async function notifyMemberPush(memberId, messageText, title) {
     const { data: p } = await supabase.from('profiles').select('push_token').eq('id', memberId).single();
     if (!p?.push_token) return;
     await supabase.functions.invoke('send-push', {
-      body: { push_token: p.push_token, title: 'Solace Team', body: messageText },
+      body: { push_token: p.push_token, title: title || 'Solace Team', body: messageText },
     });
   }
 
@@ -1220,11 +1252,18 @@
   // --- Bookings (admin only): fill in arrival/venue/dress code for a
   // confirmed request so the app can show a "Tonight's Setup"-style
   // overview to the member.
+  const BOOKING_STATUSES = [
+    { value: 'review', label: 'In review' },
+    { value: 'confirmed', label: 'Bevestigd' },
+    { value: 'done', label: 'Afgerond' },
+    { value: 'cancelled', label: 'Geannuleerd' },
+  ];
+
   async function loadBookings() {
     const { data: rows, error } = await supabase
       .from('requests')
-      .select('id, service, arrival_info, venue_info, dress_code, created_at, profiles!inner(full_name)')
-      .eq('status', 'confirmed')
+      .select('id, service, status, member_id, arrival_info, venue_info, dress_code, created_at, profiles!inner(full_name)')
+      .in('status', ['review', 'confirmed'])
       .order('created_at', { ascending: false });
 
     const listEl = document.getElementById('bookingsList');
@@ -1240,10 +1279,14 @@
     for (const r of rows) {
       const row = document.createElement('div');
       row.className = 'playbook-item';
+      const statusOptions = BOOKING_STATUSES.map(
+        (s) => `<option value="${s.value}" ${s.value === r.status ? 'selected' : ''}>${s.label}</option>`
+      ).join('');
       row.innerHTML = `
         <div style="flex:1">
           <div class="playbook-item-title">${escapeHtml(r.profiles?.full_name || 'Onbekend lid')} &middot; ${escapeHtml(r.service)}</div>
-          <div class="field" style="margin-top:8px"><label>Aankomst</label><input type="text" data-field="arrival_info" value="${escapeHtml(r.arrival_info || '')}" placeholder="bv. Black Car, 19:30"></div>
+          <div class="field" style="margin-top:8px"><label>Status</label><select data-field="status">${statusOptions}</select></div>
+          <div class="field"><label>Aankomst</label><input type="text" data-field="arrival_info" value="${escapeHtml(r.arrival_info || '')}" placeholder="bv. Black Car, 19:30"></div>
           <div class="field"><label>Locatie</label><input type="text" data-field="venue_info" value="${escapeHtml(r.venue_info || '')}" placeholder="bv. Nobu Amsterdam, VIP tafel"></div>
           <div class="field"><label>Dresscode</label><input type="text" data-field="dress_code" value="${escapeHtml(r.dress_code || '')}" placeholder="bv. Smart Casual"></div>
           <button type="button" class="btn btn-primary btn-small" data-action="save-booking">Opslaan</button>
@@ -1251,14 +1294,23 @@
       `;
       row.querySelector('[data-action="save-booking"]').addEventListener('click', async (e) => {
         const wrap = e.target.closest('.playbook-item');
+        const newStatus = wrap.querySelector('[data-field="status"]').value;
         const update = {
+          status: newStatus,
           arrival_info: wrap.querySelector('[data-field="arrival_info"]').value.trim() || null,
           venue_info: wrap.querySelector('[data-field="venue_info"]').value.trim() || null,
           dress_code: wrap.querySelector('[data-field="dress_code"]').value.trim() || null,
         };
         await supabase.from('requests').update(update).eq('id', r.id);
+        if (newStatus === 'confirmed' && r.status !== 'confirmed') {
+          notifyMemberPush(r.member_id, `Uw aanvraag is bevestigd: ${r.service}`, 'Solace Executive');
+        }
+        if (newStatus === 'done' && r.status !== 'done') {
+          notifyMemberPush(r.member_id, `Uw aanvraag is afgerond: ${r.service}. U heeft 150 punten verdiend.`, 'Solace Executive');
+        }
         e.target.textContent = 'Opgeslagen';
         setTimeout(() => { e.target.textContent = 'Opslaan'; }, 1500);
+        loadBookings();
       });
       listEl.appendChild(row);
     }
@@ -1488,6 +1540,8 @@
       document.getElementById('navInbox').hidden = false;
       document.getElementById('navPlaybook').hidden = false;
       document.getElementById('navBookings').hidden = false;
+      checkAdminNotifications();
+      setInterval(checkAdminNotifications, 45000);
     }
 
     memberName = profile?.full_name || '';
