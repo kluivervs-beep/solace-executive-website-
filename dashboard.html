@@ -1147,8 +1147,15 @@
     document.getElementById('inboxThreadWrap').hidden = false;
     document.getElementById('inboxThreadName').textContent = name;
 
-    const { data: profileRow } = await supabase.from('profiles').select('full_name').eq('id', memberId).single();
+    const { data: profileRow } = await supabase.from('profiles').select('full_name, created_at').eq('id', memberId).single();
     document.getElementById('inboxThreadName').textContent = profileRow?.full_name || name;
+    if (profileRow?.created_at) {
+      const lang = window.SolaceI18n ? window.SolaceI18n.lang : 'nl';
+      const since = new Intl.DateTimeFormat(lang === 'nl' ? 'nl-NL' : 'en-GB', { month: 'long', year: 'numeric' }).format(new Date(profileRow.created_at));
+      document.getElementById('inboxThreadEmail').textContent = t('dash.account.since').replace('{date}', since);
+    } else {
+      document.getElementById('inboxThreadEmail').textContent = '';
+    }
 
     const { data: messages } = await supabase
       .from('concierge_messages')
