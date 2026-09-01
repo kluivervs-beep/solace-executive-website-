@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { push_token, title, body } = await req.json();
+    const { push_token, title, body, data } = await req.json();
     if (!push_token || !title) {
       return new Response(JSON.stringify({ error: 'push_token and title are required' }), {
         status: 400,
@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
     const res = await fetch('https://exp.host/--/api/v2/push/send', {
       method: 'POST',
       headers: { 'content-type': 'application/json', accept: 'application/json' },
-      body: JSON.stringify({ to: push_token, title, body, sound: 'default' }),
+      body: JSON.stringify({ to: push_token, title, body, sound: 'default', data }),
     });
     const result = await res.json();
 

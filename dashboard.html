@@ -173,6 +173,24 @@
   .playbook-item-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--color-gold-dim); color: var(--color-gold-light); margin-top: 6px; }
   .playbook-item-actions { display: flex; gap: 8px; flex-shrink: 0; }
   .playbook-item.is-inactive { opacity: 0.5; }
+  .experience-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--space-2); }
+  .experience-item { position: relative; border-radius: 10px; overflow: hidden; aspect-ratio: 4 / 3; border: 1px solid var(--color-border); }
+  .experience-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .experience-item.is-inactive { opacity: 0.4; }
+  .experience-item-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.75), transparent 55%); display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; }
+  .experience-item-title { font-size: 12px; font-weight: 600; color: #fff; line-height: 1.3; }
+  .experience-item-actions { display: flex; gap: 6px; margin-top: 6px; }
+  .experience-item-actions button { font-size: 10px; padding: 3px 8px; }
+  .inbox-invoices { padding: var(--space-2) var(--space-2) 0; border-bottom: 1px solid var(--color-border); }
+  .inbox-invoice-form { display: flex; gap: 8px; margin: 10px 0 var(--space-2); }
+  .inbox-invoice-form input[type="text"] { flex: 1; }
+  .inbox-invoice-form input[type="number"] { width: 100px; }
+  .inbox-invoice-form input { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--color-border); background: var(--color-bg-elevated-2); color: var(--color-ink); font-size: 12.5px; }
+  .invoice-item { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding: 8px 0; border-bottom: 1px solid var(--color-border); }
+  .invoice-item:last-child { border-bottom: none; }
+  .invoice-item-desc { font-size: 12.5px; color: var(--color-ink); }
+  .invoice-item-amount { font-size: 12.5px; color: var(--color-ink-muted); margin-top: 2px; }
+  .invoice-item-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
   @keyframes chat-bubble-in {
     from { opacity: 0; transform: translateY(6px); }
@@ -473,9 +491,11 @@
       <a data-view="requests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span data-i18n="dash.nav.requests">Aanvragen</span><span class="nav-badge" id="requestsBadge" hidden></span></a>
       <a data-view="concierge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.1-3.8 3.8-5.8 7-5.8s5.9 2 7 5.8"/></svg><span data-i18n="dash.nav.concierge">Concierge</span></a>
       <a data-view="account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i18n="dash.nav.account">Account</span></a>
+      <a data-view="billing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg><span data-i18n="dash.nav.billing">Facturen</span></a>
       <a data-view="rewards" id="navRewards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.4 5.3 5.6.6-4.2 3.9 1.2 5.6-4.6-2.9-4.6 2.9 1.2-5.6-4.2-3.9 5.6-.6z"/></svg><span data-i18n="dash.nav.rewards">Beloningen</span><span class="nav-beta" id="navRewardsBadge">BETA</span></a>
       <a data-view="inbox" id="navInbox" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8l9 6 9-6M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/></svg><span>Inbox</span><span class="nav-badge" id="inboxBadge" hidden></span></a>
       <a data-view="playbook" id="navPlaybook" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.4 5.3 5.6.6-4.2 3.9 1.2 5.6-4.6-2.9-4.6 2.9 1.2-5.6-4.2-3.9 5.6-.6z"/></svg><span>Playbook</span></a>
+      <a data-view="experiences" id="navExperiences" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="14" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15l-5-4-9 7"/></svg><span>Experiences</span></a>
       <a data-view="bookings" id="navBookings" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg><span>Beheer</span><span class="nav-badge" id="beheerBadge" hidden></span></a>
     </nav>
 
@@ -613,6 +633,14 @@
                 <p class="dash-panel-sub" id="inboxThreadEmail"></p>
               </div>
             </div>
+            <div class="inbox-invoices">
+              <div id="inboxInvoicesList"></div>
+              <form class="inbox-invoice-form" id="inboxInvoiceForm">
+                <input type="text" id="invDesc" placeholder="Omschrijving (bv. Privéjet Amsterdam-Ibiza)" autocomplete="off" required>
+                <input type="number" id="invAmount" placeholder="Bedrag" step="0.01" min="0" required>
+                <button type="submit" class="btn btn-outline btn-small">Factuur toevoegen</button>
+              </form>
+            </div>
             <div class="chat-log" id="inboxLog"></div>
             <form class="chat-input-row" id="inboxForm">
               <input type="text" id="inboxInput" placeholder="Reply as Solace team&hellip;" autocomplete="off">
@@ -663,7 +691,11 @@
               <option value="EXCLUSIVE">EXCLUSIVE</option>
             </select>
           </div>
-          <button type="submit" class="btn btn-primary btn-small">Toevoegen</button>
+          <div class="field">
+            <label for="pbPhoto">Foto (optioneel)</label>
+            <input type="file" id="pbPhoto" accept="image/*">
+          </div>
+          <button type="submit" class="btn btn-primary btn-small" id="pbSubmitBtn">Toevoegen</button>
         </form>
       </section>
 
@@ -673,6 +705,56 @@
         </div>
         <div id="playbookList">
           <p class="inbox-empty" id="playbookEmpty">Nog geen items.</p>
+        </div>
+      </section>
+    </section>
+
+    <section class="dash-view" data-view="experiences" hidden>
+      <div class="dash-welcome">
+        <div>
+          <p class="eyebrow">MEMBER EXPERIENCES</p>
+          <h1>Wat we voor leden hebben geregeld.</h1>
+        </div>
+      </div>
+
+      <section class="dash-panel playbook-panel">
+        <div class="dash-panel-head">
+          <div>
+            <h2>Nieuwe foto</h2>
+            <p class="dash-panel-sub">Verschijnt direct in de app zodra u opslaat. Zet "Actief" uit om iets tijdelijk te verbergen zonder het te verwijderen.</p>
+          </div>
+        </div>
+        <form id="experienceForm">
+          <div class="field">
+            <label for="expTitle">Titel (NL)</label>
+            <input type="text" id="expTitle" required placeholder="Bijv. Villa aan het meer, Como">
+          </div>
+          <div class="field">
+            <label for="expTitleEn">Titel (EN)</label>
+            <input type="text" id="expTitleEn">
+          </div>
+          <div class="field">
+            <label for="expCaption">Bijschrift (NL)</label>
+            <textarea id="expCaption" rows="2"></textarea>
+          </div>
+          <div class="field">
+            <label for="expCaptionEn">Bijschrift (EN)</label>
+            <textarea id="expCaptionEn" rows="2"></textarea>
+          </div>
+          <div class="field">
+            <label for="expPhoto">Foto</label>
+            <input type="file" id="expPhoto" accept="image/*" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-small" id="expSubmitBtn">Toevoegen</button>
+        </form>
+      </section>
+
+      <section class="dash-panel playbook-panel">
+        <div class="dash-panel-head">
+          <h2>Huidige foto's</h2>
+        </div>
+        <div id="experienceList" class="experience-grid">
+          <p class="inbox-empty" id="experienceEmpty">Nog geen foto's.</p>
         </div>
       </section>
     </section>
@@ -767,6 +849,22 @@
           <button type="submit" class="btn btn-primary" data-i18n="dash.account.password.save">Wachtwoord opslaan</button>
           <span class="account-saved" id="passwordSaved" data-i18n="dash.account.password.saved">Gewijzigd.</span>
         </form>
+      </section>
+    </section>
+
+    <section class="dash-view" data-view="billing" hidden>
+      <div class="dash-welcome">
+        <div>
+          <p class="eyebrow" data-i18n="dash.billing.eyebrow">FACTUREN</p>
+          <h1 data-i18n="dash.billing.title">Wat uw concierge voor u heeft geregeld.</h1>
+        </div>
+      </div>
+
+      <section class="dash-panel">
+        <div id="billingList">
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+        </div>
       </section>
     </section>
 
@@ -1058,7 +1156,41 @@
     if (name === 'requests') markRequestsSeen();
     if (name === 'inbox') { loadInboxMembers(); markAdminInboxSeen(); }
     if (name === 'playbook') loadPlaybook();
+    if (name === 'experiences') loadExperiences();
     if (name === 'bookings') { loadBookings(); markAdminBookingsSeen(); }
+    if (name === 'billing') loadBilling();
+  }
+
+  // --- Billing (member view): a simple ledger of what staff have recorded
+  // as arranged/settled for this member. No payment is collected here.
+  async function loadBilling() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    const { data: rows } = await supabase
+      .from('invoices')
+      .select('description, amount, currency, status, created_at')
+      .eq('member_id', session.user.id)
+      .order('created_at', { ascending: false });
+
+    const el = document.getElementById('billingList');
+    if (!rows || !rows.length) {
+      el.innerHTML = `<div class="request-empty">${t('dash.billing.empty')}</div>`;
+      return;
+    }
+    el.innerHTML = rows.map((inv) => {
+      const amountFmt = new Intl.NumberFormat('nl-NL', { style: 'currency', currency: inv.currency }).format(inv.amount);
+      const statusClass = inv.status === 'paid' ? 'req-status--done' : 'req-status--review';
+      const statusLabel = inv.status === 'paid' ? t('dash.billing.paid') : t('dash.billing.pending');
+      return `
+        <div class="request-row">
+          <div>
+            <div class="req-name">${escapeHtml(inv.description)}</div>
+            <div class="req-meta">${amountFmt}</div>
+          </div>
+          <span class="req-status ${statusClass}">${statusLabel}</span>
+        </div>
+      `;
+    }).join('');
   }
 
   // --- Admin attention badges: since staff email notifications land in
@@ -1159,7 +1291,7 @@
 
     const { data: messages } = await supabase
       .from('concierge_messages')
-      .select('role, content, created_at')
+      .select('role, content, image_url, created_at')
       .eq('member_id', memberId)
       .order('created_at', { ascending: true });
 
@@ -1167,12 +1299,69 @@
     log.innerHTML = (messages || []).map((m) => {
       const cls = m.role === 'user' ? 'chat-bubble--user' : m.role === 'staff' ? 'chat-bubble--staff' : 'chat-bubble--ai';
       const label = m.role === 'staff' ? '<strong>Solace Team</strong><br>' : '';
-      return `<div class="chat-row"><div class="chat-bubble ${cls}">${label}${escapeHtml(m.content)}</div></div>`;
+      const img = m.image_url ? `<img src="${escapeHtml(m.image_url)}" alt="" style="display:block;max-width:220px;border-radius:10px;margin-bottom:6px">` : '';
+      return `<div class="chat-row"><div class="chat-bubble ${cls}">${label}${img}${escapeHtml(m.content)}</div></div>`;
     }).join('');
     log.scrollTop = log.scrollHeight;
 
     loadInboxMembers();
+    loadInvoices(memberId);
   }
+
+  // --- Invoices (admin only): what staff record a member owes for a
+  // fulfilled request. No payment is collected in-app; this is just a
+  // visible ledger both sides can check.
+  async function loadInvoices(memberId) {
+    const { data: rows } = await supabase
+      .from('invoices')
+      .select('id, description, amount, currency, status, created_at')
+      .eq('member_id', memberId)
+      .order('created_at', { ascending: false });
+
+    const listEl = document.getElementById('inboxInvoicesList');
+    if (!rows || !rows.length) {
+      listEl.innerHTML = '<p class="inbox-empty" style="padding:6px 0">Nog geen facturen voor dit lid.</p>';
+      return;
+    }
+
+    listEl.innerHTML = '';
+    for (const inv of rows) {
+      const row = document.createElement('div');
+      row.className = 'invoice-item';
+      const amountFmt = new Intl.NumberFormat('nl-NL', { style: 'currency', currency: inv.currency }).format(inv.amount);
+      row.innerHTML = `
+        <div>
+          <div class="invoice-item-desc">${escapeHtml(inv.description)}</div>
+          <div class="invoice-item-amount">${amountFmt} &middot; ${inv.status === 'paid' ? 'Betaald' : 'Openstaand'}</div>
+        </div>
+        <div class="invoice-item-actions">
+          <button type="button" class="btn btn-outline btn-small" data-action="toggle-status">${inv.status === 'paid' ? 'Zet op openstaand' : 'Markeer betaald'}</button>
+          <button type="button" class="btn btn-outline btn-small" data-action="delete-invoice">Verwijderen</button>
+        </div>
+      `;
+      row.querySelector('[data-action="toggle-status"]').addEventListener('click', async () => {
+        await supabase.from('invoices').update({ status: inv.status === 'paid' ? 'pending' : 'paid' }).eq('id', inv.id);
+        loadInvoices(memberId);
+      });
+      row.querySelector('[data-action="delete-invoice"]').addEventListener('click', async () => {
+        if (!confirm('Deze factuur verwijderen?')) return;
+        await supabase.from('invoices').delete().eq('id', inv.id);
+        loadInvoices(memberId);
+      });
+      listEl.appendChild(row);
+    }
+  }
+
+  document.getElementById('inboxInvoiceForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!inboxSelectedMemberId) return;
+    const description = document.getElementById('invDesc').value.trim();
+    const amount = parseFloat(document.getElementById('invAmount').value);
+    if (!description || isNaN(amount)) return;
+    await supabase.from('invoices').insert({ member_id: inboxSelectedMemberId, description, amount, currency: 'EUR' });
+    e.target.reset();
+    loadInvoices(inboxSelectedMemberId);
+  });
 
   document.getElementById('inboxForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -1181,15 +1370,15 @@
     if (!text || !inboxSelectedMemberId) return;
     input.value = '';
     await supabase.from('concierge_messages').insert({ member_id: inboxSelectedMemberId, role: 'staff', content: text });
-    notifyMemberPush(inboxSelectedMemberId, text);
+    notifyMemberPush(inboxSelectedMemberId, text, undefined, { type: 'concierge' });
     openInboxThread(inboxSelectedMemberId, document.getElementById('inboxThreadName').textContent);
   });
 
-  async function notifyMemberPush(memberId, messageText, title) {
+  async function notifyMemberPush(memberId, messageText, title, data) {
     const { data: p } = await supabase.from('profiles').select('push_token').eq('id', memberId).single();
     if (!p?.push_token) return;
     await supabase.functions.invoke('send-push', {
-      body: { push_token: p.push_token, title: title || 'Solace Team', body: messageText },
+      body: { push_token: p.push_token, title: title || 'Solace Team', body: messageText, data },
     });
   }
 
@@ -1199,7 +1388,7 @@
   async function loadPlaybook() {
     const { data: rows, error } = await supabase
       .from('opportunities')
-      .select('id, title, title_en, description, tag, active, sort_order')
+      .select('id, title, title_en, description, tag, active, sort_order, image_url')
       .order('sort_order');
 
     const listEl = document.getElementById('playbookList');
@@ -1217,6 +1406,7 @@
       row.className = 'playbook-item' + (o.active ? '' : ' is-inactive');
       row.innerHTML = `
         <div>
+          ${o.image_url ? `<img src="${o.image_url}" alt="${escapeHtml(o.title)}" style="width:100%;max-width:220px;border-radius:8px;margin-bottom:8px;display:block;">` : ''}
           <div class="playbook-item-title">${escapeHtml(o.title)}</div>
           ${o.description ? `<div class="playbook-item-desc">${escapeHtml(o.description)}</div>` : ''}
           <span class="playbook-item-tag">${escapeHtml(o.tag)}</span>
@@ -1243,17 +1433,130 @@
     e.preventDefault();
     const title = document.getElementById('pbTitle').value.trim();
     if (!title) return;
-    const { data: maxRow } = await supabase.from('opportunities').select('sort_order').order('sort_order', { ascending: false }).limit(1).single();
-    await supabase.from('opportunities').insert({
-      title,
-      title_en: document.getElementById('pbTitleEn').value.trim() || null,
-      description: document.getElementById('pbDesc').value.trim() || null,
-      description_en: document.getElementById('pbDescEn').value.trim() || null,
-      tag: document.getElementById('pbTag').value,
-      sort_order: (maxRow?.sort_order ?? 0) + 1,
-    });
-    e.target.reset();
-    loadPlaybook();
+
+    const submitBtn = document.getElementById('pbSubmitBtn');
+    const fileInput = document.getElementById('pbPhoto');
+    const file = fileInput.files[0];
+    submitBtn.disabled = true;
+    submitBtn.textContent = file ? 'Uploaden...' : 'Bezig...';
+
+    try {
+      let image_url = null;
+      if (file) {
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const path = `playbook/${crypto.randomUUID()}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from('member-experiences').upload(path, file);
+        if (uploadError) throw uploadError;
+        const { data: urlData } = supabase.storage.from('member-experiences').getPublicUrl(path);
+        image_url = urlData.publicUrl;
+      }
+      const { data: maxRow } = await supabase.from('opportunities').select('sort_order').order('sort_order', { ascending: false }).limit(1).single();
+      await supabase.from('opportunities').insert({
+        title,
+        title_en: document.getElementById('pbTitleEn').value.trim() || null,
+        description: document.getElementById('pbDesc').value.trim() || null,
+        description_en: document.getElementById('pbDescEn').value.trim() || null,
+        tag: document.getElementById('pbTag').value,
+        image_url,
+        sort_order: (maxRow?.sort_order ?? 0) + 1,
+      });
+      e.target.reset();
+      loadPlaybook();
+    } catch (err) {
+      alert('Opslaan mislukt: ' + (err.message || err));
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Toevoegen';
+    }
+  });
+
+  // --- Member Experiences (admin only): staff-uploaded showcase photos
+  // (a villa booked, a jet interior, etc.) shown in a horizontal strip on
+  // the app's Home screen. Photos go to the "member-experiences" Storage
+  // bucket; the row just stores the resulting public URL.
+  async function loadExperiences() {
+    const { data: rows, error } = await supabase
+      .from('member_experiences')
+      .select('id, title, title_en, caption, image_url, active, sort_order')
+      .order('sort_order');
+
+    const listEl = document.getElementById('experienceList');
+    const emptyEl = document.getElementById('experienceEmpty');
+    listEl.querySelectorAll('.experience-item').forEach((el) => el.remove());
+
+    if (error || !rows || !rows.length) {
+      emptyEl.hidden = false;
+      return;
+    }
+    emptyEl.hidden = true;
+
+    for (const exp of rows) {
+      const item = document.createElement('div');
+      item.className = 'experience-item' + (exp.active ? '' : ' is-inactive');
+      item.innerHTML = `
+        <img src="${exp.image_url}" alt="${escapeHtml(exp.title)}">
+        <div class="experience-item-overlay">
+          <div class="experience-item-title">${escapeHtml(exp.title)}</div>
+          <div class="experience-item-actions">
+            <button type="button" class="btn btn-outline" data-action="toggle">${exp.active ? 'Verbergen' : 'Activeren'}</button>
+            <button type="button" class="btn btn-outline" data-action="delete">Verwijderen</button>
+          </div>
+        </div>
+      `;
+      item.querySelector('[data-action="toggle"]').addEventListener('click', async () => {
+        await supabase.from('member_experiences').update({ active: !exp.active }).eq('id', exp.id);
+        loadExperiences();
+      });
+      item.querySelector('[data-action="delete"]').addEventListener('click', async () => {
+        if (!confirm('Deze foto verwijderen?')) return;
+        await supabase.from('member_experiences').delete().eq('id', exp.id);
+        loadExperiences();
+      });
+      listEl.appendChild(item);
+    }
+  }
+
+  document.getElementById('experienceForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const title = document.getElementById('expTitle').value.trim();
+    const fileInput = document.getElementById('expPhoto');
+    const file = fileInput.files[0];
+    if (!title || !file) return;
+
+    const submitBtn = document.getElementById('expSubmitBtn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Uploaden...';
+
+    try {
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const path = `${crypto.randomUUID()}.${ext}`;
+      const { error: uploadError } = await supabase.storage.from('member-experiences').upload(path, file);
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage.from('member-experiences').getPublicUrl(path);
+      const { data: maxRow } = await supabase
+        .from('member_experiences')
+        .select('sort_order')
+        .order('sort_order', { ascending: false })
+        .limit(1)
+        .single();
+
+      await supabase.from('member_experiences').insert({
+        title,
+        title_en: document.getElementById('expTitleEn').value.trim() || null,
+        caption: document.getElementById('expCaption').value.trim() || null,
+        caption_en: document.getElementById('expCaptionEn').value.trim() || null,
+        image_url: urlData.publicUrl,
+        sort_order: (maxRow?.sort_order ?? 0) + 1,
+      });
+      e.target.reset();
+      loadExperiences();
+    } catch (err) {
+      alert('Uploaden mislukt: ' + (err.message || err));
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Toevoegen';
+    }
   });
 
   // --- Bookings (admin only): fill in arrival/venue/dress code for a
@@ -1310,10 +1613,10 @@
         };
         await supabase.from('requests').update(update).eq('id', r.id);
         if (newStatus === 'confirmed' && r.status !== 'confirmed') {
-          notifyMemberPush(r.member_id, `Uw aanvraag is bevestigd: ${r.service}`, 'Solace Executive');
+          notifyMemberPush(r.member_id, `Uw aanvraag is bevestigd: ${r.service}`, 'Solace Executive', { type: 'booking', requestId: r.id });
         }
         if (newStatus === 'done' && r.status !== 'done') {
-          notifyMemberPush(r.member_id, `Uw aanvraag is afgerond: ${r.service}. U heeft 150 punten verdiend.`, 'Solace Executive');
+          notifyMemberPush(r.member_id, `Uw aanvraag is afgerond: ${r.service}. U heeft 150 punten verdiend.`, 'Solace Executive', { type: 'booking', requestId: r.id });
         }
         e.target.textContent = 'Opgeslagen';
         setTimeout(() => { e.target.textContent = 'Opslaan'; }, 1500);
@@ -1546,6 +1849,7 @@
     if (profile?.is_admin) {
       document.getElementById('navInbox').hidden = false;
       document.getElementById('navPlaybook').hidden = false;
+      document.getElementById('navExperiences').hidden = false;
       document.getElementById('navBookings').hidden = false;
       checkAdminNotifications();
       setInterval(checkAdminNotifications, 45000);
@@ -1692,14 +1996,14 @@
   async function loadChatHistory(userId) {
     const { data: messages } = await supabase
       .from('concierge_messages')
-      .select('role, content')
+      .select('role, content, image_url')
       .eq('member_id', userId)
       .order('created_at', { ascending: true });
 
     if (messages && messages.length) {
       chatLog.innerHTML = '';
       messages.forEach((m) => {
-        addBubble(m.content, m.role === 'user' ? 'user' : 'ai');
+        addBubble(m.content, m.role === 'user' ? 'user' : 'ai', m.image_url);
         chatHistory.push({ role: m.role, content: m.content });
       });
     }
@@ -1711,10 +2015,17 @@
     await supabase.from('concierge_messages').insert({ member_id: session.user.id, role, content });
   }
 
-  function addBubble(text, kind) {
+  function addBubble(text, kind, imageUrl) {
     const bubble = document.createElement('div');
     bubble.className = `chat-bubble chat-bubble--${kind}`;
-    bubble.textContent = text;
+    if (imageUrl) {
+      const img = document.createElement('img');
+      img.src = imageUrl;
+      img.alt = '';
+      img.style.cssText = 'display:block;max-width:220px;border-radius:10px;margin-bottom:6px';
+      bubble.appendChild(img);
+    }
+    bubble.appendChild(document.createTextNode(text));
 
     if (kind === 'user') {
       chatLog.appendChild(bubble);
