@@ -746,10 +746,13 @@
             <textarea id="expCaptionEn" rows="2"></textarea>
           </div>
           <div class="field">
-            <label for="expPhoto">Foto</label>
+            <label for="expPhoto">Foto <span id="expPhotoHint" style="font-weight:400;color:var(--color-ink-muted);"></span></label>
             <input type="file" id="expPhoto" accept="image/*" required>
           </div>
-          <button type="submit" class="btn btn-primary btn-small" id="expSubmitBtn">Toevoegen</button>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <button type="submit" class="btn btn-primary btn-small" id="expSubmitBtn">Toevoegen</button>
+            <button type="button" class="btn btn-outline btn-small" id="expCancelEditBtn" hidden>Annuleren</button>
+          </div>
         </form>
       </section>
 
@@ -1478,10 +1481,36 @@
   // (a villa booked, a jet interior, etc.) shown in a horizontal strip on
   // the app's Home screen. Photos go to the "member-experiences" Storage
   // bucket; the row just stores the resulting public URL.
+  let editingExperienceId = null;
+
+  function startEditingExperience(exp) {
+    editingExperienceId = exp.id;
+    document.getElementById('expTitle').value = exp.title || '';
+    document.getElementById('expTitleEn').value = exp.title_en || '';
+    document.getElementById('expCaption').value = exp.caption || '';
+    document.getElementById('expCaptionEn').value = exp.caption_en || '';
+    document.getElementById('expPhoto').required = false;
+    document.getElementById('expPhotoHint').textContent = '(laat leeg om de huidige foto te behouden)';
+    document.getElementById('expSubmitBtn').textContent = 'Wijzigingen opslaan';
+    document.getElementById('expCancelEditBtn').hidden = false;
+    document.getElementById('experienceForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function stopEditingExperience() {
+    editingExperienceId = null;
+    document.getElementById('experienceForm').reset();
+    document.getElementById('expPhoto').required = true;
+    document.getElementById('expPhotoHint').textContent = '';
+    document.getElementById('expSubmitBtn').textContent = 'Toevoegen';
+    document.getElementById('expCancelEditBtn').hidden = true;
+  }
+
+  document.getElementById('expCancelEditBtn').addEventListener('click', stopEditingExperience);
+
   async function loadExperiences() {
     const { data: rows, error } = await supabase
       .from('member_experiences')
-      .select('id, title, title_en, caption, image_url, active, sort_order')
+      .select('id, title, title_en, caption, caption_en, image_url, active, sort_order')
       .order('sort_order');
 
     const listEl = document.getElementById('experienceList');
@@ -1502,11 +1531,15 @@
         <div class="experience-item-overlay">
           <div class="experience-item-title">${escapeHtml(exp.title)}</div>
           <div class="experience-item-actions">
+            <button type="button" class="btn btn-outline" data-action="edit">Bewerken</button>
             <button type="button" class="btn btn-outline" data-action="toggle">${exp.active ? 'Verbergen' : 'Activeren'}</button>
             <button type="button" class="btn btn-outline" data-action="delete">Verwijderen</button>
           </div>
         </div>
       `;
+      item.querySelector('[data-action="edit"]').addEventListener('click', () => {
+        startEditingExperience(exp);
+      });
       item.querySelector('[data-action="toggle"]').addEventListener('click', async () => {
         await supabase.from('member_experiences').update({ active: !exp.active }).eq('id', exp.id);
         loadExperiences();
@@ -1564,52 +1597,63 @@
 
   document.getElementById('experienceForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const isEditing = !!editingExperienceId;
     const title = document.getElementById('expTitle').value.trim();
     const titleEn = document.getElementById('expTitleEn').value.trim();
     const caption = document.getElementById('expCaption').value.trim();
     const captionEn = document.getElementById('expCaptionEn').value.trim();
     const fileInput = document.getElementById('expPhoto');
     const file = fileInput.files[0];
-    if (!title || !file) return;
+    if (!title || (!isEditing && !file)) return;
 
     const submitBtn = document.getElementById('expSubmitBtn');
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Uploaden...';
+    submitBtn.textContent = isEditing ? 'Opslaan...' : 'Uploaden...';
 
     try {
-      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-      const path = `${crypto.randomUUID()}.${ext}`;
-      const { error: uploadError } = await supabase.storage.from('member-experiences').upload(path, file);
-      if (uploadError) throw uploadError;
-
-      const { data: urlData } = supabase.storage.from('member-experiences').getPublicUrl(path);
-      const { data: maxRow } = await supabase
-        .from('member_experiences')
-        .select('sort_order')
-        .order('sort_order', { ascending: false })
-        .limit(1)
-        .single();
-
-      await supabase.from('member_experiences').insert({
+      const payload = {
         title,
         title_en: titleEn || null,
         caption: caption || null,
         caption_en: captionEn || null,
-        image_url: urlData.publicUrl,
-        sort_order: (maxRow?.sort_order ?? 0) + 1,
-      });
+      };
+
+      if (file) {
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const path = `${crypto.randomUUID()}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from('member-experiences').upload(path, file);
+        if (uploadError) throw uploadError;
+        const { data: urlData } = supabase.storage.from('member-experiences').getPublicUrl(path);
+        payload.image_url = urlData.publicUrl;
+      }
+
+      if (isEditing) {
+        await supabase.from('member_experiences').update(payload).eq('id', editingExperienceId);
+      } else {
+        const { data: maxRow } = await supabase
+          .from('member_experiences')
+          .select('sort_order')
+          .order('sort_order', { ascending: false })
+          .limit(1)
+          .single();
+        await supabase.from('member_experiences').insert({
+          ...payload,
+          sort_order: (maxRow?.sort_order ?? 0) + 1,
+        });
+      }
+
       rememberSuggestion('solace_exp_suggest_title', title);
       rememberSuggestion('solace_exp_suggest_titleEn', titleEn);
       rememberSuggestion('solace_exp_suggest_caption', caption);
       rememberSuggestion('solace_exp_suggest_captionEn', captionEn);
       renderExpChips();
-      e.target.reset();
+      stopEditingExperience();
       loadExperiences();
     } catch (err) {
-      alert('Uploaden mislukt: ' + (err.message || err));
+      alert((isEditing ? 'Opslaan mislukt: ' : 'Uploaden mislukt: ') + (err.message || err));
     } finally {
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Toevoegen';
+      submitBtn.textContent = isEditing ? 'Wijzigingen opslaan' : 'Toevoegen';
     }
   });
 
