@@ -727,18 +727,22 @@
         <form id="experienceForm">
           <div class="field">
             <label for="expTitle">Titel (NL)</label>
+            <div class="filter-chips" id="expTitleChips"></div>
             <input type="text" id="expTitle" required placeholder="Bijv. Villa aan het meer, Como">
           </div>
           <div class="field">
             <label for="expTitleEn">Titel (EN)</label>
+            <div class="filter-chips" id="expTitleEnChips"></div>
             <input type="text" id="expTitleEn">
           </div>
           <div class="field">
             <label for="expCaption">Bijschrift (NL)</label>
+            <div class="filter-chips" id="expCaptionChips"></div>
             <textarea id="expCaption" rows="2"></textarea>
           </div>
           <div class="field">
             <label for="expCaptionEn">Bijschrift (EN)</label>
+            <div class="filter-chips" id="expCaptionEnChips"></div>
             <textarea id="expCaptionEn" rows="2"></textarea>
           </div>
           <div class="field">
@@ -1516,9 +1520,54 @@
     }
   }
 
+  // --- Quick-fill suggestion chips for the Experiences form: remembers
+  // every title/caption ever typed (per field, in localStorage) so a
+  // repeat category (e.g. "Personal shopping, Amsterdam") is one click
+  // instead of retyping it every time.
+  const EXP_SUGGEST_FIELDS = [
+    { input: 'expTitle', chips: 'expTitleChips', storageKey: 'solace_exp_suggest_title' },
+    { input: 'expTitleEn', chips: 'expTitleEnChips', storageKey: 'solace_exp_suggest_titleEn' },
+    { input: 'expCaption', chips: 'expCaptionChips', storageKey: 'solace_exp_suggest_caption' },
+    { input: 'expCaptionEn', chips: 'expCaptionEnChips', storageKey: 'solace_exp_suggest_captionEn' },
+  ];
+
+  function getSuggestions(storageKey) {
+    try {
+      return JSON.parse(localStorage.getItem(storageKey) || '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  function rememberSuggestion(storageKey, value) {
+    if (!value) return;
+    const existing = getSuggestions(storageKey).filter((v) => v !== value);
+    existing.unshift(value);
+    localStorage.setItem(storageKey, JSON.stringify(existing.slice(0, 8)));
+  }
+
+  function renderExpChips() {
+    EXP_SUGGEST_FIELDS.forEach(({ input, chips, storageKey }) => {
+      const container = document.getElementById(chips);
+      const values = getSuggestions(storageKey);
+      container.innerHTML = values
+        .map((v) => `<button type="button" class="chip" data-fill="${input}">${escapeHtml(v)}</button>`)
+        .join('');
+      container.querySelectorAll('[data-fill]').forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+          document.getElementById(input).value = values[i];
+        });
+      });
+    });
+  }
+  renderExpChips();
+
   document.getElementById('experienceForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const title = document.getElementById('expTitle').value.trim();
+    const titleEn = document.getElementById('expTitleEn').value.trim();
+    const caption = document.getElementById('expCaption').value.trim();
+    const captionEn = document.getElementById('expCaptionEn').value.trim();
     const fileInput = document.getElementById('expPhoto');
     const file = fileInput.files[0];
     if (!title || !file) return;
@@ -1543,12 +1592,17 @@
 
       await supabase.from('member_experiences').insert({
         title,
-        title_en: document.getElementById('expTitleEn').value.trim() || null,
-        caption: document.getElementById('expCaption').value.trim() || null,
-        caption_en: document.getElementById('expCaptionEn').value.trim() || null,
+        title_en: titleEn || null,
+        caption: caption || null,
+        caption_en: captionEn || null,
         image_url: urlData.publicUrl,
         sort_order: (maxRow?.sort_order ?? 0) + 1,
       });
+      rememberSuggestion('solace_exp_suggest_title', title);
+      rememberSuggestion('solace_exp_suggest_titleEn', titleEn);
+      rememberSuggestion('solace_exp_suggest_caption', caption);
+      rememberSuggestion('solace_exp_suggest_captionEn', captionEn);
+      renderExpChips();
       e.target.reset();
       loadExperiences();
     } catch (err) {
