@@ -894,3 +894,30 @@ end;
 $$;
 
 grant execute on function public.check_referral_code(text) to anon, authenticated;
+-- Optional video alongside the required photo (photo always acts as the
+-- poster/thumbnail; video, when present, plays on tap). Both
+-- member_experiences and activity_feed need the column, and the sync
+-- triggers need to carry it through.
+alter table public.member_experiences add column if not exists video_url text;
+alter table public.activity_feed add column if not exists video_url text;
+
+create or replace function public.fn_activity_from_experience()
+returns trigger as $$
+begin
+  if tg_op = 'DELETE' then
+    delete from public.activity_feed where source_table = 'member_experiences' and source_id = old.id;
+    return old;
+  end if;
+  if not new.active then
+    delete from public.activity_feed where source_table = 'member_experiences' and source_id = new.id;
+    return new;
+  end if;
+  insert into public.activity_feed (kind, title, title_en, caption, caption_en, image_url, video_url, source_table, source_id)
+  values ('experience', new.title, new.title_en, new.caption, new.caption_en, new.image_url, new.video_url, 'member_experiences', new.id)
+  on conflict (source_table, source_id) do update set
+    title = excluded.title, title_en = excluded.title_en, caption = excluded.caption,
+    caption_en = excluded.caption_en, image_url = excluded.image_url, video_url = excluded.video_url;
+  return new;
+end;
+$$ language plpgsql security definer set search_path = public;
+

@@ -749,6 +749,11 @@
             <label for="expPhoto">Foto <span id="expPhotoHint" style="font-weight:400;color:var(--color-ink-muted);"></span></label>
             <input type="file" id="expPhoto" accept="image/*" required>
           </div>
+          <div class="field">
+            <label for="expVideo">Video (optioneel) <span style="font-weight:400;color:var(--color-ink-muted);">verschijnt als afspeelbare video, foto blijft de miniatuur</span></label>
+            <input type="file" id="expVideo" accept="video/*">
+            <p id="expVideoSizeWarning" style="display:none;color:#B4923D;font-size:13px;margin-top:6px;">Dit bestand is vrij groot, uploaden kan even duren.</p>
+          </div>
           <div style="display:flex; gap:10px; align-items:center;">
             <button type="submit" class="btn btn-primary btn-small" id="expSubmitBtn">Toevoegen</button>
             <button type="button" class="btn btn-outline btn-small" id="expCancelEditBtn" hidden>Annuleren</button>
@@ -1503,14 +1508,21 @@
     document.getElementById('expPhotoHint').textContent = '';
     document.getElementById('expSubmitBtn').textContent = 'Toevoegen';
     document.getElementById('expCancelEditBtn').hidden = true;
+    document.getElementById('expVideoSizeWarning').style.display = 'none';
   }
 
   document.getElementById('expCancelEditBtn').addEventListener('click', stopEditingExperience);
 
+  document.getElementById('expVideo').addEventListener('change', (e) => {
+    const f = e.target.files[0];
+    const warn = document.getElementById('expVideoSizeWarning');
+    warn.style.display = f && f.size > 25 * 1024 * 1024 ? 'block' : 'none';
+  });
+
   async function loadExperiences() {
     const { data: rows, error } = await supabase
       .from('member_experiences')
-      .select('id, title, title_en, caption, caption_en, image_url, active, sort_order')
+      .select('id, title, title_en, caption, caption_en, image_url, video_url, active, sort_order')
       .order('sort_order');
 
     const listEl = document.getElementById('experienceList');
@@ -1529,7 +1541,7 @@
       item.innerHTML = `
         <img src="${exp.image_url}" alt="${escapeHtml(exp.title)}">
         <div class="experience-item-overlay">
-          <div class="experience-item-title">${escapeHtml(exp.title)}</div>
+          <div class="experience-item-title">${escapeHtml(exp.title)}${exp.video_url ? ' &#9654; video' : ''}</div>
           <div class="experience-item-actions">
             <button type="button" class="btn btn-outline" data-action="edit">Bewerken</button>
             <button type="button" class="btn btn-outline" data-action="toggle">${exp.active ? 'Verbergen' : 'Activeren'}</button>
@@ -1604,6 +1616,8 @@
     const captionEn = document.getElementById('expCaptionEn').value.trim();
     const fileInput = document.getElementById('expPhoto');
     const file = fileInput.files[0];
+    const videoInput = document.getElementById('expVideo');
+    const videoFile = videoInput.files[0];
     if (!title || (!isEditing && !file)) return;
 
     const submitBtn = document.getElementById('expSubmitBtn');
@@ -1625,6 +1639,15 @@
         if (uploadError) throw uploadError;
         const { data: urlData } = supabase.storage.from('member-experiences').getPublicUrl(path);
         payload.image_url = urlData.publicUrl;
+      }
+
+      if (videoFile) {
+        const ext = (videoFile.name.split('.').pop() || 'mp4').toLowerCase();
+        const path = `video/${crypto.randomUUID()}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from('member-experiences').upload(path, videoFile);
+        if (uploadError) throw uploadError;
+        const { data: urlData } = supabase.storage.from('member-experiences').getPublicUrl(path);
+        payload.video_url = urlData.publicUrl;
       }
 
       if (isEditing) {
