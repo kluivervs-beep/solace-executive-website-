@@ -1228,3 +1228,64 @@ $$;
 drop trigger if exists trg_activity_reward on public.rewards;
 drop function if exists public.fn_activity_from_reward();
 delete from public.activity_feed where source_table = 'rewards';
+
+-- Found while reviewing RewardsScreen.tsx: the APP calls a completely
+-- separate RPC (redeem_reward, authenticated-callable) from the one the
+-- concierge-chat edge function uses (redeem_reward_for_member,
+-- service_role-only). Tonight's priority-effect + staff-notification
+-- fix only touched the chat path -- redeeming directly via the app's
+-- Rewards screen button was still the old silent no-op. Brought this
+-- one up to the same behavior (priority_credits/priority_until effect,
+-- Formspree staff notification via pg_net directly since this path has
+-- no edge function to call out from).
+create or replace function public.redeem_reward(reward_uuid uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public, net
+as $$
+declare
+  v_cost integer;
+  v_balance integer;
+  v_effect text;
+  v_title text;
+  v_member_email text;
+begin
+  select cost_points, effect, title into v_cost, v_effect, v_title from public.rewards where id = reward_uuid and active = true;
+  if v_cost is null then
+    raise exception 'Reward not found or inactive';
+  end if;
+
+  select points_balance into v_balance from public.profiles where id = auth.uid();
+  if v_balance < v_cost then
+    raise exception 'Insufficient points';
+  end if;
+
+  insert into public.point_transactions (member_id, amount, reason)
+  values (auth.uid(), -v_cost, 'Beloning ingewisseld');
+
+  insert into public.reward_redemptions (member_id, reward_id, points_spent)
+  values (auth.uid(), reward_uuid, v_cost);
+
+  if v_effect = 'priority_single' then
+    update public.profiles set priority_credits = priority_credits + 1 where id = auth.uid();
+  elsif v_effect = 'priority_3mo' then
+    update public.profiles
+    set priority_until = greatest(coalesce(priority_until, now()), now()) + interval '3 months'
+    where id = auth.uid();
+  end if;
+
+  v_member_email := auth.email();
+  perform net.http_post(
+    url := 'https://formspree.io/f/xgojjlzv',
+    body := jsonb_build_object(
+      '_subject', 'Beloning ingewisseld: ' || v_title,
+      'name', coalesce(v_member_email, 'Lid'),
+      'email', coalesce(v_member_email, ''),
+      'message', coalesce(v_member_email, 'Een lid') || ' heeft "' || v_title || '" ingewisseld voor ' || v_cost || ' punten via de app.' ||
+        case when v_effect in ('priority_single','priority_3mo') then ' Wordt automatisch toegepast op de eerstvolgende aanvraag van dit lid.' else ' Vereist actie van het team.' end
+    ),
+    headers := jsonb_build_object('Content-Type', 'application/json')
+  );
+end;
+$$;
