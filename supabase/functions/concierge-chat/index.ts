@@ -72,6 +72,30 @@ This chat only displays plain text, it does not render Markdown. Never use **bol
 
 Always reply in the same language as the member's most recent message (Dutch or English), even if earlier messages in this conversation were in the other language. If their latest message is in English, your entire reply must be in English; if it's in Dutch, reply entirely in Dutch. Judge the language from that message alone, not from the conversation as a whole.`;
 
+// Nothing else in this prompt states the actual calendar date, so
+// without this the model has no real way to resolve "morgen",
+// "overmorgen", "volgende week", etc. into an actual date, and those
+// relative words were ending up written verbatim into logged requests
+// (meaningless by the time staff reviews them days later).
+function buildDateContext(): string {
+  const now = new Date();
+  const nl = new Intl.DateTimeFormat('nl-NL', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'Europe/Amsterdam',
+  }).format(now);
+  const en = new Intl.DateTimeFormat('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'Europe/Amsterdam',
+  }).format(now);
+  return `Today's date is ${en} (${nl} in Dutch), Europe/Amsterdam time. Whenever the member uses a relative date or time expression ("morgen", "overmorgen", "volgende week vrijdag", "aanstaande dinsdag", "tomorrow", "next week", "in 3 weken", etc.), work out the actual calendar date yourself from today's date and write that resolved date (e.g. "4 september 2026") into log_request's service/notes and into anything you say back to the member, never the relative phrase itself. A relative phrase means nothing once staff reviews the request days later.`;
+}
+
 function buildAddressInstruction(fullName: string | null | undefined, title: string | null | undefined): string {
   const hour = Number(
     new Intl.DateTimeFormat('nl-NL', { hour: 'numeric', hour12: false, timeZone: 'Europe/Amsterdam' }).format(
@@ -286,7 +310,7 @@ Deno.serve(async (req) => {
         ? `\n\nA request was already logged a few minutes ago in this conversation: "${recentRequest.service}". If the member is just adding more detail to that same request, do not call log_request again, simply acknowledge it. Only call log_request again if they are clearly describing a separate, distinct booking.`
         : '';
 
-    const SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}\n\n${buildAddressInstruction(profile?.full_name, profile?.title)}${notesContext}${rewardsContext}${recentRequestContext}\n\nReminder: reply in the same language as the member's most recent message below, regardless of what language any names, service titles, or earlier messages above are in. Service and reward titles stored in the system are often Dutch even for English-speaking members; never let that pull your reply into Dutch.`;
+    const SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}\n\n${buildDateContext()}\n\n${buildAddressInstruction(profile?.full_name, profile?.title)}${notesContext}${rewardsContext}${recentRequestContext}\n\nReminder: reply in the same language as the member's most recent message below, regardless of what language any names, service titles, or earlier messages above are in. Service and reward titles stored in the system are often Dutch even for English-speaking members; never let that pull your reply into Dutch.`;
 
     const conversation = [...messages];
     let finalText = '';
@@ -345,19 +369,42 @@ Deno.serve(async (req) => {
             notes: string;
             urgent?: boolean;
           };
+
+          // A redeemed "priority" reward silently did nothing before this:
+          // spend the points, no actual effect on how the request was
+          // handled. A banked single-use credit or an active 3-month
+          // priority window now really does flag the next request urgent,
+          // same treatment as a member-stated "spoed".
+          const { data: priorityProfile } = await supabase
+            .from('profiles')
+            .select('priority_credits, priority_until')
+            .eq('id', memberId)
+            .single();
+          const hasPriorityWindow = !!priorityProfile?.priority_until && new Date(priorityProfile.priority_until) > new Date();
+          const hasPriorityCredit = (priorityProfile?.priority_credits || 0) > 0;
+          const grantedPriority = !urgent && (hasPriorityWindow || hasPriorityCredit);
+
           const { error: insertError } = await supabase.from('requests').insert({
             member_id: memberId,
             service,
             notes,
             status: 'review',
-            is_urgent: !!urgent,
+            is_urgent: !!urgent || grantedPriority,
           });
           toolResultContent = insertError
             ? `Could not log the request: ${insertError.message}`
+            : grantedPriority
+            ? 'Request logged for the team to review, with priority handling applied from a redeemed reward.'
             : 'Request logged for the team to review.';
           if (!insertError) {
             requestLogged = true;
-            await notifyStaff(service, notes, memberEmail, !!urgent);
+            await notifyStaff(service, notes, memberEmail, !!urgent || grantedPriority);
+            if (grantedPriority && hasPriorityCredit && !hasPriorityWindow) {
+              await supabase
+                .from('profiles')
+                .update({ priority_credits: (priorityProfile!.priority_credits || 0) - 1 })
+                .eq('id', memberId);
+            }
           }
         }
       } else if (toolUseBlock.name === 'check_request_status') {
@@ -393,7 +440,7 @@ Deno.serve(async (req) => {
         const { reward_title } = toolUseBlock.input as { reward_title: string };
         const { data: reward } = await supabase
           .from('rewards')
-          .select('id, cost_points')
+          .select('id, title, cost_points, effect')
           .eq('active', true)
           .ilike('title', reward_title)
           .maybeSingle();
@@ -410,6 +457,19 @@ Deno.serve(async (req) => {
           } else {
             const { data: p } = await supabase.from('profiles').select('points_balance').eq('id', memberId).single();
             toolResultContent = `Redeemed successfully. New balance: ${p?.points_balance ?? 0} points.`;
+            // Most rewards need an actual human follow-up (a call, a dossier,
+            // applying priority) -- redemption used to be silent on the staff
+            // side, so nothing ever happened after a member cashed one in.
+            const followUp =
+              reward.effect === 'priority_single' || reward.effect === 'priority_3mo'
+                ? 'Wordt automatisch toegepast op de eerstvolgende aanvraag van dit lid.'
+                : 'Vereist actie van het team.';
+            await notifyStaff(
+              `Beloning ingewisseld: ${reward.title}`,
+              `${memberEmail || 'Een lid'} heeft "${reward.title}" ingewisseld voor ${reward.cost_points} punten. ${followUp}`,
+              memberEmail,
+              false
+            );
           }
         }
       } else if (toolUseBlock.name === 'flag_change_request') {

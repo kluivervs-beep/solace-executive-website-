@@ -1166,3 +1166,55 @@ $$ language plpgsql;
 -- pull-to-refresh or leave/return to a screen to see a staff approval
 -- or added detail.
 alter publication supabase_realtime add table public.requests;
+
+-- Rewards catalog: "Voorrang bij uw volgende aanvraag" / "Voorrangsstatus,
+-- 3 maanden" used to just deduct points and do nothing else -- a member
+-- redeemed one for real tonight and staff never even found out. effect
+-- now drives real behavior in redeem_reward_for_member() and the
+-- log_request tool: a banked priority_credits or an active
+-- priority_until window auto-marks the member's next request urgent
+-- (same SPOED handling as a stated deadline), and every redemption now
+-- notifies staff so nothing needs a human to notice on their own.
+alter table public.rewards add column if not exists effect text;
+alter table public.profiles add column if not exists priority_credits integer not null default 0;
+alter table public.profiles add column if not exists priority_until timestamptz;
+
+update public.rewards set effect = 'priority_single' where title = 'Voorrang bij uw volgende aanvraag';
+update public.rewards set effect = 'priority_3mo' where title = 'Voorrangsstatus, 3 maanden';
+
+create or replace function public.redeem_reward_for_member(member_uuid uuid, reward_uuid uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_cost integer;
+  v_balance integer;
+  v_effect text;
+begin
+  select cost_points, effect into v_cost, v_effect from public.rewards where id = reward_uuid and active = true;
+  if v_cost is null then
+    raise exception 'Reward not found or inactive';
+  end if;
+
+  select points_balance into v_balance from public.profiles where id = member_uuid;
+  if v_balance < v_cost then
+    raise exception 'Insufficient points';
+  end if;
+
+  insert into public.point_transactions (member_id, amount, reason)
+  values (member_uuid, -v_cost, 'Beloning ingewisseld via AI Concierge');
+
+  insert into public.reward_redemptions (member_id, reward_id, points_spent)
+  values (member_uuid, reward_uuid, v_cost);
+
+  if v_effect = 'priority_single' then
+    update public.profiles set priority_credits = priority_credits + 1 where id = member_uuid;
+  elsif v_effect = 'priority_3mo' then
+    update public.profiles
+    set priority_until = greatest(coalesce(priority_until, now()), now()) + interval '3 months'
+    where id = member_uuid;
+  end if;
+end;
+$$;
