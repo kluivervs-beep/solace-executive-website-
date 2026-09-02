@@ -1055,3 +1055,23 @@ create policy "admins can delete access requests"
 create policy "admins can read all profiles"
   on public.profiles for select
   using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin));
+
+-- Fix: "admins can read all profiles" was self-referential (a policy ON
+-- profiles that subqueries profiles), which put admins reading their OWN
+-- profile at risk of RLS recursion depending on evaluation order. The
+-- standard Supabase fix is a SECURITY DEFINER helper function, which
+-- bypasses RLS internally instead of re-triggering it.
+create or replace function public.is_admin()
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select coalesce((select is_admin from public.profiles where id = auth.uid()), false);
+$$;
+
+drop policy if exists "admins can read all profiles" on public.profiles;
+create policy "admins can read all profiles"
+  on public.profiles for select
+  using (public.is_admin());
