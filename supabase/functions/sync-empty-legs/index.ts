@@ -101,10 +101,10 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Only keep the soonest-departing flights, so the app doesn't get
-    // flooded with the partner's full market feed.
+    // Kluiver wants the full current offer shown, not a curated subset.
+    // Still cap at a sane ceiling in case their page ever lists far more.
     flights.sort((a, b) => a.departure_at.localeCompare(b.departure_at));
-    const kept = flights.slice(0, 15);
+    const kept = flights.slice(0, 50);
 
     const { error: upsertError } = await supabase.from('empty_legs').upsert(kept, { onConflict: 'source_ref' });
     if (upsertError) throw upsertError;
