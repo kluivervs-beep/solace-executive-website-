@@ -1075,3 +1075,18 @@ drop policy if exists "admins can read all profiles" on public.profiles;
 create policy "admins can read all profiles"
   on public.profiles for select
   using (public.is_admin());
+
+-- Account deletion now also removes uploaded concierge-attachment photos
+-- from Storage, not just the DB rows (see supabase/functions/delete-account).
+-- The rest of a member's data already cascades automatically from the
+-- auth.users row (profiles.id -> auth.users is ON DELETE CASCADE, and
+-- concierge_messages/requests/invoices/point_transactions/reward_redemptions
+-- all cascade from profiles); favorites and referral_codes reference
+-- auth.users directly with NO ACTION, so those still need an explicit
+-- delete before deleteUser() or it errors.
+--
+-- Also raised the project's server-side password policy (Auth config,
+-- not a SQL migration -- applied via the Management API): min length 8,
+-- requiring lowercase + uppercase + digit + special character. Enforced
+-- both there and client-side in login.html/reset-password.html, which
+-- also gained a show/hide toggle on password fields.

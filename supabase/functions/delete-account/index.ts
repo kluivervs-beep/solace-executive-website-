@@ -37,11 +37,21 @@ Deno.serve(async (req) => {
 
     const userId = userData.user.id;
 
-    await admin.from('concierge_messages').delete().eq('member_id', userId);
-    await admin.from('requests').delete().eq('member_id', userId);
+    // Uploaded photos live in Storage, not a table, so deleting the member's
+    // rows and auth user doesn't remove them on its own -- they're kept in
+    // a folder named by the member's own id.
+    const { data: attachments } = await admin.storage.from('concierge-attachments').list(userId);
+    if (attachments?.length) {
+      await admin.storage.from('concierge-attachments').remove(attachments.map((f) => `${userId}/${f.name}`));
+    }
+
+    // favorites and referral_codes reference auth.users directly with no
+    // cascade, so they must be cleared before deleteUser or it errors.
+    // Everything else (concierge_messages, requests, invoices,
+    // point_transactions, reward_redemptions) cascades automatically from
+    // the profiles row, which itself cascades from the auth user.
     await admin.from('favorites').delete().eq('member_id', userId);
     await admin.from('referral_codes').delete().eq('owner_id', userId);
-    await admin.from('profiles').delete().eq('id', userId);
 
     const { error: deleteError } = await admin.auth.admin.deleteUser(userId);
     if (deleteError) {

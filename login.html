@@ -127,7 +127,12 @@
       </div>
       <div class="field">
         <label for="password" data-i18n="login.password">Wachtwoord</label>
-        <input type="password" id="password" name="password" autocomplete="current-password" required placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+        <div class="password-field">
+          <input type="password" id="password" name="password" autocomplete="current-password" required placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+          <button type="button" class="password-toggle" data-toggle-for="password" aria-label="Toon wachtwoord">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
       </div>
 
       <div class="login-actions">
@@ -163,6 +168,13 @@
   const errorEl = document.getElementById('loginError');
   const submitBtn = document.getElementById('loginSubmit');
   const t = (key) => (window.SolaceI18n ? window.SolaceI18n.t(key) : key);
+
+  document.querySelectorAll('.password-toggle').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const input = document.getElementById(btn.dataset.toggleFor);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    });
+  });
 
   // Already signed in? Skip straight to the dashboard.
   supabase.auth.getSession().then(({ data }) => {

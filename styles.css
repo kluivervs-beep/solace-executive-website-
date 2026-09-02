@@ -1181,6 +1181,30 @@ body.modal-open { overflow: hidden; }
 }
 .field .optional { text-transform: none; letter-spacing: 0; opacity: 0.7; }
 
+.password-field { position: relative; }
+.password-field input { padding-right: 44px; }
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--color-ink-muted);
+  display: flex;
+  align-items: center;
+}
+.password-toggle:hover { color: var(--color-gold-light); }
+.password-toggle svg { width: 18px; height: 18px; }
+.password-hint {
+  font-size: 12px;
+  color: var(--color-ink-muted);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
 .field input,
 .field select,
 .field textarea {
