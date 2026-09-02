@@ -921,3 +921,30 @@ begin
 end;
 $$ language plpgsql security definer set search_path = public;
 
+
+-- Access requests were being captured correctly but nobody ever found
+-- out: no dashboard view, no notification. This mirrors the concierge
+-- request notification (same Formspree endpoint) via a DB trigger, since
+-- the insert happens directly from the (unauthenticated) client rather
+-- than through an edge function.
+create or replace function public.notify_access_request()
+returns trigger as $$
+begin
+  perform net.http_post(
+    url := 'https://formspree.io/f/xgojjlzv',
+    body := jsonb_build_object(
+      '_subject', 'Nieuwe toegangsaanvraag: ' || new.full_name,
+      'name', new.full_name,
+      'email', new.email,
+      'message', 'Telefoon: ' || coalesce(new.phone, '-') || E'\nUitnodigingscode: ' || coalesce(new.referral_code, '-')
+    ),
+    headers := jsonb_build_object('Content-Type', 'application/json')
+  );
+  return new;
+end;
+$$ language plpgsql security definer set search_path = public, net;
+
+drop trigger if exists notify_access_request_trigger on public.access_requests;
+create trigger notify_access_request_trigger
+  after insert on public.access_requests
+  for each row execute function public.notify_access_request();

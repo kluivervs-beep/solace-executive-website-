@@ -497,6 +497,7 @@
       <a data-view="playbook" id="navPlaybook" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.4 5.3 5.6.6-4.2 3.9 1.2 5.6-4.6-2.9-4.6 2.9 1.2-5.6-4.2-3.9 5.6-.6z"/></svg><span>Playbook</span></a>
       <a data-view="experiences" id="navExperiences" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="14" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15l-5-4-9 7"/></svg><span>Experiences</span></a>
       <a data-view="bookings" id="navBookings" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg><span>Beheer</span><span class="nav-badge" id="beheerBadge" hidden></span></a>
+      <a data-view="access-requests" id="navAccessRequests" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Toegangsaanvragen</span><span class="nav-badge" id="accessRequestsBadge" hidden></span></a>
     </nav>
 
     <div class="dash-side-foot">
@@ -788,6 +789,27 @@
         </div>
         <div id="bookingsList">
           <p class="inbox-empty" id="bookingsEmpty">Geen openstaande aanvragen.</p>
+        </div>
+      </section>
+    </section>
+
+    <section class="dash-view" data-view="access-requests" hidden>
+      <div class="dash-welcome">
+        <div>
+          <p class="eyebrow">TOEGANGSAANVRAGEN</p>
+          <h1>Wie vraagt toegang tot Solace Executive.</h1>
+        </div>
+      </div>
+
+      <section class="dash-panel playbook-panel">
+        <div class="dash-panel-head">
+          <div>
+            <h2>Openstaand</h2>
+            <p class="dash-panel-sub">Keur goed en maak zelf het account aan in Supabase (Authentication), of wijs af. De aanvrager krijgt hier geen automatisch bericht van.</p>
+          </div>
+        </div>
+        <div id="accessRequestsList">
+          <p class="inbox-empty" id="accessRequestsEmpty">Geen openstaande aanvragen.</p>
         </div>
       </section>
     </section>
@@ -1170,6 +1192,7 @@
     if (name === 'playbook') loadPlaybook();
     if (name === 'experiences') loadExperiences();
     if (name === 'bookings') { loadBookings(); markAdminBookingsSeen(); }
+    if (name === 'access-requests') { loadAccessRequests(); markAdminAccessRequestsSeen(); }
     if (name === 'billing') loadBilling();
   }
 
@@ -1217,10 +1240,15 @@
     localStorage.setItem('solace_admin_seen_bookings', new Date().toISOString());
     document.getElementById('beheerBadge').hidden = true;
   }
+  function markAdminAccessRequestsSeen() {
+    localStorage.setItem('solace_admin_seen_access_requests', new Date().toISOString());
+    document.getElementById('accessRequestsBadge').hidden = true;
+  }
 
   async function checkAdminNotifications() {
     const seenInbox = localStorage.getItem('solace_admin_seen_inbox') || '1970-01-01';
     const seenBookings = localStorage.getItem('solace_admin_seen_bookings') || '1970-01-01';
+    const seenAccessRequests = localStorage.getItem('solace_admin_seen_access_requests') || '1970-01-01';
 
     const { count: newMessages } = await supabase
       .from('concierge_messages')
@@ -1235,6 +1263,13 @@
       .eq('status', 'review')
       .gt('created_at', seenBookings);
     document.getElementById('beheerBadge').hidden = !newRequests;
+
+    const { count: newAccessRequests } = await supabase
+      .from('access_requests')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'pending')
+      .gt('created_at', seenAccessRequests);
+    document.getElementById('accessRequestsBadge').hidden = !newAccessRequests;
   }
 
   // --- Inbox (admin only): see every member's concierge conversation and
@@ -1690,6 +1725,61 @@
     { value: 'cancelled', label: 'Geannuleerd' },
   ];
 
+  // --- Access requests (admin only): people who entered a valid
+  // invitation code on the "Request access" screen before they have an
+  // account. Approving here is informational only, staff still creates
+  // the actual login (Supabase Authentication) by hand.
+  async function loadAccessRequests() {
+    const { data: rows, error } = await supabase
+      .from('access_requests')
+      .select('id, full_name, email, phone, referral_code, status, created_at')
+      .order('created_at', { ascending: false });
+
+    const listEl = document.getElementById('accessRequestsList');
+    const emptyEl = document.getElementById('accessRequestsEmpty');
+    listEl.querySelectorAll('.playbook-item').forEach((el) => el.remove());
+
+    if (error || !rows || !rows.length) {
+      emptyEl.hidden = false;
+      return;
+    }
+    emptyEl.hidden = true;
+
+    const STATUS_LABEL = { pending: 'Openstaand', approved: 'Goedgekeurd', rejected: 'Afgewezen' };
+
+    for (const r of rows) {
+      const row = document.createElement('div');
+      row.className = 'playbook-item';
+      const when = new Date(r.created_at).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' });
+      row.innerHTML = `
+        <div>
+          <div class="playbook-item-title">${escapeHtml(r.full_name)} <span class="playbook-item-tag">${STATUS_LABEL[r.status] || r.status}</span></div>
+          <div class="playbook-item-desc">${escapeHtml(r.email)}${r.phone ? ' &middot; ' + escapeHtml(r.phone) : ''} &middot; code ${escapeHtml(r.referral_code || '-')} &middot; ${when}</div>
+        </div>
+        <div class="playbook-item-actions">
+          ${r.status === 'pending' ? '<button type="button" class="btn btn-outline btn-small" data-action="approve">Goedkeuren</button><button type="button" class="btn btn-outline btn-small" data-action="reject">Afwijzen</button>' : ''}
+          <button type="button" class="btn btn-outline btn-small" data-action="delete">Verwijderen</button>
+        </div>
+      `;
+      const approveBtn = row.querySelector('[data-action="approve"]');
+      if (approveBtn) approveBtn.addEventListener('click', async () => {
+        await supabase.from('access_requests').update({ status: 'approved' }).eq('id', r.id);
+        loadAccessRequests();
+      });
+      const rejectBtn = row.querySelector('[data-action="reject"]');
+      if (rejectBtn) rejectBtn.addEventListener('click', async () => {
+        await supabase.from('access_requests').update({ status: 'rejected' }).eq('id', r.id);
+        loadAccessRequests();
+      });
+      row.querySelector('[data-action="delete"]').addEventListener('click', async () => {
+        if (!confirm('Deze aanvraag verwijderen?')) return;
+        await supabase.from('access_requests').delete().eq('id', r.id);
+        loadAccessRequests();
+      });
+      listEl.appendChild(row);
+    }
+  }
+
   async function loadBookings() {
     const { data: rows, error } = await supabase
       .from('requests')
@@ -1972,6 +2062,7 @@
       document.getElementById('navPlaybook').hidden = false;
       document.getElementById('navExperiences').hidden = false;
       document.getElementById('navBookings').hidden = false;
+      document.getElementById('navAccessRequests').hidden = false;
       checkAdminNotifications();
       setInterval(checkAdminNotifications, 45000);
     }
