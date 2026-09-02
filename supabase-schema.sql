@@ -1090,3 +1090,20 @@ create policy "admins can read all profiles"
 -- requiring lowercase + uppercase + digit + special character. Enforced
 -- both there and client-side in login.html/reset-password.html, which
 -- also gained a show/hide toggle on password fields.
+
+-- Members can now hide their own requests from view (e.g. old cancelled
+-- ones) without staff ever losing the record -- the row stays in place
+-- with hidden_by_member=true, still fully visible in the admin Beheer
+-- view, just filtered out of the member's own app queries.
+alter table public.requests add column if not exists hidden_by_member boolean not null default false;
+
+create or replace function public.hide_own_request(request_id uuid)
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  update public.requests set hidden_by_member = true where id = request_id and member_id = auth.uid();
+$$;
+
+grant execute on function public.hide_own_request(uuid) to authenticated;

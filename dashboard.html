@@ -802,8 +802,13 @@
         <div class="dash-panel-head">
           <div>
             <h2>Openstaande aanvragen</h2>
-            <p class="dash-panel-sub">Wijzig de status om het lid direct bij te werken. Bij "Bevestigd" krijgt het lid automatisch een pushmelding, en kunt u aankomst/locatie/dresscode invullen.</p>
+            <p class="dash-panel-sub">Wijzig de status om het lid direct bij te werken. Bij "Bevestigd" krijgt het lid automatisch een pushmelding, en kunt u aankomst/locatie/dresscode invullen. Zoek op naam of dienst, of filter op datum, om ook oudere (afgeronde) aanvragen terug te vinden.</p>
           </div>
+        </div>
+        <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
+          <input type="text" id="bookingsSearch" placeholder="Zoek op naam of dienst..." style="flex:1; min-width:200px;">
+          <input type="date" id="bookingsDateFilter" style="min-width:160px;">
+          <button type="button" class="btn btn-outline btn-small" id="bookingsFilterClear">Wissen</button>
         </div>
         <div id="bookingsList">
           <p class="inbox-empty" id="bookingsEmpty">Geen openstaande aanvragen.</p>
@@ -2017,19 +2022,47 @@
     }
   }
 
+  let allBookings = [];
+
   async function loadBookings() {
-    const { data: rows, error } = await supabase
+    // Always fetch everything (not just the active queue) so a name/date
+    // search can also find older, already-completed requests. renderBookings
+    // still defaults to hiding done/cancelled when no filter is active, to
+    // keep the everyday work queue uncluttered.
+    const { data: rows } = await supabase
       .from('requests')
       .select('id, service, status, member_id, arrival_info, venue_info, dress_code, created_at, profiles!inner(full_name)')
-      .in('status', ['review', 'confirmed'])
       .order('created_at', { ascending: false });
+
+    allBookings = rows || [];
+    renderBookings();
+  }
+
+  function renderBookings() {
+    const search = (document.getElementById('bookingsSearch')?.value || '').trim().toLowerCase();
+    const dateFilter = document.getElementById('bookingsDateFilter')?.value || '';
+    const filterActive = !!search || !!dateFilter;
+
+    let rows = allBookings;
+    if (!filterActive) {
+      rows = rows.filter((r) => r.status === 'review' || r.status === 'confirmed');
+    }
+    if (search) {
+      rows = rows.filter((r) =>
+        (r.profiles?.full_name || '').toLowerCase().includes(search) || (r.service || '').toLowerCase().includes(search)
+      );
+    }
+    if (dateFilter) {
+      rows = rows.filter((r) => r.created_at.slice(0, 10) === dateFilter);
+    }
 
     const listEl = document.getElementById('bookingsList');
     const emptyEl = document.getElementById('bookingsEmpty');
     listEl.querySelectorAll('.playbook-item').forEach((el) => el.remove());
 
-    if (error || !rows || !rows.length) {
+    if (!rows.length) {
       emptyEl.hidden = false;
+      emptyEl.textContent = filterActive ? 'Niets gevonden.' : 'Geen openstaande aanvragen.';
       return;
     }
     emptyEl.hidden = true;
@@ -2073,6 +2106,14 @@
       listEl.appendChild(row);
     }
   }
+
+  document.getElementById('bookingsSearch').addEventListener('input', renderBookings);
+  document.getElementById('bookingsDateFilter').addEventListener('change', renderBookings);
+  document.getElementById('bookingsFilterClear').addEventListener('click', () => {
+    document.getElementById('bookingsSearch').value = '';
+    document.getElementById('bookingsDateFilter').value = '';
+    renderBookings();
+  });
 
   async function markRequestsSeen() {
     const badge = document.getElementById('requestsBadge');
