@@ -985,3 +985,40 @@ create policy "admins can update empty legs"
 create policy "admins can delete empty legs"
   on public.empty_legs for delete
   using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin));
+
+-- Automated empty-leg sync from our jet partner (see
+-- supabase/functions/sync-empty-legs). Synced rows carry a source_ref so
+-- re-syncing is an upsert, not duplicate inserts; staff-entered rows via
+-- the dashboard leave source/source_ref null and are never touched by it.
+alter table public.empty_legs add column if not exists source text;
+alter table public.empty_legs add column if not exists source_ref text unique;
+
+-- Empty legs are now also shown publicly on jets.html (content marketing
+-- while the app is still ramping up), not just to logged-in members.
+drop policy if exists "Members can view active empty legs" on public.empty_legs;
+create policy "Public can view active empty legs"
+  on public.empty_legs for select
+  using (active = true);
+
+-- Schedule the daily sync (run once in the Supabase SQL Editor — pg_cron
+-- setup isn't something this migration log re-applies automatically).
+-- Replace SYNC_SECRET_VALUE with the value stored in Edge Functions ->
+-- Secrets -> SYNC_SECRET before running.
+--
+-- create extension if not exists pg_cron;
+--
+-- select cron.schedule(
+--   'sync-empty-legs-daily',
+--   '0 5 * * *',
+--   $$
+--   select net.http_post(
+--     url := 'https://weiihajterqholxppgsl.supabase.co/functions/v1/sync-empty-legs',
+--     headers := jsonb_build_object(
+--       'Content-Type', 'application/json',
+--       'Authorization', 'Bearer sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr',
+--       'x-sync-secret', 'SYNC_SECRET_VALUE'
+--     ),
+--     body := '{}'::jsonb
+--   );
+--   $$
+-- );

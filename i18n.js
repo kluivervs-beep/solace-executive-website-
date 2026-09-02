@@ -171,6 +171,10 @@
       'jetslp.closing.title': 'Nog vragen, of liever het volledige aanbod bekijken?',
       'jetslp.closing.body': 'Solace Executive regelt naast privéjets ook jachtcharters en executive transport.',
       'jetslp.closing.cta': 'Bekijk alle diensten',
+      'jetslp.emptylegs.eyebrow': 'NU BESCHIKBAAR',
+      'jetslp.emptylegs.title': 'Empty legs tegen een aantrekkelijker tarief',
+      'jetslp.emptylegs.sub': 'Bestaande positioneringsvluchten zonder passagiers. Sluit uw planning erop aan, dan vliegt u tegen een aantrekkelijker tarief.',
+      'jetslp.emptylegs.note': 'Interesse? Neem contact op via het lidmaatschap, wij checken direct de laatste beschikbaarheid.',
       'jetslp.soundhint': 'Speel muziek af',
 
       'carlp.meta.title': 'Autotransport | Solace Executive',
@@ -484,6 +488,10 @@
       'jetslp.closing.title': 'Any questions, or prefer to see everything we offer?',
       'jetslp.closing.body': 'Besides private jets, Solace Executive also arranges yacht charters and executive transport.',
       'jetslp.closing.cta': 'View all services',
+      'jetslp.emptylegs.eyebrow': 'AVAILABLE NOW',
+      'jetslp.emptylegs.title': 'Empty legs at a more attractive rate',
+      'jetslp.emptylegs.sub': 'Existing positioning flights without passengers. Fit your plans around them and fly at a more attractive rate.',
+      'jetslp.emptylegs.note': 'Interested? Get in touch through membership and we’ll check the latest availability right away.',
       'jetslp.soundhint': 'Play music',
 
       'carlp.meta.title': 'Car Transport | Solace Executive',

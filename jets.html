@@ -181,6 +181,76 @@
     color: var(--color-ink-muted);
   }
 
+  .lp-emptylegs {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 var(--space-4) var(--space-6);
+  }
+  .lp-emptylegs-head { text-align: center; max-width: 560px; margin: 0 auto var(--space-5); }
+  .lp-emptylegs-eyebrow {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--color-gold-light);
+    margin-bottom: 12px;
+  }
+  .lp-emptylegs-head h2 { font-family: var(--font-display); font-weight: 500; font-size: 28px; color: var(--color-ink); margin-bottom: 10px; }
+  .lp-emptylegs-head p { font-family: var(--font-sans); font-size: 14.5px; line-height: 1.6; color: var(--color-ink-muted); }
+  .lp-emptylegs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+  }
+  .lp-leg-card {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-elevated);
+  }
+  .lp-leg-photo { position: relative; height: 150px; }
+  .lp-leg-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .lp-leg-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15,27,36,0.05) 0%, rgba(15,27,36,0.95) 100%);
+  }
+  .lp-leg-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 1;
+    border: 1px solid rgba(245,241,230,0.5);
+    border-radius: 4px;
+    padding: 3px 7px;
+    font-family: var(--font-sans);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    color: #F5F1E6;
+  }
+  .lp-leg-route {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 12px;
+    z-index: 1;
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: #F5F1E6;
+  }
+  .lp-leg-when { font-family: var(--font-sans); font-size: 11.5px; color: var(--color-gold-light); margin-top: 2px; }
+  .lp-leg-body { padding: 14px; }
+  .lp-leg-aircraft { font-family: var(--font-sans); font-size: 11.5px; color: var(--color-ink-muted); margin-bottom: 8px; }
+  .lp-leg-price { font-family: var(--font-sans); font-size: 12px; color: var(--color-ink-muted); }
+  .lp-leg-price strong { font-family: var(--font-display); font-size: 17px; color: var(--color-gold-light); font-weight: 500; }
+  .lp-emptylegs-note { text-align: center; font-family: var(--font-sans); font-size: 12px; color: var(--color-ink-muted); margin-top: var(--space-4); }
+
+  @media (max-width: 720px) {
+    .lp-emptylegs-grid { grid-template-columns: 1fr; }
+  }
+
   .lp-closing {
     text-align: center;
     padding: var(--space-6) var(--space-4) var(--space-7);
@@ -285,6 +355,16 @@
   </div>
 </section>
 
+<section class="lp-emptylegs" id="lp-emptylegs" hidden>
+  <div class="lp-emptylegs-head">
+    <p class="lp-emptylegs-eyebrow" data-i18n="jetslp.emptylegs.eyebrow">NU BESCHIKBAAR</p>
+    <h2 class="reveal" data-i18n="jetslp.emptylegs.title">Empty legs tegen een aantrekkelijker tarief</h2>
+    <p class="reveal" data-i18n="jetslp.emptylegs.sub">Bestaande positioneringsvluchten zonder passagiers. Sluit uw planning erop aan.</p>
+  </div>
+  <div class="lp-emptylegs-grid reveal" id="lpEmptyLegsGrid"></div>
+  <p class="lp-emptylegs-note" data-i18n="jetslp.emptylegs.note">Interesse? Neem contact op via het lidmaatschap, wij checken direct de laatste beschikbaarheid.</p>
+</section>
+
 <section class="lp-closing">
   <h2 class="reveal" data-i18n="jetslp.closing.title">Nog vragen, of liever het volledige aanbod bekijken?</h2>
   <p class="reveal" data-i18n="jetslp.closing.body">Solace Executive regelt naast privéjets ook jachtcharters en executive transport.</p>
@@ -294,6 +374,73 @@
 <footer class="lp-footer">
   <a href="index.html">&copy; <span id="year"></span> Solace Executive</a>
 </footer>
+
+<script type="module">
+  // Public empty-leg teaser: shown to everyone, not just members, since
+  // this is content marketing for now while the app is still ramping up.
+  // Only ever shows our own priced rate, never the partner's name/price.
+  import { supabase } from './supabase-client.js';
+
+  const JET_PHOTOS = [
+    'assets/photos/jets.jpg',
+    'assets/photos/jets-2.jpg',
+    'assets/photos/jets-3.jpg',
+    'assets/photos/jets-4.jpg',
+    'assets/photos/jets-5.jpg',
+    'assets/photos/jets-6.jpg',
+    'assets/photos/jets-7.jpg',
+  ];
+  function hashString(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+    return Math.abs(h);
+  }
+  function photoFor(id) {
+    return JET_PHOTOS[hashString(id) % JET_PHOTOS.length];
+  }
+
+  (async () => {
+    const { data: legs, error } = await supabase
+      .from('empty_legs')
+      .select('id, origin, destination, departure_at, aircraft, price_from')
+      .eq('active', true)
+      .gte('departure_at', new Date().toISOString())
+      .order('departure_at', { ascending: true })
+      .limit(6);
+
+    if (error || !legs || !legs.length) return;
+
+    const lang = document.documentElement.lang === 'en' ? 'en-GB' : 'nl-NL';
+    const grid = document.getElementById('lpEmptyLegsGrid');
+    const section = document.getElementById('lp-emptylegs');
+
+    grid.innerHTML = legs
+      .map((leg) => {
+        const when = new Date(leg.departure_at).toLocaleDateString(lang, { day: 'numeric', month: 'short' });
+        const price = new Intl.NumberFormat(lang, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(leg.price_from);
+        return `
+          <article class="lp-leg-card">
+            <div class="lp-leg-photo">
+              <img src="${photoFor(leg.id)}" alt="${leg.origin} - ${leg.destination}" loading="lazy">
+              <span class="lp-leg-tag">EMPTY LEG</span>
+              <div class="lp-leg-route">${leg.origin} &rarr; ${leg.destination}<div class="lp-leg-when">${when}</div></div>
+            </div>
+            <div class="lp-leg-body">
+              <div class="lp-leg-aircraft">${leg.aircraft}</div>
+              <div class="lp-leg-price">vanaf <strong>${price}</strong></div>
+            </div>
+          </article>
+        `;
+      })
+      .join('');
+
+    section.hidden = false;
+    // The section was display:none while this loaded, so GSAP's earlier
+    // ScrollTrigger pass (for the sections below it) measured the wrong
+    // layout. Recompute now that the real height is in.
+    if (window.ScrollTrigger) window.ScrollTrigger.refresh();
+  })();
+</script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
