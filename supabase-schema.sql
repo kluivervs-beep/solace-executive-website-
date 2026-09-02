@@ -948,3 +948,40 @@ drop trigger if exists notify_access_request_trigger on public.access_requests;
 create trigger notify_access_request_trigger
   after insert on public.access_requests
   for each row execute function public.notify_access_request();
+
+-- Empty legs: positioning flights offered by our jet partner at a reduced
+-- rate. Staff enters our own marked-up price by hand (mirrors the fleet
+-- car pricing), the partner's own rate/name is never shown to members.
+create table public.empty_legs (
+  id uuid primary key default gen_random_uuid(),
+  origin text not null,
+  destination text not null,
+  departure_at timestamptz not null,
+  aircraft text not null,
+  max_passengers integer,
+  price_from numeric not null,
+  active boolean not null default true,
+  created_at timestamptz default now()
+);
+
+alter table public.empty_legs enable row level security;
+
+create policy "Members can view active empty legs"
+  on public.empty_legs for select
+  using (auth.role() = 'authenticated' and active = true);
+
+create policy "admins can read all empty legs"
+  on public.empty_legs for select
+  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin));
+
+create policy "admins can insert empty legs"
+  on public.empty_legs for insert
+  with check (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin));
+
+create policy "admins can update empty legs"
+  on public.empty_legs for update
+  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin));
+
+create policy "admins can delete empty legs"
+  on public.empty_legs for delete
+  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin));
