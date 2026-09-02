@@ -1218,3 +1218,13 @@ begin
   end if;
 end;
 $$;
+
+-- Removed: rewards were auto-syncing into activity_feed as "news", but
+-- the catalog barely changes, so every active reward just sat there
+-- forever as stale "Yesterday" items cluttering the feed with no real
+-- news value. Members already browse rewards directly via the Rewards
+-- screen; the feed is for genuinely time-sensitive content (experiences,
+-- playbook opportunities, manual news).
+drop trigger if exists trg_activity_reward on public.rewards;
+drop function if exists public.fn_activity_from_reward();
+delete from public.activity_feed where source_table = 'rewards';
