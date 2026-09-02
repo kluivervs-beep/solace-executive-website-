@@ -1132,3 +1132,29 @@ select cron.schedule(
   );
   $$
 );
+
+-- Fix: Beheer's auto-refresh (added earlier tonight) was wiping out
+-- in-progress edits and the "Opgeslagen" save confirmation every 15s,
+-- since it fully rebuilt the row DOM including live text inputs.
+-- Removed Beheer from the auto-refresh loop; a save now patches the
+-- in-memory row instead of reloading the whole list.
+--
+-- Also extended seen_by_member tracking: it only flagged status
+-- changes before, so a member never got notified when staff added
+-- arrival/venue/dress-code details without changing status. Wired this
+-- into the app's notification bell for the first time (previously dead
+-- infrastructure, unused by any client) and added a push notification
+-- for detail-only updates.
+create or replace function public.mark_request_status_changed()
+returns trigger as $$
+begin
+  if new.status is distinct from old.status
+     or new.arrival_info is distinct from old.arrival_info
+     or new.venue_info is distinct from old.venue_info
+     or new.dress_code is distinct from old.dress_code then
+    new.updated_at = now();
+    new.seen_by_member = false;
+  end if;
+  return new;
+end;
+$$ language plpgsql;

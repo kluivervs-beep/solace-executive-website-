@@ -1297,6 +1297,9 @@
   // staff is currently looking at, so new members/messages/requests show
   // up on their own instead of needing a manual page reload. Paused
   // while the tab isn't visible so it doesn't poll in the background.
+  // Beheer is deliberately excluded: its rows are inline edit forms, and
+  // wiping/rebuilding them mid-typing (or right after a save, hiding the
+  // "Opgeslagen" confirmation) is worse than a stale list.
   setInterval(() => {
     if (document.visibilityState !== 'visible') return;
     if (currentView === 'inbox') {
@@ -1305,8 +1308,6 @@
       } else {
         loadInboxMembers();
       }
-    } else if (currentView === 'bookings') {
-      loadBookings();
     } else if (currentView === 'access-requests') {
       loadAccessRequests();
     } else if (currentView === 'empty-legs') {
@@ -2092,16 +2093,27 @@
           venue_info: wrap.querySelector('[data-field="venue_info"]').value.trim() || null,
           dress_code: wrap.querySelector('[data-field="dress_code"]').value.trim() || null,
         };
+        const detailsChanged =
+          update.arrival_info !== (r.arrival_info || null) ||
+          update.venue_info !== (r.venue_info || null) ||
+          update.dress_code !== (r.dress_code || null);
+
         await supabase.from('requests').update(update).eq('id', r.id);
         if (newStatus === 'confirmed' && r.status !== 'confirmed') {
           notifyMemberPush(r.member_id, `Uw aanvraag is bevestigd: ${r.service}`, 'Solace Executive', { type: 'booking', requestId: r.id });
-        }
-        if (newStatus === 'done' && r.status !== 'done') {
+        } else if (newStatus === 'done' && r.status !== 'done') {
           notifyMemberPush(r.member_id, `Uw aanvraag is afgerond: ${r.service}. U heeft 150 punten verdiend.`, 'Solace Executive', { type: 'booking', requestId: r.id });
+        } else if (detailsChanged) {
+          notifyMemberPush(r.member_id, `Er is extra informatie toegevoegd aan uw aanvraag: ${r.service}`, 'Solace Executive', { type: 'booking', requestId: r.id });
         }
         e.target.textContent = 'Opgeslagen';
         setTimeout(() => { e.target.textContent = 'Opslaan'; }, 1500);
-        loadBookings();
+        // Refresh this row's own snapshot (r) in place instead of a full
+        // loadBookings() reload -- reloading destroys every row's inputs
+        // mid-edit if another admin (or the 15s auto-refresh) touches the
+        // list, and it also instantly overwrites this "Opgeslagen"
+        // confirmation with a fresh "Opslaan" button.
+        Object.assign(r, update);
       });
       listEl.appendChild(row);
     }
