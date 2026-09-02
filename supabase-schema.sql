@@ -1022,3 +1022,15 @@ create policy "Public can view active empty legs"
 --   );
 --   $$
 -- );
+
+-- Fix: the access-requests admin section in dashboard.html could read
+-- but not approve/reject/delete requests -- only SELECT/INSERT policies
+-- existed, so RLS silently no-op'd the update/delete (no error surfaced,
+-- buttons just appeared to do nothing).
+create policy "admins can update access requests"
+  on public.access_requests for update
+  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin));
+
+create policy "admins can delete access requests"
+  on public.access_requests for delete
+  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin));
