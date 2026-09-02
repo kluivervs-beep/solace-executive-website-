@@ -1046,3 +1046,12 @@ create policy "admins can delete access requests"
 -- has already passed, on every scheduled run, so stale flights don't
 -- linger in the dashboard's list (manually-added rows included, not
 -- just synced ones).
+
+-- Fix: admins could only read their OWN profile row (the "own profile"
+-- policy), so any dashboard view joining another member's profile (the
+-- Inbox member list, in particular) silently only ever showed the admin
+-- themselves. New members with no concierge messages yet also never
+-- appeared in Inbox at all, since it only listed distinct senders.
+create policy "admins can read all profiles"
+  on public.profiles for select
+  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin));

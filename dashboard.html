@@ -1255,7 +1255,10 @@
   const views = document.querySelectorAll('.dash-view');
   const navLinks = document.querySelectorAll('.dash-nav a[data-view]');
 
+  let currentView = null;
+
   function showView(name) {
+    currentView = name;
     views.forEach((v) => { v.hidden = v.dataset.view !== name; });
     navLinks.forEach((a) => a.classList.toggle('is-active', a.dataset.view === name));
     if (name === 'requests') markRequestsSeen();
@@ -1267,6 +1270,27 @@
     if (name === 'empty-legs') loadEmptyLegs();
     if (name === 'billing') loadBilling();
   }
+
+  // Refreshes whichever view (and, in Inbox, whichever open conversation)
+  // staff is currently looking at, so new members/messages/requests show
+  // up on their own instead of needing a manual page reload. Paused
+  // while the tab isn't visible so it doesn't poll in the background.
+  setInterval(() => {
+    if (document.visibilityState !== 'visible') return;
+    if (currentView === 'inbox') {
+      if (inboxSelectedMemberId) {
+        openInboxThread(inboxSelectedMemberId, document.getElementById('inboxThreadName').textContent);
+      } else {
+        loadInboxMembers();
+      }
+    } else if (currentView === 'bookings') {
+      loadBookings();
+    } else if (currentView === 'access-requests') {
+      loadAccessRequests();
+    } else if (currentView === 'empty-legs') {
+      loadEmptyLegs();
+    }
+  }, 15000);
 
   // --- Billing (member view): a simple ledger of what staff have recorded
   // as arranged/settled for this member. No payment is collected here.
@@ -1350,14 +1374,23 @@
   let inboxSelectedMemberId = null;
 
   async function loadInboxMembers() {
-    const { data: rows, error } = await supabase
-      .from('concierge_messages')
-      .select('member_id, content, created_at, profiles!inner(full_name)')
-      .order('created_at', { ascending: false });
+    // Every member should be reachable here, not just the ones who've
+    // already sent a message -- staff wants to see and message new
+    // signups proactively too.
+    const [{ data: messageRows }, { data: profileRows }] = await Promise.all([
+      supabase
+        .from('concierge_messages')
+        .select('member_id, content, created_at')
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('profiles')
+        .select('id, full_name, created_at')
+        .eq('is_admin', false),
+    ]);
 
     const listEl = document.getElementById('inboxMemberList');
     const emptyEl = document.getElementById('inboxMemberEmpty');
-    if (error || !rows || !rows.length) {
+    if (!profileRows || !profileRows.length) {
       emptyEl.hidden = false;
       listEl.querySelectorAll('.inbox-member-item').forEach((el) => el.remove());
       return;
@@ -1365,18 +1398,25 @@
     emptyEl.hidden = true;
 
     const seen = new Map();
-    for (const row of rows) {
+    for (const row of messageRows || []) {
       if (!seen.has(row.member_id)) {
-        seen.set(row.member_id, {
-          memberId: row.member_id,
-          name: row.profiles?.full_name || 'Unnamed member',
-          preview: row.content,
-        });
+        seen.set(row.member_id, { preview: row.content, lastActivity: row.created_at });
       }
     }
 
+    const members = profileRows.map((p) => {
+      const activity = seen.get(p.id);
+      return {
+        memberId: p.id,
+        name: p.full_name || 'Naamloos lid',
+        preview: activity ? activity.preview : 'Nog geen bericht gestuurd',
+        lastActivity: activity ? activity.lastActivity : p.created_at,
+      };
+    });
+    members.sort((a, b) => new Date(b.lastActivity) - new Date(a.lastActivity));
+
     listEl.querySelectorAll('.inbox-member-item').forEach((el) => el.remove());
-    for (const m of seen.values()) {
+    for (const m of members) {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'inbox-member-item' + (m.memberId === inboxSelectedMemberId ? ' is-active' : '');
