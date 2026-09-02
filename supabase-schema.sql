@@ -1107,3 +1107,28 @@ as $$
 $$;
 
 grant execute on function public.hide_own_request(uuid) to authenticated;
+
+-- Birthday bonus: an edge function (birthday-check) finds members whose
+-- birthday is today, awards 250 points via point_transactions (same
+-- ledger the welcome bonus uses), and sends a push notification.
+-- birthday_bonus_year guards against a double-award if it ever runs
+-- twice on the same day.
+alter table public.profiles add column if not exists birthday_bonus_year integer;
+
+-- Scheduled daily at 06:00 UTC (pg_cron + pg_net, same pattern as the
+-- empty-legs sync).
+select cron.schedule(
+  'birthday-check-daily',
+  '0 6 * * *',
+  $$
+  select net.http_post(
+    url := 'https://weiihajterqholxppgsl.supabase.co/functions/v1/birthday-check',
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'Authorization', 'Bearer sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr',
+      'x-sync-secret', '<SYNC_SECRET value from Edge Functions -> Secrets>'
+    ),
+    body := '{}'::jsonb
+  );
+  $$
+);

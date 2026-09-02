@@ -39,6 +39,10 @@ type ParsedFlight = {
   max_passengers: number | null;
   price_from: number;
   active: boolean;
+  origin_code: string | null;
+  origin_country: string | null;
+  destination_code: string | null;
+  destination_country: string | null;
 };
 
 function roundPrice(raw: number) {
@@ -58,6 +62,10 @@ function parseFlights(html: string): ParsedFlight[] {
     const timeMatch = block.match(/om (\d{2}:\d{2})/);
     const priceMatch = block.match(/Vanaf\s*€\s*([\d.]+)/);
     const aircraftMatch = block.match(/<dt>Vliegtuig<\/dt>\s*<dd>([^<]+)<\/dd>/);
+    // The search-index attribute also carries full airport codes/countries
+    // that aren't shown elsewhere on the card, e.g.
+    // "paris, fr (lfpb) tivat, me (lytv) lfpb lytv embraer phenom 300 ...".
+    const searchMatch = block.match(/data-search="([^,]+),\s*(\w+)\s*\(([a-z0-9]+)\)\s+([^,]+),\s*(\w+)\s*\(([a-z0-9]+)\)/i);
 
     if (!hrefMatch || !dateMatch || !routeMatch || !priceMatch || !aircraftMatch) continue;
 
@@ -74,6 +82,10 @@ function parseFlights(html: string): ParsedFlight[] {
       max_passengers: paxMatch ? parseInt(paxMatch[1], 10) : null,
       price_from: roundPrice(rawPrice),
       active: true,
+      origin_code: searchMatch ? searchMatch[3].toUpperCase() : null,
+      origin_country: searchMatch ? searchMatch[2].toUpperCase() : null,
+      destination_code: searchMatch ? searchMatch[6].toUpperCase() : null,
+      destination_country: searchMatch ? searchMatch[5].toUpperCase() : null,
     });
   }
 
