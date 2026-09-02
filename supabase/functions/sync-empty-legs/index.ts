@@ -85,6 +85,12 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ ok: false, error: 'unauthorized' }), { status: 401 });
   }
   try {
+    // Departed flights should disappear from the app/dashboard entirely,
+    // not just get filtered out of the display query. Runs here (rather
+    // than its own cron job) so there's only one scheduled trigger to
+    // manage. Covers manually-added rows too, not just synced ones.
+    await supabase.from('empty_legs').delete().lt('departure_at', new Date().toISOString());
+
     const res = await fetch(SOURCE_URL, {
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; SolaceExecutiveSync/1.0; +https://solaceexecutive.com)' },
     });

@@ -1835,7 +1835,17 @@
       `;
       const approveBtn = row.querySelector('[data-action="approve"]');
       if (approveBtn) approveBtn.addEventListener('click', async () => {
-        await supabase.from('access_requests').update({ status: 'approved' }).eq('id', r.id);
+        approveBtn.disabled = true;
+        approveBtn.textContent = 'Bezig...';
+        const { data, error } = await supabase.functions.invoke('approve-access-request', {
+          body: { request_id: r.id },
+        });
+        if (error || data?.error) {
+          alert('Kon niet goedkeuren: ' + (data?.error || error.message));
+          approveBtn.disabled = false;
+          approveBtn.textContent = 'Goedkeuren';
+          return;
+        }
         loadAccessRequests();
       });
       const rejectBtn = row.querySelector('[data-action="reject"]');

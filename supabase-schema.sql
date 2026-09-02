@@ -1034,3 +1034,15 @@ create policy "admins can update access requests"
 create policy "admins can delete access requests"
   on public.access_requests for delete
   using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin));
+
+-- Approving an access request now actually onboards the person: a new
+-- edge function (approve-access-request) creates their real login
+-- account (or finds their existing one), emails them a branded link to
+-- set a password, and only then marks the request approved. Wired into
+-- dashboard.html's "Goedkeuren" button. Login currently only works on
+-- the website, not the app (not shipped to the App Store yet).
+--
+-- sync-empty-legs also now deletes any empty_legs row whose departure
+-- has already passed, on every scheduled run, so stale flights don't
+-- linger in the dashboard's list (manually-added rows included, not
+-- just synced ones).
