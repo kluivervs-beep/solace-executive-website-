@@ -1158,3 +1158,11 @@ begin
   return new;
 end;
 $$ language plpgsql;
+
+-- The app's live-update subscriptions on public.requests (RequestsScreen,
+-- and now HomeScreen) were silently no-ops until now: postgres_changes
+-- realtime only fires for tables added to the supabase_realtime
+-- publication, and requests was never added. Members had to
+-- pull-to-refresh or leave/return to a screen to see a staff approval
+-- or added detail.
+alter publication supabase_realtime add table public.requests;
