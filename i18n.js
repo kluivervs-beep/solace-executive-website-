@@ -120,6 +120,9 @@
       'whatsapp.email': 'Of mail naar <a href="mailto:hello@solaceexecutive.com">hello@solaceexecutive.com</a>',
 
       'login.meta.title': 'Inloggen | Solace Executive',
+      'login.appteaser.badge': 'App komt eraan',
+      'login.appteaser.title': 'Uw concierge, voortaan in uw broekzak',
+      'login.appteaser.body': 'Binnenkort verhuist het ledenportaal naar de Solace Executive app. Log voor nu nog even hieronder in via de website.',
       'login.title': 'Ledenportaal',
       'login.sub': 'Log in met de gegevens die u van ons heeft ontvangen.',
       'login.email': 'E-mail',
@@ -438,6 +441,9 @@
       'whatsapp.email': 'Or email <a href="mailto:hello@solaceexecutive.com">hello@solaceexecutive.com</a>',
 
       'login.meta.title': 'Log in | Solace Executive',
+      'login.appteaser.badge': 'App coming soon',
+      'login.appteaser.title': 'Your concierge, now in your pocket',
+      'login.appteaser.body': 'The member portal is moving to the Solace Executive app soon. For now, please log in below via the website.',
       'login.title': 'Member portal',
       'login.sub': 'Log in with the details we sent you.',
       'login.email': 'Email',

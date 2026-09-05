@@ -94,6 +94,125 @@
   .login-forgot-link { text-align: center; margin-top: var(--space-3); font-size: 13px; }
   .login-forgot-link a { color: var(--color-gold-light); text-decoration: underline; text-underline-offset: 3px; }
   .login-forgot-sub { color: var(--color-ink-muted); font-size: 13.5px; line-height: 1.6; margin-bottom: var(--space-3); }
+
+  /* --- App teaser --- */
+  .app-teaser {
+    position: relative;
+    text-align: center;
+    padding: 8px 4px 38px;
+    margin-bottom: var(--space-4);
+  }
+  .app-teaser-glow {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, rgba(180,146,61,0.22) 0%, rgba(180,146,61,0) 70%);
+    animation: teaserPulse 5s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes teaserPulse {
+    0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+    50% { opacity: 1; transform: translateX(-50%) scale(1.08); }
+  }
+  .app-teaser-phone {
+    position: relative;
+    width: 148px;
+    margin: 0 auto 18px;
+    animation: teaserFloat 6s ease-in-out infinite;
+  }
+  @keyframes teaserFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-9px); }
+  }
+  .app-teaser-frame {
+    width: 148px;
+    height: 300px;
+    border-radius: 26px;
+    background: linear-gradient(165deg, #16232E 0%, #0B141B 100%);
+    border: 1px solid rgba(212,190,140,0.22);
+    box-shadow: 0 26px 60px rgba(0,0,0,0.5);
+    overflow: hidden;
+    position: relative;
+    padding: 20px 12px 0;
+  }
+  .app-teaser-frame::before {
+    content: '';
+    position: absolute;
+    top: 9px; left: 50%;
+    transform: translateX(-50%);
+    width: 46px; height: 12px;
+    border-radius: 8px;
+    background: #000;
+  }
+  .app-teaser-mono { width: 22px; height: 22px; margin: 10px auto 8px; opacity: 0.92; }
+  .app-teaser-line { height: 6px; border-radius: 3px; background: rgba(245,241,230,0.12); margin: 0 auto 7px; }
+  .app-teaser-card {
+    margin-top: 10px;
+    height: 68px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(180,146,61,0.22), rgba(180,146,61,0.05));
+    border: 1px solid rgba(212,190,140,0.18);
+    position: relative;
+    overflow: hidden;
+  }
+  .app-teaser-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -60%;
+    width: 40%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,0.14), transparent);
+    animation: teaserShimmer 4.5s ease-in-out infinite;
+  }
+  @keyframes teaserShimmer {
+    0% { left: -60%; }
+    45%, 100% { left: 130%; }
+  }
+  .app-teaser-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-sans);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-gold-light);
+    margin-bottom: 10px;
+  }
+  .app-teaser-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--color-gold-light);
+    box-shadow: 0 0 0 0 rgba(199,162,92,0.6);
+    animation: teaserDot 2s ease-in-out infinite;
+  }
+  @keyframes teaserDot {
+    0% { box-shadow: 0 0 0 0 rgba(199,162,92,0.5); }
+    70% { box-shadow: 0 0 0 7px rgba(199,162,92,0); }
+    100% { box-shadow: 0 0 0 0 rgba(199,162,92,0); }
+  }
+  .app-teaser h2 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 22px;
+    color: var(--color-ink);
+    margin: 0 0 8px;
+  }
+  .app-teaser p {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--color-ink-muted);
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .app-teaser-glow, .app-teaser-phone, .app-teaser-card::after, .app-teaser-badge::before { animation: none; }
+  }
 </style>
 </head>
 <body>
@@ -111,6 +230,21 @@
       <span class="brand-sub">EXECUTIVE</span>
     </span>
   </a>
+
+  <div class="app-teaser">
+    <div class="app-teaser-glow"></div>
+    <div class="app-teaser-phone">
+      <div class="app-teaser-frame">
+        <svg class="app-teaser-mono" viewBox="0 0 24 24" fill="none" stroke="#C7A25C" stroke-width="1.4"><circle cx="12" cy="12" r="10"/><path d="M9 8c0 2.5 2 3 2 5s-1 3-1 3M15 16c0-2.5-2-3-2-5s1-3 1-3"/></svg>
+        <div class="app-teaser-line" style="width:60%;"></div>
+        <div class="app-teaser-line" style="width:40%; opacity:0.6;"></div>
+        <div class="app-teaser-card"></div>
+      </div>
+    </div>
+    <div class="app-teaser-badge" data-i18n="login.appteaser.badge">App komt eraan</div>
+    <h2 data-i18n="login.appteaser.title">Uw concierge, voortaan in uw broekzak</h2>
+    <p data-i18n="login.appteaser.body">Binnenkort verhuist het ledenportaal naar de Solace Executive app. Log voor nu nog even hieronder in via de website.</p>
+  </div>
 
   <div class="login-card">
     <h1 data-i18n="login.title">Ledenportaal</h1>
