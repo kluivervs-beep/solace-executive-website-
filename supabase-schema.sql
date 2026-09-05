@@ -1289,3 +1289,9 @@ begin
   );
 end;
 $$;
+
+-- Admins had UPDATE/SELECT on requests but no DELETE policy at all, so the
+-- Beheer dashboard had no way to actually remove a test/junk request --
+-- only cancel (status change) or member-side hide, both of which leave the
+-- row in place. Added a straightforward is_admin()-gated DELETE policy.
+create policy "admins can delete requests" on public.requests for delete using (public.is_admin());

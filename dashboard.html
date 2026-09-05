@@ -96,6 +96,7 @@
   .req-status { font-size: 11px; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.03em; white-space: nowrap; }
   .req-status--review { background: rgba(180, 146, 61, 0.15); color: var(--color-gold-light); }
   .req-status--done { background: rgba(69, 108, 105, 0.2); color: #8fd0c8; }
+  .req-status--cancelled { background: rgba(160, 160, 160, 0.12); color: #9aa0a6; }
   .request-empty { padding: var(--space-4) var(--space-3); color: var(--color-ink-muted); font-size: 13.5px; text-align: center; }
   .request-show-more {
     display: block;
@@ -1097,7 +1098,7 @@
 
   const REWARDS_LIVE = true;
 
-  const STATUS_CLASS = { review: 'req-status--review', confirmed: 'req-status--done', done: 'req-status--done' };
+  const STATUS_CLASS = { review: 'req-status--review', confirmed: 'req-status--done', done: 'req-status--done', cancelled: 'req-status--cancelled' };
   const STATUS_RANK = { review: 0, confirmed: 1, done: 2 };
 
   function timeAgo(isoDate) {
@@ -2081,7 +2082,10 @@
           <div class="field"><label>Aankomst</label><input type="text" data-field="arrival_info" value="${escapeHtml(r.arrival_info || '')}" placeholder="bv. Black Car, 19:30"></div>
           <div class="field"><label>Locatie</label><input type="text" data-field="venue_info" value="${escapeHtml(r.venue_info || '')}" placeholder="bv. Nobu Amsterdam, VIP tafel"></div>
           <div class="field"><label>Dresscode</label><input type="text" data-field="dress_code" value="${escapeHtml(r.dress_code || '')}" placeholder="bv. Smart Casual"></div>
-          <button type="button" class="btn btn-primary btn-small" data-action="save-booking">Opslaan</button>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <button type="button" class="btn btn-primary btn-small" data-action="save-booking">Opslaan</button>
+            <button type="button" class="btn btn-small" data-action="delete-booking" style="border:1px solid rgba(220,90,90,0.4); color:#e08080; background:transparent;">Verwijderen</button>
+          </div>
         </div>
       `;
       row.querySelector('[data-action="save-booking"]').addEventListener('click', async (e) => {
@@ -2114,6 +2118,21 @@
         // list, and it also instantly overwrites this "Opgeslagen"
         // confirmation with a fresh "Opslaan" button.
         Object.assign(r, update);
+      });
+      row.querySelector('[data-action="delete-booking"]').addEventListener('click', async (e) => {
+        const confirmed = window.confirm(`Weet je zeker dat je deze aanvraag permanent wil verwijderen?\n\n${r.profiles?.full_name || 'Onbekend lid'} · ${r.service}`);
+        if (!confirmed) return;
+        e.target.disabled = true;
+        e.target.textContent = 'Bezig...';
+        const { error } = await supabase.from('requests').delete().eq('id', r.id);
+        if (error) {
+          e.target.disabled = false;
+          e.target.textContent = 'Verwijderen';
+          window.alert('Verwijderen mislukt: ' + error.message);
+          return;
+        }
+        allBookings = allBookings.filter((row) => row.id !== r.id);
+        renderBookings();
       });
       listEl.appendChild(row);
     }
