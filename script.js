@@ -226,6 +226,20 @@
   const successMsg = document.getElementById('formSuccess');
   const formErrorMsg = document.getElementById('formError');
 
+  const referralField = document.getElementById('referralSourceField');
+  if (referralField) {
+    const ref = new URLSearchParams(window.location.search).get('ref');
+    if (ref) {
+      referralField.value = ref;
+      try { sessionStorage.setItem('solace_referral_source', ref); } catch (e) {}
+    } else {
+      try {
+        const stored = sessionStorage.getItem('solace_referral_source');
+        if (stored) referralField.value = stored;
+      } catch (e) {}
+    }
+  }
+
   const validators = {
     name: (v) => v.trim().length > 1,
     email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
