@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uitnodiging | Solace Executive</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(180,146,61,0.10), transparent 60%),
+      linear-gradient(180deg, #0B141B 0%, #0F1B24 55%, #0C161D 100%);
+    padding: var(--space-4);
+  }
+  .join-wrap { width: 100%; max-width: 420px; text-align: center; }
+  .join-mark { width: 40px; height: 40px; margin-bottom: var(--space-3); }
+  .join-eyebrow {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--color-gold-light);
+    margin-bottom: var(--space-2);
+  }
+  .join-title {
+    font-family: 'Cormorant', serif;
+    font-style: italic;
+    font-size: 30px;
+    color: var(--color-ink);
+    margin-bottom: var(--space-2);
+  }
+  .join-body {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--color-ink-muted);
+    margin-bottom: var(--space-4);
+  }
+  .join-code-box {
+    border: 1px solid var(--color-gold-dim);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: var(--space-4);
+    background: rgba(255,255,255,0.02);
+  }
+  .join-code-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    margin-bottom: 8px;
+  }
+  .join-code-value {
+    font-family: 'Cormorant', serif;
+    font-size: 34px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--color-gold-light);
+  }
+  .join-hint {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12.5px;
+    color: var(--color-ink-muted);
+    line-height: 1.6;
+  }
+  .join-error {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: var(--color-ink-muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="join-wrap">
+  <img class="join-mark" src="assets/icons/monogram.svg" alt="">
+  <div id="joinContent">
+    <div class="join-eyebrow">Solace Executive</div>
+    <div class="join-title">U bent uitgenodigd</div>
+    <p class="join-body">Open de Solace Executive app. Als deze op uw toestel staat, opent hij vanzelf. Zo niet, voer onderstaande code handmatig in bij "Toegang aanvragen".</p>
+    <div class="join-code-box">
+      <div class="join-code-label">Uw code</div>
+      <div class="join-code-value" id="joinCode">&mdash;</div>
+    </div>
+    <p class="join-hint">De app opent automatisch als deze geïnstalleerd is. Gebeurt er niets binnen een paar seconden, open de app zelf en vul de code hierboven in.</p>
+  </div>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const code = (params.get('code') || '').trim().toUpperCase();
+  const codeEl = document.getElementById('joinCode');
+
+  if (!code) {
+    document.getElementById('joinContent').innerHTML =
+      '<p class="join-error">Deze uitnodiging mist een code. Vraag de persoon die u uitnodigde om de link opnieuw te sturen.</p>';
+  } else {
+    codeEl.textContent = code;
+    // Attempt to hand off straight to the app. A bare custom-scheme link
+    // pasted directly in chat doesn't render as tappable in WhatsApp/
+    // iMessage, so this page exists specifically to be the real https://
+    // link people share instead -- it always opens as a normal link, and
+    // then does the scheme redirect itself, with the code still visible
+    // as a fallback if the app isn't installed.
+    window.location.href = 'solaceexecutive://join?code=' + encodeURIComponent(code);
+  }
+</script>
+
+</body>
+</html>
