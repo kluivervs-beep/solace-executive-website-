@@ -1295,3 +1295,12 @@ $$;
 -- only cancel (status change) or member-side hide, both of which leave the
 -- row in place. Added a straightforward is_admin()-gated DELETE policy.
 create policy "admins can delete requests" on public.requests for delete using (public.is_admin());
+
+-- Home screen's activity_feed query never filtered on `active`, relying only
+-- on the fn_activity_from_experience trigger's own delete-on-inactive
+-- behavior. That trigger is fine, but three leftover test rows in
+-- member_experiences (two malformed titles, one duplicate) had already
+-- upserted three near-identical "Personal shopping, Amsterdam" cards into
+-- the shared, all-members activity feed. Cleaned up the source rows and
+-- their activity_feed upserts; the app query now also filters active=true
+-- defensively.
