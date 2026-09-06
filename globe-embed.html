@@ -46,15 +46,15 @@
     left: 0;
     z-index: 2;
     font-family: -apple-system, sans-serif;
-    font-size: 10px;
-    font-weight: 600;
+    font-size: 11px;
+    font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: #C7A25C;
     text-shadow: 0 1px 6px rgba(11, 20, 27, 0.9);
     white-space: nowrap;
     pointer-events: none;
-    transition: opacity 400ms ease-out;
+    transition: opacity 400ms ease-out, color 200ms ease-out;
     will-change: transform, opacity;
   }
   .globe-label::before {
@@ -67,50 +67,6 @@
     margin-left: -1.5px;
     background: #C7A25C;
     border-radius: 50%;
-  }
-  .globe-tooltip {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 4;
-    min-width: 176px;
-    background: rgba(15, 27, 36, 0.95);
-    border: 1px solid rgba(180,146,61,0.35);
-    border-radius: 10px;
-    padding: 11px 13px;
-    opacity: 0;
-    transition: opacity 250ms ease-out;
-    will-change: transform, opacity;
-  }
-  .globe-tooltip-name {
-    display: block;
-    font-family: -apple-system, sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #C7A25C;
-    margin-bottom: 3px;
-  }
-  .globe-tooltip-blurb {
-    display: block;
-    font-family: -apple-system, sans-serif;
-    font-size: 12px;
-    line-height: 1.4;
-    color: #A9B4BB;
-    margin-bottom: 9px;
-  }
-  .globe-tooltip-cta {
-    display: block;
-    width: 100%;
-    border: none;
-    border-radius: 999px;
-    background: #C7A25C;
-    color: #241B0C;
-    font-family: -apple-system, sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    padding: 8px 0;
   }
 </style>
 </head>
@@ -147,18 +103,37 @@
     { name: 'Tokyo', lat: 35.68, lon: 139.65, blurb: 'Regional hub, Asia-Pacific' },
     { name: 'Shanghai', lat: 31.23, lon: 121.47, blurb: 'Fleet partner on the ground' },
     { name: 'Sydney', lat: -33.87, lon: 151.21, blurb: 'Fleet partner on the ground' },
+    { name: 'Munich', lat: 48.14, lon: 11.58, blurb: 'Fleet partner on the ground' },
+    { name: 'Copenhagen', lat: 55.68, lon: 12.57, blurb: 'Fleet partner on the ground' },
+    { name: 'Athens', lat: 37.98, lon: 23.73, blurb: 'Yacht charters, Aegean Sea' },
+    { name: 'Ibiza', lat: 38.91, lon: 1.43, blurb: 'Yacht charters, Mediterranean' },
+    { name: 'Marrakech', lat: 31.63, lon: -7.99, blurb: 'Regional hub, North Africa' },
+    { name: 'Cape Town', lat: -33.92, lon: 18.42, blurb: 'Regional hub, Southern Africa' },
+    { name: 'Chicago', lat: 41.88, lon: -87.63, blurb: 'Fleet partner on the ground' },
+    { name: 'Las Vegas', lat: 36.17, lon: -115.14, blurb: 'Fleet partner on the ground' },
+    { name: 'Toronto', lat: 43.65, lon: -79.38, blurb: 'Regional hub, Canada' },
+    { name: 'Mexico City', lat: 19.43, lon: -99.13, blurb: 'Regional hub, Latin America' },
+    { name: 'Buenos Aires', lat: -34.6, lon: -58.38, blurb: 'Regional hub, South America' },
+    { name: 'Seoul', lat: 37.57, lon: 126.98, blurb: 'Regional hub, Asia-Pacific' },
+    { name: 'Bangkok', lat: 13.76, lon: 100.5, blurb: 'Regional hub, Southeast Asia' },
+    { name: 'Mumbai', lat: 19.08, lon: 72.88, blurb: 'Regional hub, South Asia' },
   ];
 
   const ROUTES = [
     ['Amsterdam', 'London'], ['Amsterdam', 'Paris'], ['Amsterdam', 'Berlin'],
-    ['Amsterdam', 'Dubai'], ['Amsterdam', 'New York'], ['Berlin', 'Vienna'],
-    ['Vienna', 'Zurich'], ['Zurich', 'Milan'], ['Geneva', 'Monaco'],
-    ['Monaco', 'Rome'], ['Paris', 'Madrid'], ['Madrid', 'Barcelona'],
+    ['Amsterdam', 'Dubai'], ['Amsterdam', 'New York'], ['Amsterdam', 'Copenhagen'],
+    ['Berlin', 'Vienna'], ['Berlin', 'Munich'], ['Vienna', 'Zurich'], ['Zurich', 'Milan'],
+    ['Geneva', 'Monaco'], ['Monaco', 'Rome'], ['Rome', 'Athens'], ['Paris', 'Madrid'],
+    ['Paris', 'Ibiza'], ['Madrid', 'Barcelona'], ['Barcelona', 'Ibiza'],
     ['Barcelona', 'Milan'], ['Paris', 'Milan'], ['New York', 'Miami'],
-    ['New York', 'Los Angeles'], ['Los Angeles', 'Tokyo'], ['Miami', 'Sao Paulo'],
-    ['Dubai', 'Riyadh'], ['Dubai', 'Doha'], ['Dubai', 'Singapore'],
-    ['Dubai', 'Hong Kong'], ['Hong Kong', 'Tokyo'], ['Hong Kong', 'Shanghai'],
-    ['Singapore', 'Sydney'], ['Hong Kong', 'Sydney'],
+    ['New York', 'Chicago'], ['New York', 'Toronto'], ['New York', 'Los Angeles'],
+    ['Los Angeles', 'Las Vegas'], ['Los Angeles', 'Tokyo'], ['Miami', 'Sao Paulo'],
+    ['Miami', 'Mexico City'], ['Sao Paulo', 'Buenos Aires'], ['Dubai', 'Riyadh'],
+    ['Dubai', 'Doha'], ['Dubai', 'Singapore'], ['Dubai', 'Hong Kong'],
+    ['Dubai', 'Marrakech'], ['Dubai', 'Mumbai'], ['Marrakech', 'Cape Town'],
+    ['Hong Kong', 'Tokyo'], ['Hong Kong', 'Shanghai'], ['Hong Kong', 'Seoul'],
+    ['Hong Kong', 'Bangkok'], ['Singapore', 'Bangkok'], ['Singapore', 'Sydney'],
+    ['Hong Kong', 'Sydney'],
   ];
 
   function postToApp(payload) {
@@ -221,7 +196,7 @@
       const nodeColors = new Float32Array(CITIES.length * 3);
       for (let i = 0; i < nodeColors.length; i += 3) { nodeColors[i] = 0.96; nodeColors[i + 1] = 0.91; nodeColors[i + 2] = 0.78; }
       nodeGeo.setAttribute('color', new THREE.Float32BufferAttribute(nodeColors, 3));
-      const nodeMat = new THREE.PointsMaterial({ vertexColors: true, size: 0.09, transparent: true, opacity: 0.95 });
+      const nodeMat = new THREE.PointsMaterial({ vertexColors: true, size: 0.15, transparent: true, opacity: 0.95 });
       const cityPoints = new THREE.Points(nodeGeo, nodeMat);
       globeGroup.add(cityPoints);
 
@@ -249,24 +224,15 @@
         labelEls[city.name] = el;
       });
 
-      const tooltipEl = document.createElement('div');
-      tooltipEl.className = 'globe-tooltip';
-      tooltipEl.innerHTML =
-        '<span class="globe-tooltip-name"></span>' +
-        '<span class="globe-tooltip-blurb"></span>' +
-        '<button type="button" class="globe-tooltip-cta">Ask the concierge</button>';
-      hero.appendChild(tooltipEl);
-      const tooltipNameEl = tooltipEl.querySelector('.globe-tooltip-name');
-      const tooltipBlurbEl = tooltipEl.querySelector('.globe-tooltip-blurb');
-      const tooltipCtaEl = tooltipEl.querySelector('.globe-tooltip-cta');
-
+      // Details now live in a native bottom sheet on the app side (photo,
+      // blurb, "Ask the concierge" button) -- this page's only job on tap
+      // is to tell the app which city, then briefly highlight its label so
+      // the tap still feels acknowledged before the sheet appears.
       let selectedCity = null;
-      tooltipCtaEl.addEventListener('click', () => {
-        if (selectedCity) postToApp({ type: 'ask-concierge', city: selectedCity.name });
-      });
+      let selectedUntil = 0;
 
       const raycaster = new THREE.Raycaster();
-      raycaster.params.Points.threshold = 0.16;
+      raycaster.params.Points.threshold = 0.26;
       const pointerNdc = new THREE.Vector2(-10, -10);
 
       function pickCityAt(clientX, clientY) {
@@ -294,8 +260,10 @@
 
       window.addEventListener('pointerdown', (e) => {
         const picked = pickCityAt(e.clientX, e.clientY);
-        selectedCity = selectedCity === picked ? null : picked;
-        if (selectedCity) postToApp({ type: 'city-selected', city: selectedCity.name });
+        if (!picked) return;
+        selectedCity = picked;
+        selectedUntil = Date.now() + 900;
+        postToApp({ type: 'city-selected', city: picked.name });
       });
 
       const worldPos = new THREE.Vector3();
@@ -317,27 +285,17 @@
       }
 
       function updateLabels() {
+        if (selectedCity && Date.now() > selectedUntil) selectedCity = null;
+
         CITIES.forEach((city) => {
           const { facing, offsetX, offsetY } = projectCity(city);
           const el = labelEls[city.name];
-          if (facing < 0.08 || selectedCity === city) { el.style.opacity = '0'; return; }
-          el.style.opacity = String(Math.min(1, (facing - 0.08) / 0.35) * 0.85);
-          el.style.transform = `translate3d(${offsetX.toFixed(1)}px, ${offsetY.toFixed(1)}px, 0) translate(-50%, -140%)`;
+          const isSelected = selectedCity === city;
+          if (facing < 0.08) { el.style.opacity = '0'; return; }
+          el.style.opacity = isSelected ? '1' : String(Math.min(1, (facing - 0.08) / 0.35) * 0.85);
+          el.style.color = isSelected ? '#F5E9C8' : '#C7A25C';
+          el.style.transform = `translate3d(${offsetX.toFixed(1)}px, ${offsetY.toFixed(1)}px, 0) translate(-50%, -140%) scale(${isSelected ? 1.3 : 1})`;
         });
-
-        if (selectedCity) {
-          const { facing, offsetX, offsetY } = projectCity(selectedCity);
-          if (facing < 0.08) {
-            tooltipEl.style.opacity = '0';
-          } else {
-            tooltipNameEl.textContent = selectedCity.name;
-            tooltipBlurbEl.textContent = selectedCity.blurb || '';
-            tooltipEl.style.opacity = '1';
-            tooltipEl.style.transform = `translate3d(${offsetX.toFixed(1)}px, ${offsetY.toFixed(1)}px, 0) translate(-50%, -155%)`;
-          }
-        } else {
-          tooltipEl.style.opacity = '0';
-        }
       }
 
       let animating = true;
