@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Solace Globe</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: #0F1B24;
+    overflow: hidden;
+  }
+  .hero {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(96vw, 96vh);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    display: none;
+  }
+  .hero-canvas.is-active { display: block; }
+  .fallback {
+    font-family: -apple-system, sans-serif;
+    color: #A9B4BB;
+    font-size: 13px;
+    text-align: center;
+    padding: 0 24px;
+  }
+  .globe-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    font-family: -apple-system, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #C7A25C;
+    text-shadow: 0 1px 6px rgba(11, 20, 27, 0.9);
+    white-space: nowrap;
+    pointer-events: none;
+    transition: opacity 400ms ease-out;
+    will-change: transform, opacity;
+  }
+  .globe-label::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -8px;
+    width: 3px;
+    height: 3px;
+    margin-left: -1.5px;
+    background: #C7A25C;
+    border-radius: 50%;
+  }
+  .globe-tooltip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 4;
+    min-width: 176px;
+    background: rgba(15, 27, 36, 0.95);
+    border: 1px solid rgba(180,146,61,0.35);
+    border-radius: 10px;
+    padding: 11px 13px;
+    opacity: 0;
+    transition: opacity 250ms ease-out;
+    will-change: transform, opacity;
+  }
+  .globe-tooltip-name {
+    display: block;
+    font-family: -apple-system, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #C7A25C;
+    margin-bottom: 3px;
+  }
+  .globe-tooltip-blurb {
+    display: block;
+    font-family: -apple-system, sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #A9B4BB;
+    margin-bottom: 9px;
+  }
+  .globe-tooltip-cta {
+    display: block;
+    width: 100%;
+    border: none;
+    border-radius: 999px;
+    background: #C7A25C;
+    color: #241B0C;
+    font-family: -apple-system, sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 8px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <canvas id="heroCanvas" class="hero-canvas"></canvas>
+  <div id="fallback" class="fallback">Loading globe…</div>
+</div>
+
+<script>
+  const CITIES = [
+    { name: 'Amsterdam', lat: 52.37, lon: 4.9, blurb: 'Home base, direct reach' },
+    { name: 'London', lat: 51, lon: 0, blurb: 'Core market, standing route' },
+    { name: 'Paris', lat: 48.85, lon: 2.35, blurb: 'Core market, standing route' },
+    { name: 'Berlin', lat: 52.52, lon: 13.405, blurb: 'Fleet partner on the ground' },
+    { name: 'Vienna', lat: 48.21, lon: 16.37, blurb: 'Fleet partner on the ground' },
+    { name: 'Geneva', lat: 46.2, lon: 6.14, blurb: 'Private jets and yacht charters' },
+    { name: 'Zurich', lat: 47.38, lon: 8.54, blurb: 'Private jets and yacht charters' },
+    { name: 'Milan', lat: 45.46, lon: 9.19, blurb: 'Fleet partner on the ground' },
+    { name: 'Monaco', lat: 43.74, lon: 7.42, blurb: 'Yacht charters, Mediterranean' },
+    { name: 'Rome', lat: 41.9, lon: 12.5, blurb: 'Fleet partner on the ground' },
+    { name: 'Madrid', lat: 40.42, lon: -3.7, blurb: 'Fleet partner on the ground' },
+    { name: 'Barcelona', lat: 41.39, lon: 2.17, blurb: 'Yacht charters, Mediterranean' },
+    { name: 'Dubai', lat: 25.2, lon: 55.27, blurb: 'Regional hub, Middle East' },
+    { name: 'Riyadh', lat: 24.71, lon: 46.68, blurb: 'Regional hub, Middle East' },
+    { name: 'Doha', lat: 25.29, lon: 51.53, blurb: 'Regional hub, Middle East' },
+    { name: 'New York', lat: 40.71, lon: -74.0, blurb: 'Fleet partner on the ground' },
+    { name: 'Miami', lat: 25.76, lon: -80.19, blurb: 'Yacht charters and transport' },
+    { name: 'Los Angeles', lat: 34.05, lon: -118.24, blurb: 'Fleet partner on the ground' },
+    { name: 'Sao Paulo', lat: -23.55, lon: -46.63, blurb: 'Regional hub, South America' },
+    { name: 'Singapore', lat: 1.35, lon: 103.82, blurb: 'Regional hub, Asia-Pacific' },
+    { name: 'Hong Kong', lat: 22.32, lon: 114.17, blurb: 'Fleet partner on the ground' },
+    { name: 'Tokyo', lat: 35.68, lon: 139.65, blurb: 'Regional hub, Asia-Pacific' },
+    { name: 'Shanghai', lat: 31.23, lon: 121.47, blurb: 'Fleet partner on the ground' },
+    { name: 'Sydney', lat: -33.87, lon: 151.21, blurb: 'Fleet partner on the ground' },
+  ];
+
+  const ROUTES = [
+    ['Amsterdam', 'London'], ['Amsterdam', 'Paris'], ['Amsterdam', 'Berlin'],
+    ['Amsterdam', 'Dubai'], ['Amsterdam', 'New York'], ['Berlin', 'Vienna'],
+    ['Vienna', 'Zurich'], ['Zurich', 'Milan'], ['Geneva', 'Monaco'],
+    ['Monaco', 'Rome'], ['Paris', 'Madrid'], ['Madrid', 'Barcelona'],
+    ['Barcelona', 'Milan'], ['Paris', 'Milan'], ['New York', 'Miami'],
+    ['New York', 'Los Angeles'], ['Los Angeles', 'Tokyo'], ['Miami', 'Sao Paulo'],
+    ['Dubai', 'Riyadh'], ['Dubai', 'Doha'], ['Dubai', 'Singapore'],
+    ['Dubai', 'Hong Kong'], ['Hong Kong', 'Tokyo'], ['Hong Kong', 'Shanghai'],
+    ['Singapore', 'Sydney'], ['Hong Kong', 'Sydney'],
+  ];
+
+  function postToApp(payload) {
+    if (window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(JSON.stringify(payload));
+    }
+  }
+
+  function latLonToVector3(THREE, lat, lon, radius) {
+    const phi = (90 - lat) * (Math.PI / 180);
+    const theta = (lon + 180) * (Math.PI / 180);
+    return new THREE.Vector3(
+      -radius * Math.sin(phi) * Math.cos(theta),
+      radius * Math.cos(phi),
+      radius * Math.sin(phi) * Math.sin(theta)
+    );
+  }
+
+  async function init() {
+    const canvas = document.getElementById('heroCanvas');
+    const hero = document.querySelector('.hero');
+    const fallback = document.getElementById('fallback');
+
+    const testCtx = canvas.getContext('webgl2') || canvas.getContext('webgl');
+    if (!testCtx) { fallback.textContent = 'Your device cannot show the 3D globe.'; return; }
+
+    let THREE;
+    try {
+      THREE = await import('https://unpkg.com/three@0.160.0/build/three.module.js');
+    } catch (err) {
+      fallback.textContent = 'Could not load the globe.';
+      return;
+    }
+
+    try {
+      fallback.style.display = 'none';
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+      camera.position.set(0, 0, 6.4);
+
+      const globeGroup = new THREE.Group();
+      const wireMat = new THREE.MeshBasicMaterial({ color: 0xb4923d, wireframe: true, transparent: true, opacity: 0.34 });
+      globeGroup.add(new THREE.Mesh(new THREE.SphereGeometry(2, 28, 18), wireMat));
+      const haloMat = new THREE.MeshBasicMaterial({ color: 0xd8bd7c, wireframe: true, transparent: true, opacity: 0.08 });
+      globeGroup.add(new THREE.Mesh(new THREE.SphereGeometry(2.08, 20, 14), haloMat));
+
+      const NODE_RADIUS = 2.02;
+      const cityBase = {};
+      const nodePositions = [];
+      CITIES.forEach((city) => {
+        const v = latLonToVector3(THREE, city.lat, city.lon, NODE_RADIUS);
+        cityBase[city.name] = v;
+        nodePositions.push(v.x, v.y, v.z);
+      });
+      const nodeGeo = new THREE.BufferGeometry();
+      nodeGeo.setAttribute('position', new THREE.Float32BufferAttribute(nodePositions, 3));
+      const nodeColors = new Float32Array(CITIES.length * 3);
+      for (let i = 0; i < nodeColors.length; i += 3) { nodeColors[i] = 0.96; nodeColors[i + 1] = 0.91; nodeColors[i + 2] = 0.78; }
+      nodeGeo.setAttribute('color', new THREE.Float32BufferAttribute(nodeColors, 3));
+      const nodeMat = new THREE.PointsMaterial({ vertexColors: true, size: 0.09, transparent: true, opacity: 0.95 });
+      const cityPoints = new THREE.Points(nodeGeo, nodeMat);
+      globeGroup.add(cityPoints);
+
+      ROUTES.forEach(([fromName, toName]) => {
+        const from = cityBase[fromName];
+        const to = cityBase[toName];
+        if (!from || !to) return;
+        const mid = from.clone().add(to).multiplyScalar(0.5);
+        mid.setLength(NODE_RADIUS * 1.28);
+        const curve = new THREE.QuadraticBezierCurve3(from, mid, to);
+        const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(24));
+        const mat = new THREE.LineBasicMaterial({ color: 0xd8bd7c, transparent: true, opacity: 0.16 });
+        globeGroup.add(new THREE.Line(geo, mat));
+      });
+
+      scene.add(globeGroup);
+
+      const labelEls = {};
+      CITIES.forEach((city) => {
+        const el = document.createElement('span');
+        el.className = 'globe-label';
+        el.textContent = city.name;
+        el.style.opacity = '0';
+        hero.appendChild(el);
+        labelEls[city.name] = el;
+      });
+
+      const tooltipEl = document.createElement('div');
+      tooltipEl.className = 'globe-tooltip';
+      tooltipEl.innerHTML =
+        '<span class="globe-tooltip-name"></span>' +
+        '<span class="globe-tooltip-blurb"></span>' +
+        '<button type="button" class="globe-tooltip-cta">Ask the concierge</button>';
+      hero.appendChild(tooltipEl);
+      const tooltipNameEl = tooltipEl.querySelector('.globe-tooltip-name');
+      const tooltipBlurbEl = tooltipEl.querySelector('.globe-tooltip-blurb');
+      const tooltipCtaEl = tooltipEl.querySelector('.globe-tooltip-cta');
+
+      let selectedCity = null;
+      tooltipCtaEl.addEventListener('click', () => {
+        if (selectedCity) postToApp({ type: 'ask-concierge', city: selectedCity.name });
+      });
+
+      const raycaster = new THREE.Raycaster();
+      raycaster.params.Points.threshold = 0.16;
+      const pointerNdc = new THREE.Vector2(-10, -10);
+
+      function pickCityAt(clientX, clientY) {
+        const rect = canvas.getBoundingClientRect();
+        if (clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom) return null;
+        pointerNdc.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+        pointerNdc.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(pointerNdc, camera);
+        const hits = raycaster.intersectObject(cityPoints);
+        if (!hits.length) return null;
+        const index = hits[0].index;
+        return typeof index === 'number' ? CITIES[index] : null;
+      }
+
+      function resize() {
+        const rect = canvas.getBoundingClientRect();
+        const size = Math.max(1, rect.width);
+        renderer.setSize(size, size, false);
+        camera.aspect = 1;
+        camera.updateProjectionMatrix();
+      }
+      canvas.classList.add('is-active');
+      resize();
+      window.addEventListener('resize', resize);
+
+      window.addEventListener('pointerdown', (e) => {
+        const picked = pickCityAt(e.clientX, e.clientY);
+        selectedCity = selectedCity === picked ? null : picked;
+        if (selectedCity) postToApp({ type: 'city-selected', city: selectedCity.name });
+      });
+
+      const worldPos = new THREE.Vector3();
+      function projectCity(city) {
+        const canvasRect = canvas.getBoundingClientRect();
+        const heroRect = hero.getBoundingClientRect();
+        const base = cityBase[city.name];
+        worldPos.copy(base).applyMatrix4(globeGroup.matrixWorld);
+        const outward = worldPos.clone().normalize();
+        const towardCam = camera.position.clone().sub(worldPos).normalize();
+        const facing = outward.dot(towardCam);
+        const ndc = worldPos.clone().project(camera);
+        const px = (ndc.x * 0.5 + 0.5) * canvasRect.width;
+        const py = (1 - (ndc.y * 0.5 + 0.5)) * canvasRect.height;
+        const margin = 44;
+        const offsetX = Math.min(heroRect.width - margin, Math.max(margin, canvasRect.left - heroRect.left + px));
+        const offsetY = canvasRect.top - heroRect.top + py;
+        return { facing, offsetX, offsetY };
+      }
+
+      function updateLabels() {
+        CITIES.forEach((city) => {
+          const { facing, offsetX, offsetY } = projectCity(city);
+          const el = labelEls[city.name];
+          if (facing < 0.08 || selectedCity === city) { el.style.opacity = '0'; return; }
+          el.style.opacity = String(Math.min(1, (facing - 0.08) / 0.35) * 0.85);
+          el.style.transform = `translate3d(${offsetX.toFixed(1)}px, ${offsetY.toFixed(1)}px, 0) translate(-50%, -140%)`;
+        });
+
+        if (selectedCity) {
+          const { facing, offsetX, offsetY } = projectCity(selectedCity);
+          if (facing < 0.08) {
+            tooltipEl.style.opacity = '0';
+          } else {
+            tooltipNameEl.textContent = selectedCity.name;
+            tooltipBlurbEl.textContent = selectedCity.blurb || '';
+            tooltipEl.style.opacity = '1';
+            tooltipEl.style.transform = `translate3d(${offsetX.toFixed(1)}px, ${offsetY.toFixed(1)}px, 0) translate(-50%, -155%)`;
+          }
+        } else {
+          tooltipEl.style.opacity = '0';
+        }
+      }
+
+      let animating = true;
+      function tick() {
+        if (!animating) return;
+        globeGroup.rotation.y += 0.0016;
+        globeGroup.updateMatrixWorld(true);
+        renderer.render(scene, camera);
+        updateLabels();
+        requestAnimationFrame(tick);
+      }
+      tick();
+
+      document.addEventListener('visibilitychange', () => {
+        animating = !document.hidden;
+        if (animating) tick();
+      });
+    } catch (err) {
+      fallback.style.display = 'block';
+      fallback.textContent = 'Could not load the globe.';
+    }
+  }
+
+  init();
+</script>
+
+</body>
+</html>
