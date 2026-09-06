@@ -11,7 +11,7 @@
     padding: 0;
     width: 100%;
     height: 100%;
-    background: #0F1B24;
+    background: transparent;
     overflow: hidden;
   }
   .hero {
@@ -284,17 +284,46 @@
         return { facing, offsetX, offsetY };
       }
 
+      // Greedy label declutter: with 40 cities on a small sphere, several
+      // always land close enough together to overlap into an illegible
+      // pile of text. Each frame, place the most face-on (frontmost)
+      // labels first and skip any candidate whose estimated bounding box
+      // would collide with one already placed, rather than trying to show
+      // every label at once regardless of crowding.
+      const placedBoxes = [];
+      function estimateLabelWidth(name) {
+        return name.length * 7.4 + 10;
+      }
+      function overlaps(a, b) {
+        return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
+      }
+
       function updateLabels() {
         if (selectedCity && Date.now() > selectedUntil) selectedCity = null;
 
-        CITIES.forEach((city) => {
+        const all = CITIES.map((city) => {
           const { facing, offsetX, offsetY } = projectCity(city);
-          const el = labelEls[city.name];
-          const isSelected = selectedCity === city;
-          if (facing < 0.08) { el.style.opacity = '0'; return; }
-          el.style.opacity = isSelected ? '1' : String(Math.min(1, (facing - 0.08) / 0.35) * 0.85);
-          el.style.color = isSelected ? '#F5E9C8' : '#C7A25C';
-          el.style.transform = `translate3d(${offsetX.toFixed(1)}px, ${offsetY.toFixed(1)}px, 0) translate(-50%, -140%) scale(${isSelected ? 1.3 : 1})`;
+          return { city, facing, offsetX, offsetY, isSelected: selectedCity === city };
+        });
+
+        const candidates = all.filter((c) => c.facing >= 0.08);
+        candidates.sort((a, b) => (b.isSelected - a.isSelected) || (b.facing - a.facing));
+
+        placedBoxes.length = 0;
+        const PAD = 6;
+        candidates.forEach((c) => {
+          const w = estimateLabelWidth(c.city.name);
+          const box = { left: c.offsetX - w / 2 - PAD, right: c.offsetX + w / 2 + PAD, top: c.offsetY - 22, bottom: c.offsetY + 4 };
+          c.shown = c.isSelected || !placedBoxes.some((b) => overlaps(box, b));
+          if (c.shown) placedBoxes.push(box);
+        });
+
+        all.forEach((c) => {
+          const el = labelEls[c.city.name];
+          if (!c.shown) { el.style.opacity = '0'; return; }
+          el.style.opacity = c.isSelected ? '1' : String(Math.min(1, (c.facing - 0.08) / 0.35) * 0.85);
+          el.style.color = c.isSelected ? '#F5E9C8' : '#C7A25C';
+          el.style.transform = `translate3d(${c.offsetX.toFixed(1)}px, ${c.offsetY.toFixed(1)}px, 0) translate(-50%, -140%) scale(${c.isSelected ? 1.3 : 1})`;
         });
       }
 
