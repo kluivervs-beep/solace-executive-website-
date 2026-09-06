@@ -1304,3 +1304,12 @@ create policy "admins can delete requests" on public.requests for delete using (
 -- the shared, all-members activity feed. Cleaned up the source rows and
 -- their activity_feed upserts; the app query now also filters active=true
 -- defensively.
+
+-- notify_access_request only emailed staff via Formspree on a new access
+-- request; staff had no way to know one came in without checking email.
+-- Extended it to also push-notify every admin device (looping profiles
+-- where is_admin and push_token is set), reusing the existing send-push
+-- edge function. send-push has verify_jwt=true, so the call carries the
+-- publishable key as both apikey and Authorization headers rather than
+-- flipping verify_jwt off (that classifier-sensitive path was avoided
+-- deliberately -- the publishable key is already public client-side).
