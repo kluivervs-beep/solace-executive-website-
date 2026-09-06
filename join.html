@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Uitnodiging | Solace Executive</title>
+<title>Invitation | Solace Executive</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,7 +49,7 @@
     border: 1px solid var(--color-gold-dim);
     border-radius: 14px;
     padding: 20px;
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-3);
     background: rgba(255,255,255,0.02);
   }
   .join-code-label {
@@ -66,6 +66,11 @@
     font-weight: 600;
     letter-spacing: 3px;
     color: var(--color-gold-light);
+  }
+  .join-open-btn {
+    display: block;
+    width: 100%;
+    margin-bottom: var(--space-3);
   }
   .join-hint {
     font-family: 'Montserrat', sans-serif;
@@ -86,33 +91,67 @@
   <img class="join-mark" src="assets/icons/monogram.svg" alt="">
   <div id="joinContent">
     <div class="join-eyebrow">Solace Executive</div>
-    <div class="join-title">U bent uitgenodigd</div>
-    <p class="join-body">Open de Solace Executive app. Als deze op uw toestel staat, opent hij vanzelf. Zo niet, voer onderstaande code handmatig in bij "Toegang aanvragen".</p>
+    <div class="join-title" id="joinTitle">You are invited</div>
+    <p class="join-body" id="joinBody">Tap below to open the Solace Executive app with your code already in place.</p>
     <div class="join-code-box">
-      <div class="join-code-label">Uw code</div>
+      <div class="join-code-label" id="joinCodeLabel">Your code</div>
       <div class="join-code-value" id="joinCode">&mdash;</div>
     </div>
-    <p class="join-hint">De app opent automatisch als deze geïnstalleerd is. Gebeurt er niets binnen een paar seconden, open de app zelf en vul de code hierboven in.</p>
+    <button type="button" class="btn btn-primary join-open-btn" id="joinOpenBtn">Open the app</button>
+    <p class="join-hint" id="joinHint">Don't have the app yet? Open it once installed and enter the code above under "Request access".</p>
   </div>
 </div>
 
 <script>
   const params = new URLSearchParams(window.location.search);
   const code = (params.get('code') || '').trim().toUpperCase();
+  const lang = (params.get('lang') || 'en').toLowerCase() === 'nl' ? 'nl' : 'en';
   const codeEl = document.getElementById('joinCode');
 
+  const COPY = {
+    en: {
+      title: 'You are invited',
+      body: 'Tap below to open the Solace Executive app with your code already in place.',
+      codeLabel: 'Your code',
+      openBtn: 'Open the app',
+      hint: 'Don’t have the app yet? Open it once installed and enter the code above under "Request access".',
+      error: 'This invitation is missing a code. Ask the person who invited you to send the link again.',
+    },
+    nl: {
+      title: 'U bent uitgenodigd',
+      body: 'Tik hieronder om de Solace Executive app te openen met uw code al klaar.',
+      codeLabel: 'Uw code',
+      openBtn: 'Open de app',
+      hint: 'Heeft u de app nog niet? Open de app zodra deze is geïnstalleerd en vul de code hierboven in bij "Toegang aanvragen".',
+      error: 'Deze uitnodiging mist een code. Vraag de persoon die u uitnodigde om de link opnieuw te sturen.',
+    },
+  }[lang];
+
+  document.documentElement.lang = lang;
+  document.title = (lang === 'nl' ? 'Uitnodiging' : 'Invitation') + ' | Solace Executive';
+  document.getElementById('joinTitle').textContent = COPY.title;
+  document.getElementById('joinBody').textContent = COPY.body;
+  document.getElementById('joinCodeLabel').textContent = COPY.codeLabel;
+  document.getElementById('joinOpenBtn').textContent = COPY.openBtn;
+  document.getElementById('joinHint').textContent = COPY.hint;
+
   if (!code) {
-    document.getElementById('joinContent').innerHTML =
-      '<p class="join-error">Deze uitnodiging mist een code. Vraag de persoon die u uitnodigde om de link opnieuw te sturen.</p>';
+    document.getElementById('joinContent').innerHTML = '<p class="join-error">' + COPY.error + '</p>';
   } else {
     codeEl.textContent = code;
-    // Attempt to hand off straight to the app. A bare custom-scheme link
-    // pasted directly in chat doesn't render as tappable in WhatsApp/
-    // iMessage, so this page exists specifically to be the real https://
-    // link people share instead -- it always opens as a normal link, and
-    // then does the scheme redirect itself, with the code still visible
-    // as a fallback if the app isn't installed.
-    window.location.href = 'solaceexecutive://join?code=' + encodeURIComponent(code);
+    const appUrl = 'solaceexecutive://join?code=' + encodeURIComponent(code);
+
+    // A programmatic window.location redirect on page load, with no user
+    // gesture behind it, is routinely ignored by iOS Safari (it treats an
+    // unprompted scheme jump as something to block, same category as an
+    // unsolicited popup). A real tap on a button is a genuine user
+    // gesture, which Safari reliably honors -- so that's the button below,
+    // and this is just a courtesy attempt in case the browser allows it.
+    window.location.href = appUrl;
+
+    document.getElementById('joinOpenBtn').addEventListener('click', () => {
+      window.location.href = appUrl;
+    });
   }
 </script>
 
