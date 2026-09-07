@@ -68,6 +68,10 @@
     background: #C7A25C;
     border-radius: 50%;
   }
+  .globe-label--below::before {
+    bottom: auto;
+    top: -8px;
+  }
 </style>
 </head>
 <body>
@@ -119,6 +123,28 @@
     { name: 'Mumbai', lat: 19.08, lon: 72.88, blurb: 'Regional hub, South Asia' },
   ];
 
+  const params = new URLSearchParams(window.location.search);
+  const FLIGHT_MODE = params.get('mode') === 'flight';
+  const FLIGHT_ORIGIN = FLIGHT_MODE ? {
+    name: params.get('oname') || '',
+    lat: parseFloat(params.get('olat')),
+    lon: parseFloat(params.get('olon')),
+  } : null;
+  const FLIGHT_DEST = FLIGHT_MODE ? {
+    name: params.get('dname') || '',
+    lat: parseFloat(params.get('dlat')),
+    lon: parseFloat(params.get('dlon')),
+  } : null;
+  // Great-circle angular separation in degrees (0-180) -- used to scale
+  // the arc's bulge so a short regional hop gets a gentle rise instead of
+  // the same bulge that suits a hemisphere-spanning route.
+  const FLIGHT_ANGULAR_DEG = FLIGHT_MODE ? (() => {
+    const toRad = (d) => (d * Math.PI) / 180;
+    const cosC = Math.sin(toRad(FLIGHT_ORIGIN.lat)) * Math.sin(toRad(FLIGHT_DEST.lat)) +
+      Math.cos(toRad(FLIGHT_ORIGIN.lat)) * Math.cos(toRad(FLIGHT_DEST.lat)) * Math.cos(toRad(FLIGHT_ORIGIN.lon - FLIGHT_DEST.lon));
+    return Math.acos(Math.min(1, Math.max(-1, cosC))) * (180 / Math.PI);
+  })() : 0;
+
   const ROUTES = [
     ['Amsterdam', 'London'], ['Amsterdam', 'Paris'], ['Amsterdam', 'Berlin'],
     ['Amsterdam', 'Dubai'], ['Amsterdam', 'New York'], ['Amsterdam', 'Copenhagen'],
@@ -135,6 +161,13 @@
     ['Hong Kong', 'Bangkok'], ['Singapore', 'Bangkok'], ['Singapore', 'Sydney'],
     ['Hong Kong', 'Sydney'],
   ];
+
+  // Flight mode (used by the app's jet estimator) swaps the full
+  // marketing network for just the two picked cities and the one arc
+  // between them -- same rotating-globe visual, but framing a single
+  // route instead of the whole network.
+  const ACTIVE_CITIES = FLIGHT_MODE ? [FLIGHT_ORIGIN, FLIGHT_DEST] : CITIES;
+  const ACTIVE_ROUTES = FLIGHT_MODE ? [[FLIGHT_ORIGIN.name, FLIGHT_DEST.name]] : ROUTES;
 
   function postToApp(payload) {
     if (window.ReactNativeWebView) {
@@ -178,44 +211,68 @@
       camera.position.set(0, 0, 6.4);
 
       const globeGroup = new THREE.Group();
-      const wireMat = new THREE.MeshBasicMaterial({ color: 0xb4923d, wireframe: true, transparent: true, opacity: 0.34 });
+      // Flight mode dims the wireframe sphere well below the full
+      // network's look -- with only one route to show, a busy surface
+      // competes with the arc instead of setting it off.
+      const wireMat = new THREE.MeshBasicMaterial({ color: 0xb4923d, wireframe: true, transparent: true, opacity: FLIGHT_MODE ? 0.16 : 0.34 });
       globeGroup.add(new THREE.Mesh(new THREE.SphereGeometry(2, 28, 18), wireMat));
-      const haloMat = new THREE.MeshBasicMaterial({ color: 0xd8bd7c, wireframe: true, transparent: true, opacity: 0.08 });
+      const haloMat = new THREE.MeshBasicMaterial({ color: 0xd8bd7c, wireframe: true, transparent: true, opacity: FLIGHT_MODE ? 0.04 : 0.08 });
       globeGroup.add(new THREE.Mesh(new THREE.SphereGeometry(2.08, 20, 14), haloMat));
 
       const NODE_RADIUS = 2.02;
       const cityBase = {};
       const nodePositions = [];
-      CITIES.forEach((city) => {
+      ACTIVE_CITIES.forEach((city) => {
         const v = latLonToVector3(THREE, city.lat, city.lon, NODE_RADIUS);
         cityBase[city.name] = v;
         nodePositions.push(v.x, v.y, v.z);
       });
       const nodeGeo = new THREE.BufferGeometry();
       nodeGeo.setAttribute('position', new THREE.Float32BufferAttribute(nodePositions, 3));
-      const nodeColors = new Float32Array(CITIES.length * 3);
-      for (let i = 0; i < nodeColors.length; i += 3) { nodeColors[i] = 0.96; nodeColors[i + 1] = 0.91; nodeColors[i + 2] = 0.78; }
+      const nodeColors = new Float32Array(ACTIVE_CITIES.length * 3);
+      for (let i = 0; i < nodeColors.length; i += 3) {
+        nodeColors[i] = 0.96; nodeColors[i + 1] = 0.91; nodeColors[i + 2] = FLIGHT_MODE ? 0.88 : 0.78;
+      }
       nodeGeo.setAttribute('color', new THREE.Float32BufferAttribute(nodeColors, 3));
-      const nodeMat = new THREE.PointsMaterial({ vertexColors: true, size: 0.15, transparent: true, opacity: 0.95 });
+      const nodeMat = new THREE.PointsMaterial({ vertexColors: true, size: FLIGHT_MODE ? 0.22 : 0.15, transparent: true, opacity: 0.95 });
       const cityPoints = new THREE.Points(nodeGeo, nodeMat);
       globeGroup.add(cityPoints);
 
-      ROUTES.forEach(([fromName, toName]) => {
+      ACTIVE_ROUTES.forEach(([fromName, toName]) => {
         const from = cityBase[fromName];
         const to = cityBase[toName];
         if (!from || !to) return;
         const mid = from.clone().add(to).multiplyScalar(0.5);
-        mid.setLength(NODE_RADIUS * 1.28);
+        const flightBulge = 1.06 + Math.min(1, FLIGHT_ANGULAR_DEG / 70) * 0.28;
+        mid.setLength(NODE_RADIUS * (FLIGHT_MODE ? flightBulge : 1.28));
         const curve = new THREE.QuadraticBezierCurve3(from, mid, to);
-        const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(24));
-        const mat = new THREE.LineBasicMaterial({ color: 0xd8bd7c, transparent: true, opacity: 0.16 });
-        globeGroup.add(new THREE.Line(geo, mat));
+        if (FLIGHT_MODE) {
+          // A thin Line all but disappears next to the wireframe even at
+          // high opacity -- a tube gives the single route real, visible
+          // thickness instead of competing on color alone.
+          const tubeGeo = new THREE.TubeGeometry(curve, 32, 0.018, 8, false);
+          const tubeMat = new THREE.MeshBasicMaterial({ color: 0xf5e9c8, transparent: true, opacity: 0.92 });
+          globeGroup.add(new THREE.Mesh(tubeGeo, tubeMat));
+        } else {
+          const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(24));
+          const mat = new THREE.LineBasicMaterial({ color: 0xd8bd7c, transparent: true, opacity: 0.16 });
+          globeGroup.add(new THREE.Line(geo, mat));
+        }
       });
 
       scene.add(globeGroup);
 
+      if (FLIGHT_MODE) {
+        // Orient the globe so the route's midpoint faces the camera on
+        // the first frame, instead of waiting for the ambient rotation to
+        // bring it into view.
+        const avgLon = (FLIGHT_ORIGIN.lon + FLIGHT_DEST.lon) / 2;
+        const theta = (avgLon + 180) * (Math.PI / 180);
+        globeGroup.rotation.y = Math.PI / 2 - theta;
+      }
+
       const labelEls = {};
-      CITIES.forEach((city) => {
+      ACTIVE_CITIES.forEach((city) => {
         const el = document.createElement('span');
         el.className = 'globe-label';
         el.textContent = city.name;
@@ -244,7 +301,7 @@
         const hits = raycaster.intersectObject(cityPoints);
         if (!hits.length) return null;
         const index = hits[0].index;
-        return typeof index === 'number' ? CITIES[index] : null;
+        return typeof index === 'number' ? ACTIVE_CITIES[index] : null;
       }
 
       function resize() {
@@ -301,12 +358,15 @@
       function updateLabels() {
         if (selectedCity && Date.now() > selectedUntil) selectedCity = null;
 
-        const all = CITIES.map((city) => {
+        const all = ACTIVE_CITIES.map((city) => {
           const { facing, offsetX, offsetY } = projectCity(city);
           return { city, facing, offsetX, offsetY, isSelected: selectedCity === city };
         });
 
-        const candidates = all.filter((c) => c.facing >= 0.08);
+        // Flight mode only ever has two labels, so they stay on screen
+        // regardless of which side of the globe they're currently facing
+        // instead of fading out like a crowded 40-city network would.
+        const candidates = FLIGHT_MODE ? all.slice() : all.filter((c) => c.facing >= 0.08);
         candidates.sort((a, b) => (b.isSelected - a.isSelected) || (b.facing - a.facing));
 
         placedBoxes.length = 0;
@@ -314,16 +374,24 @@
         candidates.forEach((c) => {
           const w = estimateLabelWidth(c.city.name);
           const box = { left: c.offsetX - w / 2 - PAD, right: c.offsetX + w / 2 + PAD, top: c.offsetY - 22, bottom: c.offsetY + 4 };
-          c.shown = c.isSelected || !placedBoxes.some((b) => overlaps(box, b));
+          c.shown = c.isSelected || FLIGHT_MODE || !placedBoxes.some((b) => overlaps(box, b));
           if (c.shown) placedBoxes.push(box);
         });
 
         all.forEach((c) => {
           const el = labelEls[c.city.name];
           if (!c.shown) { el.style.opacity = '0'; return; }
-          el.style.opacity = c.isSelected ? '1' : String(Math.min(1, (c.facing - 0.08) / 0.35) * 0.85);
+          el.style.opacity = (c.isSelected || FLIGHT_MODE) ? '1' : String(Math.min(1, (c.facing - 0.08) / 0.35) * 0.85);
           el.style.color = c.isSelected ? '#F5E9C8' : '#C7A25C';
-          el.style.transform = `translate3d(${c.offsetX.toFixed(1)}px, ${c.offsetY.toFixed(1)}px, 0) translate(-50%, -140%) scale(${c.isSelected ? 1.3 : 1})`;
+          // In flight mode the destination's label sits below its point
+          // instead of above -- with only two cities, this keeps them
+          // from stacking into unreadable overlapping text when they're
+          // close together (a short regional hop) rather than opposite
+          // sides of the globe.
+          const isFlightDest = FLIGHT_MODE && c.city === FLIGHT_DEST;
+          el.classList.toggle('globe-label--below', isFlightDest);
+          const vOffset = isFlightDest ? '40%' : '-140%';
+          el.style.transform = `translate3d(${c.offsetX.toFixed(1)}px, ${c.offsetY.toFixed(1)}px, 0) translate(-50%, ${vOffset}) scale(${c.isSelected ? 1.3 : 1})`;
         });
       }
 
