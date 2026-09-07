@@ -238,6 +238,7 @@
       const cityPoints = new THREE.Points(nodeGeo, nodeMat);
       globeGroup.add(cityPoints);
 
+      let flightCurve = null;
       ACTIVE_ROUTES.forEach(([fromName, toName]) => {
         const from = cityBase[fromName];
         const to = cityBase[toName];
@@ -247,11 +248,17 @@
         mid.setLength(NODE_RADIUS * (FLIGHT_MODE ? flightBulge : 1.28));
         const curve = new THREE.QuadraticBezierCurve3(from, mid, to);
         if (FLIGHT_MODE) {
-          // A thin Line all but disappears next to the wireframe even at
-          // high opacity -- a tube gives the single route real, visible
-          // thickness instead of competing on color alone.
-          const tubeGeo = new THREE.TubeGeometry(curve, 32, 0.018, 8, false);
-          const tubeMat = new THREE.MeshBasicMaterial({ color: 0xf5e9c8, transparent: true, opacity: 0.92 });
+          flightCurve = curve;
+          // A soft wider glow tube sits behind a brighter, slightly
+          // narrower core -- cheap way to fake bloom without a
+          // post-processing pass, and it's what actually makes the route
+          // read clearly against the dimmed wireframe instead of just
+          // being "a line".
+          const glowGeo = new THREE.TubeGeometry(curve, 48, 0.05, 8, false);
+          const glowMat = new THREE.MeshBasicMaterial({ color: 0xf5e9c8, transparent: true, opacity: 0.22, depthWrite: false });
+          globeGroup.add(new THREE.Mesh(glowGeo, glowMat));
+          const tubeGeo = new THREE.TubeGeometry(curve, 48, 0.026, 8, false);
+          const tubeMat = new THREE.MeshBasicMaterial({ color: 0xfaf3df, transparent: true, opacity: 0.97 });
           globeGroup.add(new THREE.Mesh(tubeGeo, tubeMat));
         } else {
           const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(24));
@@ -259,6 +266,71 @@
           globeGroup.add(new THREE.Line(geo, mat));
         }
       });
+
+      // A traveling light riding the route, plus a soft halo behind it --
+      // the ambient globe rotation alone read as "pretty but static", this
+      // is what actually makes the route feel alive rather than printed on.
+      let flightRunner = null;
+      let flightRunnerHalo = null;
+      if (FLIGHT_MODE && flightCurve) {
+        const runnerGeo = new THREE.SphereGeometry(0.05, 12, 12);
+        const runnerMat = new THREE.MeshBasicMaterial({ color: 0xfff6df, transparent: true });
+        flightRunner = new THREE.Mesh(runnerGeo, runnerMat);
+        const haloGeo = new THREE.SphereGeometry(0.115, 12, 12);
+        const haloMatRunner = new THREE.MeshBasicMaterial({ color: 0xf0c878, transparent: true, opacity: 0.5, depthWrite: false });
+        flightRunnerHalo = new THREE.Mesh(haloGeo, haloMatRunner);
+        globeGroup.add(flightRunnerHalo);
+        globeGroup.add(flightRunner);
+      }
+
+      // Dedicated pulsing markers for the two flight-mode cities -- a
+      // gentle breathing scale plus an expanding, fading ring underneath,
+      // like a soft radar ping. The shared cityPoints above still exists
+      // for click-picking, but its flat dot reads as static next to this.
+      const flightMarkers = [];
+      if (FLIGHT_MODE) {
+        [FLIGHT_ORIGIN, FLIGHT_DEST].forEach((city, i) => {
+          const pos = cityBase[city.name];
+          if (!pos) return;
+          const dotGeo = new THREE.SphereGeometry(0.034, 12, 12);
+          const dotMat = new THREE.MeshBasicMaterial({ color: 0xfffdf5 });
+          const dot = new THREE.Mesh(dotGeo, dotMat);
+          dot.position.copy(pos);
+          globeGroup.add(dot);
+
+          const ringGeo = new THREE.RingGeometry(0.05, 0.062, 24);
+          const ringMat = new THREE.MeshBasicMaterial({ color: 0xf5e9c8, transparent: true, opacity: 0.6, side: THREE.DoubleSide, depthWrite: false });
+          const ring = new THREE.Mesh(ringGeo, ringMat);
+          ring.position.copy(pos);
+          ring.lookAt(pos.clone().multiplyScalar(2));
+          globeGroup.add(ring);
+
+          flightMarkers.push({ dot, ring, phase: i * 0.9 });
+        });
+      }
+
+      // A quiet starfield behind the globe so it reads as hanging in
+      // space instead of floating in an empty void -- static positions
+      // with a slow shared opacity shimmer rather than a per-star
+      // simulation, which would cost far more for the same felt effect.
+      let starField = null;
+      if (FLIGHT_MODE) {
+        const STAR_COUNT = 220;
+        const starPositions = new Float32Array(STAR_COUNT * 3);
+        for (let i = 0; i < STAR_COUNT; i++) {
+          const r = 7 + Math.random() * 6;
+          const a = Math.random() * Math.PI * 2;
+          const b = Math.acos(2 * Math.random() - 1);
+          starPositions[i * 3] = r * Math.sin(b) * Math.cos(a);
+          starPositions[i * 3 + 1] = r * Math.sin(b) * Math.sin(a);
+          starPositions[i * 3 + 2] = r * Math.cos(b);
+        }
+        const starGeo = new THREE.BufferGeometry();
+        starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
+        const starMat = new THREE.PointsMaterial({ color: 0xf5f1e6, size: 0.045, transparent: true, opacity: 0.55, depthWrite: false });
+        starField = new THREE.Points(starGeo, starMat);
+        scene.add(starField);
+      }
 
       scene.add(globeGroup);
 
@@ -395,10 +467,40 @@
         });
       }
 
+      const RUNNER_DURATION_MS = 3400;
+      const clockStart = performance.now();
+
       let animating = true;
       function tick() {
         if (!animating) return;
         globeGroup.rotation.y += 0.0016;
+
+        const elapsedMs = performance.now() - clockStart;
+        const elapsedSec = elapsedMs / 1000;
+
+        if (flightCurve && flightRunner && flightRunnerHalo) {
+          const raw = (elapsedMs % RUNNER_DURATION_MS) / RUNNER_DURATION_MS;
+          const eased = raw < 0.5 ? 2 * raw * raw : -1 + (4 - 2 * raw) * raw;
+          const pos = flightCurve.getPoint(eased);
+          flightRunner.position.copy(pos);
+          flightRunnerHalo.position.copy(pos);
+          const fade = Math.min(1, raw / 0.08) * Math.min(1, (1 - raw) / 0.08);
+          flightRunner.material.opacity = fade;
+          flightRunnerHalo.material.opacity = 0.5 * fade;
+        }
+
+        flightMarkers.forEach((m) => {
+          const dotScale = 1 + Math.sin(elapsedSec * 1.6 + m.phase) * 0.12;
+          m.dot.scale.setScalar(dotScale);
+          const ringT = (elapsedSec * 0.55 + m.phase * 0.3) % 1;
+          m.ring.scale.setScalar(1 + ringT * 2.2);
+          m.ring.material.opacity = 0.6 * (1 - ringT);
+        });
+
+        if (starField) {
+          starField.material.opacity = 0.4 + Math.sin(elapsedSec * 0.6) * 0.15;
+        }
+
         globeGroup.updateMatrixWorld(true);
         renderer.render(scene, camera);
         updateLabels();
