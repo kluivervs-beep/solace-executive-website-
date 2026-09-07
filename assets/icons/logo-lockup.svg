@@ -1,0 +1,18 @@
+<svg viewBox="0 0 1000 1150" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .word { font-family: 'Cormorant Garamond', 'Cormorant', Georgia, serif; font-weight: 600; }
+      .sub { font-family: 'Montserrat', Arial, sans-serif; font-weight: 600; }
+    </style>
+  </defs>
+  <g transform="translate(500,430)">
+    <circle cx="0" cy="0" r="360" fill="none" stroke="#B4923D" stroke-width="12.5"/>
+    <path d="M -170 -170 C -170 -240 -110 -280 -20 -280 C 80 -280 160 -230 160 -160
+             C 160 -90 90 -50 20 -20 C -50 10 -160 50 -160 140
+             C -160 220 -80 270 10 270 C 100 270 160 230 160 160"
+          fill="none" stroke="#B4923D" stroke-width="45" stroke-linecap="round"/>
+    <circle cx="0" cy="-5" r="27.5" fill="#B4923D"/>
+  </g>
+  <text x="500" y="960" text-anchor="middle" class="word" font-size="200" fill="#B4923D" letter-spacing="6">SOLACE</text>
+  <text x="500" y="1055" text-anchor="middle" class="sub" font-size="52" fill="#B4923D" letter-spacing="75">EXECUTIVE</text>
+</svg>
