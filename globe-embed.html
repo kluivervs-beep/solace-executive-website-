@@ -175,6 +175,16 @@
     }
   }
 
+  function loadImageElement(url) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = url;
+    });
+  }
+
   function latLonToVector3(THREE, lat, lon, radius) {
     const phi = (90 - lat) * (Math.PI / 180);
     const theta = (lon + 180) * (Math.PI / 180);
@@ -201,6 +211,30 @@
       return;
     }
 
+    // Flight mode's textures are loaded as plain <img> elements and
+    // awaited to completion BEFORE any Texture/material/scene exists --
+    // building a THREE.Texture from a TextureLoader while the image is
+    // still in flight binds a temporary 1x1 placeholder that a handful
+    // of render() calls (which happen immediately once the canvas is
+    // active, whether or not that first frame looks right) can leave
+    // stuck as the finished result, one flat gray sphere instead of the
+    // map. Awaiting real <img> elements up front sidesteps that
+    // lifecycle entirely instead of racing it.
+    let earthImages = null;
+    if (FLIGHT_MODE) {
+      try {
+        const [dayImg, waterImg, topoImg] = await Promise.all([
+          loadImageElement('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg'),
+          loadImageElement('https://unpkg.com/three-globe/example/img/earth-water.png'),
+          loadImageElement('https://unpkg.com/three-globe/example/img/earth-topology.png'),
+        ]);
+        earthImages = { dayImg, waterImg, topoImg };
+      } catch (err) {
+        fallback.textContent = 'Could not load the globe.';
+        return;
+      }
+    }
+
     try {
       fallback.style.display = 'none';
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
@@ -212,15 +246,28 @@
 
       const globeGroup = new THREE.Group();
       let earthMesh = null;
+      let flightSun = null;
       if (FLIGHT_MODE) {
         // A real, lit map with terrain relief and ocean shine reads far
         // more clearly -- and far more detailed -- than a flat, unlit
         // texture once there's no network abstraction left to justify.
-        const loader = new THREE.TextureLoader();
+        // Built from the already-fully-loaded <img> elements awaited
+        // above, each wrapped as a plain THREE.Texture with needsUpdate
+        // set explicitly -- not a TextureLoader.load() on this line,
+        // which would bind a fresh texture (backed by a placeholder
+        // until ITS OWN load event fires) and reintroduce exactly the
+        // race the preload was meant to avoid.
+        const dayMap = new THREE.Texture(earthImages.dayImg);
+        dayMap.colorSpace = THREE.SRGBColorSpace;
+        dayMap.needsUpdate = true;
+        const waterMap = new THREE.Texture(earthImages.waterImg);
+        waterMap.needsUpdate = true;
+        const topoMap = new THREE.Texture(earthImages.topoImg);
+        topoMap.needsUpdate = true;
         const earthMat = new THREE.MeshPhongMaterial({
-          map: loader.load('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg'),
-          specularMap: loader.load('https://unpkg.com/three-globe/example/img/earth-water.png'),
-          bumpMap: loader.load('https://unpkg.com/three-globe/example/img/earth-topology.png'),
+          map: dayMap,
+          specularMap: waterMap,
+          bumpMap: topoMap,
           bumpScale: 0.04,
           specular: new THREE.Color(0x4c5866),
           shininess: 9,
@@ -228,14 +275,18 @@
         earthMesh = new THREE.Mesh(new THREE.SphereGeometry(2, 64, 40), earthMat);
         globeGroup.add(earthMesh);
 
-        // Soft "sun" from the upper-front so the relief and ocean
-        // highlights actually read, plus enough ambient fill that the
-        // unlit side of a close-up view still shows detail instead of
-        // going flat black.
-        const sun = new THREE.DirectionalLight(0xfff3dd, 1.15);
-        sun.position.set(3, 2.4, 4);
-        scene.add(sun);
-        scene.add(new THREE.AmbientLight(0xaeb9c4, 0.55));
+        // The "sun" tracks near the camera each frame (see tick()) rather
+        // than sitting at one fixed world position -- with ~100 possible
+        // routes, a fixed light left whichever ones happened to face away
+        // from it rendering almost black. But aligning it exactly with
+        // the view direction flattened every route into a washed-out
+        // gray -- every visible point faces the light dead-on, so there's
+        // no shading contrast left at all. Offsetting it to one side
+        // keeps the "always lit" guarantee while leaving real terminator
+        // contrast across the visible hemisphere.
+        flightSun = new THREE.DirectionalLight(0xfff3dd, 0.6);
+        scene.add(flightSun);
+        scene.add(new THREE.AmbientLight(0xaeb9c4, 0.3));
       } else {
         const wireMat = new THREE.MeshBasicMaterial({ color: 0xb4923d, wireframe: true, transparent: true, opacity: 0.34 });
         globeGroup.add(new THREE.Mesh(new THREE.SphereGeometry(2, 28, 18), wireMat));
@@ -421,6 +472,12 @@
         camera.aspect = 1;
         camera.updateProjectionMatrix();
       }
+      // Activate (display:block) BEFORE the first resize() -- calling
+      // getBoundingClientRect() on a still-display:none canvas returns a
+      // zero-width rect, which set the WebGL backing store to 1x1 and
+      // rendered a blurry, textureless gradient no material or lighting
+      // change could have fixed, since the sphere was never drawn at a
+      // real resolution in the first place.
       canvas.classList.add('is-active');
       resize();
       window.addEventListener('resize', resize);
@@ -506,6 +563,8 @@
       }
 
       const RUNNER_DURATION_MS = 3400;
+      const ZOOM_INTRO_MS = 1900;
+      const Y_AXIS = new THREE.Vector3(0, 1, 0);
       const clockStart = performance.now();
 
       let animating = true;
@@ -520,9 +579,24 @@
           // full spin -- enough parallax on the terrain to feel alive
           // without swinging the two cities out of frame.
           const drift = Math.sin(elapsedSec * 0.15) * 0.24;
-          const dir = flightCamDir.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), drift);
-          camera.position.copy(dir.multiplyScalar(flightCamDist));
+          const dir = flightCamDir.clone().applyAxisAngle(Y_AXIS, drift);
+          // Establish the whole earth first, then ease in to the
+          // route -- opening already zoomed in (no sense of where you
+          // are on the planet) read as abrupt and a little ugly.
+          const introT = Math.min(1, elapsedMs / ZOOM_INTRO_MS);
+          const eased = introT < 0.5 ? 4 * introT * introT * introT : 1 - Math.pow(-2 * introT + 2, 3) / 2;
+          const dist = 6.4 + eased * (flightCamDist - 6.4);
+          camera.position.copy(dir.multiplyScalar(dist));
           camera.lookAt(0, 0, 0);
+          if (flightSun) {
+            // A fixed angular offset from the camera's own direction,
+            // not a fixed world-space vector -- the latter breaks down
+            // across zoom levels, since a constant-magnitude offset is
+            // huge relative to a close-zoom camera position and tiny
+            // relative to a far one.
+            const sunDir = dir.clone().applyAxisAngle(Y_AXIS, 0.95);
+            flightSun.position.copy(sunDir.multiplyScalar(10));
+          }
         } else {
           globeGroup.rotation.y += 0.0016;
         }
