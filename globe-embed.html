@@ -211,13 +211,23 @@
       camera.position.set(0, 0, 6.4);
 
       const globeGroup = new THREE.Group();
-      // Flight mode dims the wireframe sphere well below the full
-      // network's look -- with only one route to show, a busy surface
-      // competes with the arc instead of setting it off.
-      const wireMat = new THREE.MeshBasicMaterial({ color: 0xb4923d, wireframe: true, transparent: true, opacity: FLIGHT_MODE ? 0.16 : 0.34 });
-      globeGroup.add(new THREE.Mesh(new THREE.SphereGeometry(2, 28, 18), wireMat));
-      const haloMat = new THREE.MeshBasicMaterial({ color: 0xd8bd7c, wireframe: true, transparent: true, opacity: FLIGHT_MODE ? 0.04 : 0.08 });
-      globeGroup.add(new THREE.Mesh(new THREE.SphereGeometry(2.08, 20, 14), haloMat));
+      let earthMesh = null;
+      if (FLIGHT_MODE) {
+        // A real map reads far more clearly than an abstract wireframe
+        // once you're only showing one route -- there's no network
+        // texture left to justify the abstraction.
+        const earthTexture = new THREE.TextureLoader().load(
+          'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg'
+        );
+        const earthMat = new THREE.MeshBasicMaterial({ map: earthTexture, color: 0xdcd6c2 });
+        earthMesh = new THREE.Mesh(new THREE.SphereGeometry(2, 64, 40), earthMat);
+        globeGroup.add(earthMesh);
+      } else {
+        const wireMat = new THREE.MeshBasicMaterial({ color: 0xb4923d, wireframe: true, transparent: true, opacity: 0.34 });
+        globeGroup.add(new THREE.Mesh(new THREE.SphereGeometry(2, 28, 18), wireMat));
+        const haloMat = new THREE.MeshBasicMaterial({ color: 0xd8bd7c, wireframe: true, transparent: true, opacity: 0.08 });
+        globeGroup.add(new THREE.Mesh(new THREE.SphereGeometry(2.08, 20, 14), haloMat));
+      }
 
       const NODE_RADIUS = 2.02;
       const cityBase = {};
