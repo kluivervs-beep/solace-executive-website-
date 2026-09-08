@@ -55,7 +55,7 @@
     white-space: nowrap;
     pointer-events: none;
     transition: opacity 400ms ease-out, color 200ms ease-out;
-    will-change: transform, opacity;
+    background: none;
   }
   .globe-label::before {
     content: '';
@@ -241,7 +241,14 @@
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+      // Flight mode uses a wider field of view than the network globe --
+      // at 42 deg, zooming the camera in close enough to actually see a
+      // route's local terrain pushes the sphere past the frame edges
+      // entirely (no visible curvature, background, or sense that it's
+      // a globe at all, just a flat-looking map tile). A wider FOV lets
+      // the camera get closer while the round silhouette, with a little
+      // margin around it, stays in frame the whole time.
+      const camera = new THREE.PerspectiveCamera(FLIGHT_MODE ? 70 : 42, 1, 0.1, 100);
       camera.position.set(0, 0, 6.4);
 
       const globeGroup = new THREE.Group();
@@ -309,7 +316,19 @@
         nodeColors[i] = 0.96; nodeColors[i + 1] = 0.91; nodeColors[i + 2] = FLIGHT_MODE ? 0.88 : 0.78;
       }
       nodeGeo.setAttribute('color', new THREE.Float32BufferAttribute(nodeColors, 3));
-      const nodeMat = new THREE.PointsMaterial({ vertexColors: true, size: FLIGHT_MODE ? 0.22 : 0.15, transparent: true, opacity: 0.95 });
+      // WebGL point sprites render as flat, un-antialiased SQUARES, not
+      // circles -- fine at the network globe's small 0.15 size, but at
+      // flight mode's zoom the two dots become large, sharp-edged white
+      // blocks that can visually merge into one blotch on a short hop.
+      // Flight mode draws its own round marker meshes (see below) for
+      // the visible dot; this points object stays only for raycasting,
+      // so it's shrunk down to imperceptible rather than left visible.
+      const nodeMat = new THREE.PointsMaterial({
+        vertexColors: true,
+        size: FLIGHT_MODE ? 0.01 : 0.15,
+        transparent: true,
+        opacity: FLIGHT_MODE ? 0 : 0.95,
+      });
       const cityPoints = new THREE.Points(nodeGeo, nodeMat);
       globeGroup.add(cityPoints);
 
@@ -331,9 +350,14 @@
         flightCamDir = originVec.clone().normalize().add(destVec.clone().normalize());
         if (flightCamDir.lengthSq() < 1e-6) flightCamDir.set(0, 0, 1);
         flightCamDir.normalize();
+        // With the wider 70 deg FOV above, these keep the sphere's round
+        // silhouette (and a visible margin around it) in frame even at
+        // the closest zoom -- unlike the old 42 deg / 2.6 combination,
+        // which overflowed the frame entirely and read as a flat map
+        // tile rather than a globe.
         const zoomT = Math.min(1, FLIGHT_ANGULAR_DEG / 150);
-        flightCamDist = 2.6 + zoomT * (6.4 - 2.6);
-        flightScale = Math.max(0.2, Math.pow(flightCamDist / 6.4, 1.6));
+        flightCamDist = 3.9 + zoomT * (6.4 - 3.9);
+        flightScale = Math.max(0.35, Math.pow(flightCamDist / 6.4, 1.3));
       }
 
       let flightCurve = null;
@@ -558,7 +582,11 @@
           const isFlightDest = FLIGHT_MODE && c.city === FLIGHT_DEST;
           el.classList.toggle('globe-label--below', isFlightDest);
           const vOffset = isFlightDest ? '40%' : '-140%';
-          el.style.transform = `translate3d(${c.offsetX.toFixed(1)}px, ${c.offsetY.toFixed(1)}px, 0) translate(-50%, ${vOffset}) scale(${c.isSelected ? 1.3 : 1})`;
+          // Plain left/top instead of translate3d -- no real need for a
+          // GPU-promoted layer just to reposition two small text nodes.
+          el.style.left = `${c.offsetX.toFixed(1)}px`;
+          el.style.top = `${c.offsetY.toFixed(1)}px`;
+          el.style.transform = `translate(-50%, ${vOffset}) scale(${c.isSelected ? 1.3 : 1})`;
         });
       }
 
