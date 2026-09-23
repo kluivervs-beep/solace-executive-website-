@@ -574,6 +574,13 @@
   <!-- INSTAGRAM -->
   <section class="instagram-feed" id="instagram">
     <div class="section-inner">
+      <a class="instagram-avatar-wrap reveal" id="instagramAvatarLink" href="https://www.instagram.com/solace.executive/" target="_blank" rel="noopener" aria-label="Bekijk Instagram profiel">
+        <span class="instagram-avatar-ring" id="instagramAvatarRing">
+          <span class="instagram-avatar-gap">
+            <img class="instagram-avatar" id="instagramAvatarImg" src="" alt="" hidden>
+          </span>
+        </span>
+      </a>
       <p class="eyebrow reveal" data-i18n="instagram.eyebrow">VOLG ONS</p>
       <h2 class="section-title reveal" data-i18n="instagram.title">@solace.executive</h2>
       <p class="instagram-sub reveal" data-i18n="instagram.sub">Een kijkje achter de schermen, rechtstreeks van ons Instagram.</p>
@@ -668,6 +675,16 @@
     <p>&copy; <span id="year"></span> <span data-i18n="footer.copyright">Solace Executive. Lidmaatschap op aanvraag.</span></p>
   </div>
 </footer>
+
+<div class="story-viewer" id="storyViewer" hidden role="dialog" aria-modal="true" aria-label="Instagram stories">
+  <div class="story-viewer-bars" id="storyViewerBars"></div>
+  <button class="story-viewer-close" id="storyViewerClose" type="button" aria-label="Sluiten">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <div class="story-viewer-media" id="storyViewerMedia"></div>
+  <button class="story-viewer-nav story-viewer-nav--prev" id="storyViewerPrev" type="button" aria-label="Vorige"></button>
+  <button class="story-viewer-nav story-viewer-nav--next" id="storyViewerNext" type="button" aria-label="Volgende"></button>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>

@@ -1335,13 +1335,50 @@ create policy "Public can view active instagram posts"
   on public.instagram_posts for select
   using (active = true);
 
--- Schedule the daily sync (run once in the Supabase SQL Editor). Replace
+-- Instagram profile + stories: the account's own avatar and any
+-- currently-live stories (Instagram's 24h window), so the homepage can
+-- show the same gradient "story ring" around the avatar that Instagram
+-- itself shows, and let visitors view the stories in a lightbox.
+create table public.instagram_profile (
+  id text primary key default 'main',
+  username text,
+  profile_picture_url text,
+  has_active_story boolean not null default false,
+  updated_at timestamptz default now()
+);
+
+alter table public.instagram_profile enable row level security;
+
+create policy "Public can view instagram profile"
+  on public.instagram_profile for select
+  using (true);
+
+create table public.instagram_stories (
+  id uuid primary key default gen_random_uuid(),
+  media_id text not null unique,
+  media_type text not null,
+  media_url text not null,
+  permalink text not null,
+  posted_at timestamptz not null,
+  created_at timestamptz default now()
+);
+
+alter table public.instagram_stories enable row level security;
+
+create policy "Public can view instagram stories"
+  on public.instagram_stories for select
+  using (true);
+
+-- Schedule the sync (run once in the Supabase SQL Editor). Replace
 -- SYNC_SECRET_VALUE with the value stored in Edge Functions -> Secrets ->
--- SYNC_SECRET (same one sync-empty-legs uses) before running.
+-- SYNC_SECRET (same one sync-empty-legs uses) before running. Runs every
+-- 30 minutes rather than daily like the other syncs, since stories are
+-- only live for 24h and stale ones are much more noticeable than a
+-- slightly-stale post grid would be.
 --
 -- select cron.schedule(
 --   'sync-instagram-daily',
---   '0 6 * * *',
+--   '*/30 * * * *',
 --   $$
 --   select net.http_post(
 --     url := 'https://weiihajterqholxppgsl.supabase.co/functions/v1/sync-instagram',

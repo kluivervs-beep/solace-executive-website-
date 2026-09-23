@@ -1,11 +1,16 @@
 // Supabase Edge Function: sync-instagram
 //
-// Pulls recent posts from the @solace.executive Instagram Business account
-// via the Instagram API and upserts them into public.instagram_posts, so
-// the homepage gallery updates itself whenever a new photo goes up.
+// Pulls recent posts, the profile picture, and any currently-active
+// stories from the @solace.executive Instagram Business account, and
+// upserts them into public.instagram_posts / instagram_profile /
+// instagram_stories -- so the homepage gallery, avatar, and story ring
+// all update themselves without manual work.
 //
 // Same pattern as sync-empty-legs: verify_jwt is off so pg_cron can call
 // it without a Supabase JWT, guarded instead by a shared secret header.
+// Runs every 30 minutes (see supabase-schema.sql) rather than daily like
+// the other syncs, since stories are only live for 24h and staleness
+// here is much more noticeable.
 //
 // Requires these secrets (Edge Functions -> Secrets):
 //   SUPABASE_SERVICE_ROLE_KEY — Project Settings -> API -> service_role
@@ -38,49 +43,97 @@ type IgMedia = {
   timestamp: string;
 };
 
+async function syncPosts() {
+  const fields = 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp';
+  const url =
+    `https://graph.instagram.com/v21.0/${INSTAGRAM_ACCOUNT_ID}/media` +
+    `?fields=${fields}&limit=${MAX_POSTS}&access_token=${INSTAGRAM_ACCESS_TOKEN}`;
+
+  const res = await fetch(url);
+  const body = await res.json();
+  if (!res.ok) throw new Error(body?.error?.message || `Fetch failed: ${res.status}`);
+
+  const posts: IgMedia[] = (body.data || []).filter((m: IgMedia) => m.media_type !== 'VIDEO' || m.thumbnail_url);
+
+  const rows = posts.map((m) => ({
+    media_id: m.id,
+    media_type: m.media_type,
+    media_url: m.media_type === 'VIDEO' ? m.thumbnail_url : m.media_url,
+    permalink: m.permalink,
+    caption: m.caption || null,
+    posted_at: m.timestamp,
+    active: true,
+  }));
+
+  if (rows.length > 0) {
+    const { error: upsertError } = await supabase.from('instagram_posts').upsert(rows, { onConflict: 'media_id' });
+    if (upsertError) throw upsertError;
+
+    const keptIds = rows.map((r) => r.media_id);
+    const { error: deleteError } = await supabase
+      .from('instagram_posts')
+      .delete()
+      .not('media_id', 'in', `(${keptIds.map((id) => `"${id}"`).join(',')})`);
+    if (deleteError) throw deleteError;
+  }
+
+  return rows.length;
+}
+
+// Profile picture + active stories are best-effort: if the token doesn't
+// carry the right scope, or Instagram briefly errors, the post gallery
+// sync above should still succeed rather than the whole run failing.
+async function syncProfileAndStories() {
+  const profileUrl = `https://graph.instagram.com/v21.0/${INSTAGRAM_ACCOUNT_ID}?fields=username,profile_picture_url&access_token=${INSTAGRAM_ACCESS_TOKEN}`;
+  const profileRes = await fetch(profileUrl);
+  const profileBody = await profileRes.json();
+
+  const storiesUrl = `https://graph.instagram.com/v21.0/${INSTAGRAM_ACCOUNT_ID}/stories?fields=id,media_type,media_url,permalink,timestamp&access_token=${INSTAGRAM_ACCESS_TOKEN}`;
+  const storiesRes = await fetch(storiesUrl);
+  const storiesBody = await storiesRes.json();
+  const activeStories = storiesRes.ok ? storiesBody.data || [] : [];
+
+  await supabase.from('instagram_profile').upsert({
+    id: 'main',
+    username: profileRes.ok ? profileBody.username || null : null,
+    profile_picture_url: profileRes.ok ? profileBody.profile_picture_url || null : null,
+    has_active_story: activeStories.length > 0,
+    updated_at: new Date().toISOString(),
+  });
+
+  // Stories are a 24h rolling window -- easiest correct behaviour is to
+  // replace the table wholesale each run rather than diffing.
+  await supabase.from('instagram_stories').delete().not('media_id', 'is', null);
+  if (activeStories.length > 0) {
+    await supabase.from('instagram_stories').insert(
+      activeStories.map((s: { id: string; media_type: string; media_url: string; permalink: string; timestamp: string }) => ({
+        media_id: s.id,
+        media_type: s.media_type,
+        media_url: s.media_url,
+        permalink: s.permalink,
+        posted_at: s.timestamp,
+      }))
+    );
+  }
+
+  return activeStories.length;
+}
+
 Deno.serve(async (req) => {
   if (req.headers.get('x-sync-secret') !== SYNC_SECRET) {
     return new Response(JSON.stringify({ ok: false, error: 'unauthorized' }), { status: 401 });
   }
   try {
-    const fields = 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp';
-    const url =
-      `https://graph.instagram.com/v21.0/${INSTAGRAM_ACCOUNT_ID}/media` +
-      `?fields=${fields}&limit=${MAX_POSTS}&access_token=${INSTAGRAM_ACCESS_TOKEN}`;
+    const synced = await syncPosts();
 
-    const res = await fetch(url);
-    const body = await res.json();
-    if (!res.ok) {
-      return new Response(JSON.stringify({ ok: false, error: body?.error?.message || `Fetch failed: ${res.status}` }), {
-        status: 502,
-      });
+    let stories = 0;
+    try {
+      stories = await syncProfileAndStories();
+    } catch (e) {
+      console.error('syncProfileAndStories failed (non-fatal):', e);
     }
 
-    const posts: IgMedia[] = (body.data || []).filter((m: IgMedia) => m.media_type !== 'VIDEO' || m.thumbnail_url);
-
-    const rows = posts.map((m) => ({
-      media_id: m.id,
-      media_type: m.media_type,
-      media_url: m.media_type === 'VIDEO' ? m.thumbnail_url : m.media_url,
-      permalink: m.permalink,
-      caption: m.caption || null,
-      posted_at: m.timestamp,
-      active: true,
-    }));
-
-    if (rows.length > 0) {
-      const { error: upsertError } = await supabase.from('instagram_posts').upsert(rows, { onConflict: 'media_id' });
-      if (upsertError) throw upsertError;
-
-      const keptIds = rows.map((r) => r.media_id);
-      const { error: deleteError } = await supabase
-        .from('instagram_posts')
-        .delete()
-        .not('media_id', 'in', `(${keptIds.map((id) => `"${id}"`).join(',')})`);
-      if (deleteError) throw deleteError;
-    }
-
-    return new Response(JSON.stringify({ ok: true, synced: rows.length }), {
+    return new Response(JSON.stringify({ ok: true, synced, stories }), {
       headers: { 'content-type': 'application/json' },
     });
   } catch (e) {
