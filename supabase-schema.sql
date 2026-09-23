@@ -1313,3 +1313,44 @@ create policy "admins can delete requests" on public.requests for delete using (
 -- publishable key as both apikey and Authorization headers rather than
 -- flipping verify_jwt off (that classifier-sensitive path was avoided
 -- deliberately -- the publishable key is already public client-side).
+
+-- Instagram gallery: recent posts from @solace.executive, synced in by
+-- supabase/functions/sync-instagram so the homepage updates itself
+-- whenever a new photo goes up, same pattern as empty_legs.
+create table public.instagram_posts (
+  id uuid primary key default gen_random_uuid(),
+  media_id text not null unique,
+  media_type text not null,
+  media_url text not null,
+  permalink text not null,
+  caption text,
+  posted_at timestamptz not null,
+  active boolean not null default true,
+  created_at timestamptz default now()
+);
+
+alter table public.instagram_posts enable row level security;
+
+create policy "Public can view active instagram posts"
+  on public.instagram_posts for select
+  using (active = true);
+
+-- Schedule the daily sync (run once in the Supabase SQL Editor). Replace
+-- SYNC_SECRET_VALUE with the value stored in Edge Functions -> Secrets ->
+-- SYNC_SECRET (same one sync-empty-legs uses) before running.
+--
+-- select cron.schedule(
+--   'sync-instagram-daily',
+--   '0 6 * * *',
+--   $$
+--   select net.http_post(
+--     url := 'https://weiihajterqholxppgsl.supabase.co/functions/v1/sync-instagram',
+--     headers := jsonb_build_object(
+--       'Content-Type', 'application/json',
+--       'Authorization', 'Bearer sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr',
+--       'x-sync-secret', 'SYNC_SECRET_VALUE'
+--     ),
+--     body := '{}'::jsonb
+--   );
+--   $$
+-- );

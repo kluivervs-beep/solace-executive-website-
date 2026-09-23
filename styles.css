@@ -1555,6 +1555,84 @@ body.modal-open { overflow: hidden; }
 }
 
 /* ==========================================================================
+   Instagram gallery
+   ========================================================================== */
+
+.instagram-feed { background: var(--color-bg); }
+.instagram-feed .eyebrow { display: flex; justify-content: center; }
+.instagram-feed .section-title { text-align: center; margin: 0 auto var(--space-2); }
+
+.instagram-sub {
+  color: var(--color-ink-muted);
+  font-size: 16px;
+  line-height: 1.7;
+  max-width: 48ch;
+  margin: 0 auto var(--space-5);
+  text-align: center;
+}
+
+.instagram-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-1);
+  margin-bottom: var(--space-4);
+}
+
+.instagram-status {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--color-ink-muted);
+  font-size: 15px;
+  padding: var(--space-4) 0;
+}
+
+.instagram-item {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--color-bg-elevated-2);
+}
+.instagram-item img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 600ms var(--ease-out);
+}
+.instagram-item:hover img { transform: scale(1.06); }
+
+.instagram-follow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 0 auto;
+  color: var(--color-gold-light);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 11px 22px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: border-color var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+.instagram-follow:hover {
+  border-color: var(--color-gold-light);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 900px) {
+  .instagram-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 560px) {
+  .instagram-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ==========================================================================
    WhatsApp contact section
 ========================================================================== */
 .whatsapp-section {
