@@ -1369,6 +1369,34 @@ create policy "Public can view instagram stories"
   on public.instagram_stories for select
   using (true);
 
+-- Yacht charter listings from our Ibiza broker. Staff enters these by
+-- hand (via SQL insert for now, one per PDF spec sheet the broker
+-- sends) rather than a sync job, since these come in as one-off PDFs,
+-- not a feed. Broker's own day-rate is never shown publicly, same rule
+-- as the FTO fleet-car partner and JetServiceNL empty legs -- the
+-- gallery only shows specs and a "vraag naar tarief" WhatsApp CTA.
+create table public.yachts (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  model text not null,
+  length_m numeric,
+  guests_day integer,
+  guests_night integer,
+  cabins text,
+  bathrooms integer,
+  base_harbour text,
+  photo_path text not null,
+  active boolean not null default true,
+  sort_order integer not null default 0,
+  created_at timestamptz default now()
+);
+
+alter table public.yachts enable row level security;
+
+create policy "Public can view active yachts"
+  on public.yachts for select
+  using (active = true);
+
 -- Schedule the sync (run once in the Supabase SQL Editor). Replace
 -- SYNC_SECRET_VALUE with the value stored in Edge Functions -> Secrets ->
 -- SYNC_SECRET (same one sync-empty-legs uses) before running. Runs every

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="yachtslp.meta.title">Jachten | Solace Executive</title>
+<meta name="description" content="Jachtcharter op Ibiza en daarbuiten: van dagcharter tot seizoenshuur, bemanning inbegrepen. Lidmaatschap op aanvraag bij Solace Executive." data-i18n="yachtslp.meta.description" data-i18n-attr="content">
+<meta name="theme-color" content="#0F1B24">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Jachten | Solace Executive">
+<meta property="og:description" content="Jachtcharter op Ibiza en daarbuiten, bemanning inbegrepen.">
+<meta property="og:image" content="assets/photos/yachts/chloe.jpg">
+<meta property="og:locale" content="nl_NL">
+<link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body { background: #0F1B24; }
+
+  .yl-hero-full {
+    position: relative;
+    height: 88vh;
+    min-height: 560px;
+    overflow: hidden;
+  }
+  .yl-hero-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 60%;
+  }
+  .yl-hero-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15,27,36,0.6) 0%, rgba(15,27,36,0.22) 35%, rgba(15,27,36,0.45) 65%, rgba(15,27,36,0.96) 100%);
+  }
+  .yl-hero-inner {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+  }
+
+  .yl-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4);
+  }
+  .yl-header .brand { display: flex; align-items: center; gap: 12px; }
+  .yl-header .brand-mark { width: 34px; height: 34px; }
+  .yl-header .brand-word { display: flex; flex-direction: column; line-height: 1; }
+  .yl-header .brand-name { font-family: var(--font-display); font-size: 18px; letter-spacing: 0.16em; color: var(--color-ink); }
+  .yl-header .brand-sub { font-family: var(--font-sans); font-size: 9px; letter-spacing: 0.32em; color: var(--color-gold); margin-top: 3px; }
+
+  .yl-hero-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--space-4) var(--space-6);
+  }
+  .yl-hero-content { text-align: center; max-width: 680px; }
+  .yl-eyebrow {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--color-gold-light);
+    margin-bottom: 20px;
+  }
+  .yl-title-stack { margin: 0 0 22px; }
+  .yl-title-line {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(52px, 9vw, 100px);
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+  }
+  .yl-title-line--muted { color: rgba(245,241,230,0.5); }
+  .yl-title-line--bright { color: var(--color-ink); margin-top: -0.12em; }
+  .yl-sub {
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.6;
+    color: rgba(245,241,230,0.82);
+    margin: 0 auto var(--space-5);
+    max-width: 480px;
+  }
+  .yl-hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+  /* Gallery */
+  .yl-gallery { max-width: 1180px; margin: 0 auto; padding: var(--space-6) var(--space-4); }
+  .yl-gallery-head { text-align: center; max-width: 620px; margin: 0 auto var(--space-5); }
+
+  .yachts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); }
+  .yachts-status { grid-column: 1 / -1; text-align: center; color: var(--color-ink-muted); font-size: 15px; padding: var(--space-4) 0; }
+
+  .yacht-card {
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+  }
+  .yacht-card-photo { position: relative; aspect-ratio: 4 / 3; overflow: hidden; }
+  .yacht-card-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform 600ms var(--ease-out); }
+  .yacht-card:hover .yacht-card-photo img { transform: scale(1.05); }
+  .yacht-card-body { padding: var(--space-3); display: flex; flex-direction: column; gap: 4px; flex: 1; }
+  .yacht-card-name { font-family: var(--font-display); font-size: 22px; color: var(--color-ink); }
+  .yacht-card-model { font-family: var(--font-sans); font-size: 11px; color: var(--color-gold-light); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .yacht-card-specs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .yacht-spec-chip {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    color: var(--color-ink-muted);
+    background: rgba(212,190,140,0.08);
+    border: 1px solid var(--color-border);
+    padding: 4px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .yacht-card-harbour { font-family: var(--font-sans); font-size: 12.5px; color: var(--color-ink-muted); margin-bottom: var(--space-2); }
+  .yacht-card-cta { margin-top: auto; align-self: flex-start; }
+
+  @media (max-width: 900px) {
+    .yachts-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .yachts-grid { grid-template-columns: 1fr; }
+  }
+
+  .yl-closing { text-align: center; padding: var(--space-6) var(--space-4) var(--space-7); }
+  .yl-closing h2 { font-family: var(--font-display); font-weight: 500; font-size: 30px; color: var(--color-ink); margin-bottom: 14px; }
+  .yl-closing p { font-family: var(--font-sans); font-size: 15px; color: var(--color-ink-muted); margin-bottom: var(--space-4); }
+
+  .yl-footer { text-align: center; padding: var(--space-4); border-top: 1px solid var(--color-border); }
+  .yl-footer a { font-family: var(--font-sans); font-size: 13px; color: var(--color-ink-muted); }
+  .yl-footer a:hover { color: var(--color-gold-light); }
+
+  @media (max-width: 720px) {
+    .yl-hero-full { min-height: 500px; }
+    .yl-hero-actions { flex-direction: column; width: 100%; }
+    .yl-hero-actions .btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<section class="yl-hero-full">
+  <img class="yl-hero-photo" src="assets/photos/yachts/ruby-tuesday.jpg" alt="">
+  <div class="yl-hero-scrim"></div>
+  <div class="yl-hero-inner">
+    <header class="yl-header">
+      <a href="index.html" class="brand" aria-label="Solace Executive homepage">
+        <img src="assets/icons/monogram.svg" alt="" class="brand-mark">
+        <span class="brand-word">
+          <span class="brand-name">SOLACE</span>
+          <span class="brand-sub">EXECUTIVE</span>
+        </span>
+      </a>
+      <div class="lang-switch" role="group" aria-label="Taal / Language">
+        <button type="button" class="lang-btn" data-lang="nl">NL</button>
+        <button type="button" class="lang-btn" data-lang="en">EN</button>
+      </div>
+    </header>
+    <div class="yl-hero-main">
+      <div class="yl-hero-content">
+        <p class="yl-eyebrow reveal" data-i18n="yachtslp.label">JACHTEN</p>
+        <h1 class="yl-title-stack">
+          <span class="yl-title-line yl-title-line--muted reveal" data-i18n="yachtslp.title">Elegant.</span>
+          <span class="yl-title-line yl-title-line--bright reveal" data-i18n="yachtslp.title2">Moeiteloos.</span>
+        </h1>
+        <p class="yl-sub reveal" data-i18n="yachtslp.sub">Bemanning, route en catering vooraf op elkaar afgestemd. U hoeft alleen aan boord te stappen.</p>
+        <div class="yl-hero-actions reveal">
+          <a href="#yl-gallery" class="btn btn-outline" data-i18n="yachtslp.discover">Bekijk de selectie</a>
+          <a href="index.html#lidmaatschap" class="btn btn-primary" data-i18n="yachtslp.cta">Boek nu</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="yl-gallery" id="yl-gallery">
+  <div class="yl-gallery-head">
+    <p class="eyebrow reveal" style="justify-content:center; display:flex;" data-i18n="yachts.gallery.eyebrow">ONZE SELECTIE</p>
+    <h2 class="section-title reveal" data-i18n="yachts.gallery.title">Actueel beschikbaar op Ibiza</h2>
+    <p class="reveal" data-i18n="yachts.gallery.sub">Een greep uit ons netwerk van charterjachten. Niet gevonden wat u zoekt? Wij hebben toegang tot meer.</p>
+  </div>
+  <div class="yachts-grid reveal" id="yachtsGrid">
+    <p class="yachts-status" data-i18n="yachts.loading">Jachten laden…</p>
+  </div>
+</section>
+
+<section class="yl-closing">
+  <h2 class="reveal" data-i18n="yachtslp.closing.title">Nog vragen, of liever het volledige aanbod bekijken?</h2>
+  <p class="reveal" data-i18n="yachtslp.closing.body">Solace Executive regelt naast jachtcharters ook privéjets en executive transport.</p>
+  <a href="index.html" class="btn btn-outline reveal" data-i18n="yachtslp.closing.cta">Bekijk alle diensten</a>
+</section>
+
+<footer class="yl-footer">
+  <a href="index.html">&copy; <span id="year"></span> Solace Executive</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="i18n.js"></script>
+<script type="module" src="yachts.js"></script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (window.gsap && window.ScrollTrigger && !reducedMotion) {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('.reveal').forEach((el, i) => {
+      gsap.from(el, {
+        opacity: 0,
+        y: 20,
+        duration: 0.55,
+        ease: 'power1.out',
+        delay: (i % 6) * 0.04,
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 88%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
