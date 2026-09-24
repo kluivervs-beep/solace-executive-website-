@@ -128,7 +128,18 @@
     white-space: nowrap;
   }
   .yacht-card-harbour { font-family: var(--font-sans); font-size: 12.5px; color: var(--color-ink-muted); margin-bottom: var(--space-2); }
-  .yacht-card-cta { margin-top: auto; align-self: flex-start; }
+  .yacht-card-footer {
+    margin-top: auto;
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .yacht-card-price { font-family: var(--font-sans); font-size: 15px; font-weight: 600; color: var(--color-ink); white-space: nowrap; }
+  .yacht-card-price-label { font-size: 11px; font-weight: 400; color: var(--color-ink-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .yacht-card-cta { font-size: 12px; padding: 8px 14px; white-space: nowrap; }
 
   @media (max-width: 900px) {
     .yachts-grid { grid-template-columns: repeat(2, 1fr); }

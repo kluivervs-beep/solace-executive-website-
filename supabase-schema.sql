@@ -1372,9 +1372,9 @@ create policy "Public can view instagram stories"
 -- Yacht charter listings from our Ibiza broker. Staff enters these by
 -- hand (via SQL insert for now, one per PDF spec sheet the broker
 -- sends) rather than a sync job, since these come in as one-off PDFs,
--- not a feed. Broker's own day-rate is never shown publicly, same rule
--- as the FTO fleet-car partner and JetServiceNL empty legs -- the
--- gallery only shows specs and a "vraag naar tarief" WhatsApp CTA.
+-- not a feed. price_from is our own marked-up rate (broker agreed a
+-- flat 10%, same roundPrice() pattern as JetServiceNL empty legs) --
+-- the broker's own raw rate/name is never stored or shown.
 create table public.yachts (
   id uuid primary key default gen_random_uuid(),
   name text not null,
@@ -1385,6 +1385,7 @@ create table public.yachts (
   cabins text,
   bathrooms integer,
   base_harbour text,
+  price_from numeric,
   photo_path text not null,
   active boolean not null default true,
   sort_order integer not null default 0,
