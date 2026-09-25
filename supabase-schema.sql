@@ -1432,3 +1432,53 @@ create policy "Public can view active yachts"
 update public.profiles set is_admin = false where is_admin is null;
 alter table public.profiles alter column is_admin set default false;
 alter table public.profiles alter column is_admin set not null;
+
+-- Fix: member_experiences.image_url was NOT NULL, but a video-only
+-- moment (no photo) is a real use case -- an experience just needs a
+-- photo, a video, or both, never neither.
+alter table public.member_experiences alter column image_url drop not null;
+alter table public.member_experiences add constraint member_experiences_has_media
+  check (image_url is not null or video_url is not null);
+
+-- Fix: a new access request only ever emailed staff via Formspree --
+-- checked and confirmed the push-notify half described in an earlier
+-- comment here was never actually applied to this function, staff had
+-- no way to notice a new request without opening email. Loops every
+-- admin's push_token (same send-push edge function the concierge inbox
+-- reply flow already uses) so it shows up as a phone notification too.
+create or replace function public.notify_access_request()
+returns trigger as $$
+declare
+  admin_row record;
+begin
+  perform net.http_post(
+    url := 'https://formspree.io/f/xgojjlzv',
+    body := jsonb_build_object(
+      '_subject', 'Nieuwe toegangsaanvraag: ' || new.full_name,
+      'name', new.full_name,
+      'email', new.email,
+      'message', 'Telefoon: ' || coalesce(new.phone, '-') || E'\nUitnodigingscode: ' || coalesce(new.referral_code, '-')
+    ),
+    headers := jsonb_build_object('Content-Type', 'application/json')
+  );
+
+  for admin_row in select push_token from public.profiles where is_admin and push_token is not null loop
+    perform net.http_post(
+      url := 'https://weiihajterqholxppgsl.supabase.co/functions/v1/send-push',
+      headers := jsonb_build_object(
+        'Content-Type', 'application/json',
+        'apikey', 'sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr',
+        'Authorization', 'Bearer sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr'
+      ),
+      body := jsonb_build_object(
+        'push_token', admin_row.push_token,
+        'title', 'Nieuwe toegangsaanvraag',
+        'body', new.full_name || ' vraagt toegang aan',
+        'data', jsonb_build_object('type', 'access_request')
+      )
+    );
+  end loop;
+
+  return new;
+end;
+$$ language plpgsql security definer set search_path = public, net;
