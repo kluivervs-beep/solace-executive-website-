@@ -7,10 +7,12 @@ import { supabase } from './supabase-client.js';
 
 const MAX_SHOWN = 8;
 const STORY_DURATION = 5000;
+const SEEN_KEY = 'solace_ig_seen_marker';
 
 let stories = [];
 let currentStoryIndex = 0;
 let storyTimer = null;
+let storiesMarker = '';
 
 function t(key) {
   return window.SolaceI18n ? window.SolaceI18n.t(key) : key;
@@ -67,13 +69,24 @@ async function loadProfile() {
 
   const { data: storyRows } = await supabase
     .from('instagram_stories')
-    .select('media_type, media_url, permalink, posted_at')
+    .select('media_id, media_type, media_url, permalink, posted_at')
     .order('posted_at', { ascending: true });
 
   stories = storyRows || [];
   if (stories.length === 0) return;
 
-  ring.classList.add('has-story');
+  // A stable signature of exactly this batch of stories, so "seen" only
+  // resets to unseen when the actual set of stories changes (a new one
+  // posted, or one expiring), never just because the 30-min sync re-ran.
+  storiesMarker = stories.map((s) => s.media_id).sort().join(',');
+  let seenMarker = '';
+  try {
+    seenMarker = localStorage.getItem(SEEN_KEY) || '';
+  } catch {
+    // Private browsing / storage blocked: just treat as always-unseen.
+  }
+  if (seenMarker !== storiesMarker) ring.classList.add('has-story');
+
   link.addEventListener('click', (e) => {
     e.preventDefault();
     openStoryViewer();
@@ -84,6 +97,17 @@ function openStoryViewer() {
   const viewer = document.getElementById('storyViewer');
   const bars = document.getElementById('storyViewerBars');
   if (!viewer || !bars) return;
+
+  // Mark seen the moment the viewer opens (matches Instagram's own
+  // behaviour: the ring's glow drops as soon as you start watching, not
+  // only once you've stepped through every story).
+  const ring = document.getElementById('instagramAvatarRing');
+  if (ring) ring.classList.remove('has-story');
+  try {
+    localStorage.setItem(SEEN_KEY, storiesMarker);
+  } catch {
+    // Private browsing / storage blocked: ring just won't remember next visit.
+  }
 
   bars.innerHTML = stories.map(() => '<div class="story-viewer-bar"><div class="story-viewer-bar-fill"></div></div>').join('');
   viewer.hidden = false;
