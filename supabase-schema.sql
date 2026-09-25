@@ -1420,3 +1420,15 @@ create policy "Public can view active yachts"
 --   );
 --   $$
 -- );
+
+-- Fix: some profiles.is_admin rows were NULL rather than false (the
+-- column has never had a default), which made every ".eq('is_admin',
+-- false)" member-listing query (Team Chats in the app, Inbox on the
+-- website dashboard) silently skip those members entirely -- they just
+-- never appeared in the list, no error anywhere. Both queries were
+-- switched to ".not('is_admin', 'is', true)" (is_admin=false OR null
+-- both count as "not an admin"), and this backfills the column itself
+-- so new rows can't drift back into the same trap.
+update public.profiles set is_admin = false where is_admin is null;
+alter table public.profiles alter column is_admin set default false;
+alter table public.profiles alter column is_admin set not null;

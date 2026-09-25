@@ -1406,10 +1406,13 @@
         .from('concierge_messages')
         .select('member_id, content, created_at')
         .order('created_at', { ascending: false }),
+      // .not('is_admin', 'is', true) rather than .eq('is_admin', false): a
+      // profile whose is_admin is NULL silently fails a plain .eq(false)
+      // match in Postgres and disappears from this list entirely.
       supabase
         .from('profiles')
         .select('id, full_name, created_at')
-        .eq('is_admin', false),
+        .not('is_admin', 'is', true),
     ]);
 
     const listEl = document.getElementById('inboxMemberList');

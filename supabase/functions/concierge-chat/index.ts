@@ -59,6 +59,8 @@ Members will also ask you things that are not a request at all, like "what's goo
 
 The only things you genuinely cannot know are live, real-time data: today's actual weather, current flight status, live prices, or anything changing minute to minute. Even then, never respond with a flat "I can only help with your travel and concierge requests", that undersells you and sounds unhelpful. Instead, say plainly you don't have live data for that, then pivot straight into being useful anyway (typical weather for that place and time of year, what that means for what to pack or plan, or an offer to have the team confirm closer to the date).
 
+You are given this member's request history below as context. Actually use it: notice real patterns (a repeated route, a recurring club, a club night that's always the same day of week, a tendency to book last-minute) and let that shape how you respond, e.g. asking "weer naar Nice?" instead of starting from zero, or flagging proactively that something is unusually last-minute for them. Never just recite the history back as a list.
+
 You can also help with:
 - Checking the status of a member's existing requests, with check_request_status, whenever they ask.
 - Checking their Solace Points balance and tier progress, with check_points_balance, whenever they ask.
@@ -312,7 +314,28 @@ Deno.serve(async (req) => {
         ? `\n\nA request was already logged a few minutes ago in this conversation: "${recentRequest.service}". If the member is just adding more detail to that same request, do not call log_request again, simply acknowledge it. Only call log_request again if they are clearly describing a separate, distinct booking.`
         : '';
 
-    const SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}\n\n${buildDateContext()}\n\n${buildAddressInstruction(profile?.full_name, profile?.title)}${notesContext}${rewardsContext}${recentRequestContext}\n\nReminder: reply in the same language as the member's most recent message below, regardless of what language any names, service titles, or earlier messages above are in. Service and reward titles stored in the system are often Dutch even for English-speaking members; never let that pull your reply into Dutch.`;
+    // So the concierge can actually notice patterns (a member who always
+    // flies the same route, always books the same club, tends to request
+    // things last-minute) and act on them proactively, not just recall an
+    // explicit saved preference. This is read-only context, never recited
+    // back verbatim -- the base prompt already tells the model to be a
+    // genuinely well-connected concierge, this is what lets it be one for
+    // *this* member specifically.
+    const { data: history } = await supabase
+      .from('requests')
+      .select('service, status, created_at')
+      .eq('member_id', memberId)
+      .order('created_at', { ascending: false })
+      .limit(6);
+
+    const historyContext =
+      history && history.length > 0
+        ? `\n\nThis member's request history, most recent first (for your own context only, to spot patterns and personalize proactively -- never just list this back at them):\n${history
+            .map((r: { service: string; status: string; created_at: string }) => `- ${r.service} (${r.status}, ${new Date(r.created_at).toLocaleDateString('en-GB')})`)
+            .join('\n')}`
+        : '';
+
+    const SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}\n\n${buildDateContext()}\n\n${buildAddressInstruction(profile?.full_name, profile?.title)}${notesContext}${rewardsContext}${historyContext}${recentRequestContext}\n\nReminder: reply in the same language as the member's most recent message below, regardless of what language any names, service titles, or earlier messages above are in. Service and reward titles stored in the system are often Dutch even for English-speaking members; never let that pull your reply into Dutch.`;
 
     const conversation = [...messages];
     let finalText = '';
@@ -332,7 +355,17 @@ Deno.serve(async (req) => {
         },
         body: JSON.stringify({
           model: MODEL,
-          max_tokens: 1024,
+          max_tokens: 4096,
+          // Extended thinking: the model reasons privately (checking
+          // constraints like a stated passenger limit, weighing what the
+          // history context implies) before it writes the reply or picks a
+          // tool. The thinking block is never shown to the member -- only
+          // the `text` blocks below ever reach them -- but it measurably
+          // improves multi-constraint replies. The whole content array
+          // (thinking block included) is replayed back into `conversation`
+          // below exactly as returned, which is what the API requires to
+          // keep thinking valid across a tool-use round trip.
+          thinking: { type: 'enabled', budget_tokens: 2048 },
           system: SYSTEM_PROMPT,
           messages: conversation,
           tools: TOOLS,
