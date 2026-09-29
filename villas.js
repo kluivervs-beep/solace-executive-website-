@@ -32,6 +32,9 @@ function cardHtml(villa) {
   if (villa.max_guests) chips.push(t('villas.guests').replace('{n}', villa.max_guests));
   if (villa.has_pool) chips.push(t('villas.pool'));
 
+  const area = lang() === 'en' && villa.area_en ? villa.area_en : villa.area;
+  const description = lang() === 'en' && villa.description_en ? villa.description_en : villa.description;
+
   return `
     <article class="villa-card">
       <div class="villa-card-photo">
@@ -39,11 +42,11 @@ function cardHtml(villa) {
       </div>
       <div class="villa-card-body">
         <p class="villa-card-name">${villa.name}</p>
-        ${villa.area ? `<p class="villa-card-area">${villa.area}</p>` : ''}
+        ${area ? `<p class="villa-card-area">${area}</p>` : ''}
         <div class="villa-card-specs">
           ${chips.map((c) => `<span class="villa-spec-chip">${c}</span>`).join('')}
         </div>
-        ${villa.description ? `<p class="villa-card-desc">${villa.description}</p>` : ''}
+        ${description ? `<p class="villa-card-desc">${description}</p>` : ''}
         <div class="villa-card-footer">
           ${
             villa.price_from
@@ -66,7 +69,7 @@ async function load() {
 
   const { data, error } = await supabase
     .from('villas')
-    .select('name, area, bedrooms, bathrooms, max_guests, has_pool, description, price_from, photo_path')
+    .select('name, area, area_en, bedrooms, bathrooms, max_guests, has_pool, description, description_en, price_from, photo_path')
     .eq('active', true)
     .order('sort_order', { ascending: true });
 

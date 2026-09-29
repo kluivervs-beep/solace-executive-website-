@@ -1405,10 +1405,14 @@ create policy "Public can view active yachts"
 -- partner also sends for yachts, these villa PDFs never state a price at
 -- all (rates are quoted separately, per season) -- price_from stays null
 -- until Kluiver has an actual rate to enter for a given villa.
+-- area/description/amenities are Dutch; the _en columns are the English
+-- versions shown when the site or app is switched to English (villa name
+-- is a proper noun and is not translated).
 create table public.villas (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   area text not null,
+  area_en text,
   bedrooms integer,
   bathrooms integer,
   max_guests integer,
@@ -1416,7 +1420,9 @@ create table public.villas (
   living_area_m2 integer,
   plot_area_m2 integer,
   description text,
+  description_en text,
   amenities text[] not null default '{}',
+  amenities_en text[] not null default '{}',
   price_from numeric,
   photo_path text not null,
   photos text[] not null default '{}',
