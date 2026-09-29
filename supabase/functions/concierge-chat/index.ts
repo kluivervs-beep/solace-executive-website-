@@ -298,6 +298,21 @@ Deno.serve(async (req) => {
     const memberEmail = userData.user.email ?? '';
     const { messages } = await req.json();
 
+    // TEMPORARY diagnostic: pinpointing why an attached photo's image block
+    // doesn't seem to reach the model. Logs shape only (role + whether
+    // content is a string or an array, and each array item's type), never
+    // full text or image data. Remove once the photo-vision bug is found.
+    console.log(
+      'DEBUG concierge-chat messages shape:',
+      JSON.stringify(
+        (messages || []).map((m: any) => ({
+          role: m?.role,
+          contentIsArray: Array.isArray(m?.content),
+          contentTypes: Array.isArray(m?.content) ? m.content.map((c: any) => c?.type) : typeof m?.content,
+        }))
+      )
+    );
+
     if (!Array.isArray(messages) || messages.length === 0) {
       return new Response(JSON.stringify({ error: 'messages is required' }), {
         status: 400,
