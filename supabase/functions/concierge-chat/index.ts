@@ -396,7 +396,14 @@ Deno.serve(async (req) => {
           // (thinking block included) is replayed back into `conversation`
           // below exactly as returned, which is what the API requires to
           // keep thinking valid across a tool-use round trip.
-          thinking: { type: 'enabled', budget_tokens: 2048 },
+          //
+          // claude-sonnet-5 removed the fixed-budget form
+          // (`{type: 'enabled', budget_tokens}` now 400s) in favor of
+          // adaptive thinking, where the model paces its own reasoning;
+          // `effort: 'low'` keeps this route's cost/latency close to the
+          // old 2048-token budget instead of the model's 'high' default.
+          thinking: { type: 'adaptive' },
+          output_config: { effort: 'low' },
           system: SYSTEM_PROMPT,
           messages: conversation,
           tools: TOOLS,
