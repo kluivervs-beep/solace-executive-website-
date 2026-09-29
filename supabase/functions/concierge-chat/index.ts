@@ -610,15 +610,16 @@ Deno.serve(async (req) => {
       if (textBlocks) finalText = textBlocks;
     }
 
-    // TEMPORARY diagnostic for the photo-vision bug: prepend how many image
-    // blocks were actually in the last user message, visible right in the
-    // chat reply so we don't have to go hunting through dashboard logs.
-    // Remove once the bug is found.
-    const lastUserMessage = messages[messages.length - 1];
-    const imageBlockCount = Array.isArray(lastUserMessage?.content)
-      ? lastUserMessage.content.filter((c: any) => c?.type === 'image').length
-      : 0;
-    const debugPrefix = `[DEBUG images_in_last_message=${imageBlockCount}] `;
+    // TEMPORARY diagnostic for the photo-vision bug: the previous version of
+    // this only checked the LAST message, which is wrong whenever a photo is
+    // followed by a separate text message (the image sits in an earlier
+    // message, not the last one) -- count image blocks across the WHOLE
+    // conversation actually sent to Claude instead. Remove once found.
+    const imageBlockCount = messages.reduce(
+      (sum: number, m: any) => sum + (Array.isArray(m?.content) ? m.content.filter((c: any) => c?.type === 'image').length : 0),
+      0
+    );
+    const debugPrefix = `[DEBUG total_images_in_conversation=${imageBlockCount}] `;
 
     return new Response(JSON.stringify({ reply: debugPrefix + (finalText || 'One moment.') }), {
       headers: { ...corsHeaders, 'content-type': 'application/json' },
