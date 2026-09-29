@@ -300,21 +300,6 @@ Deno.serve(async (req) => {
     const memberEmail = userData.user.email ?? '';
     const { messages } = await req.json();
 
-    // TEMPORARY diagnostic: pinpointing why an attached photo's image block
-    // doesn't seem to reach the model. Logs shape only (role + whether
-    // content is a string or an array, and each array item's type), never
-    // full text or image data. Remove once the photo-vision bug is found.
-    console.log(
-      'DEBUG concierge-chat messages shape:',
-      JSON.stringify(
-        (messages || []).map((m: any) => ({
-          role: m?.role,
-          contentIsArray: Array.isArray(m?.content),
-          contentTypes: Array.isArray(m?.content) ? m.content.map((c: any) => c?.type) : typeof m?.content,
-        }))
-      )
-    );
-
     if (!Array.isArray(messages) || messages.length === 0) {
       return new Response(JSON.stringify({ error: 'messages is required' }), {
         status: 400,
@@ -385,13 +370,17 @@ Deno.serve(async (req) => {
 
     const SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}\n\n${VILLA_CATALOG}\n\n${buildDateContext()}\n\n${buildAddressInstruction(profile?.full_name, profile?.title)}${notesContext}${rewardsContext}${historyContext}${recentRequestContext}\n\nReminder: reply in the same language as the member's most recent message below, regardless of what language any names, service titles, or earlier messages above are in. Service and reward titles stored in the system are often Dutch even for English-speaking members; never let that pull your reply into Dutch.`;
 
-    // TEMPORARY diagnostic for the photo-vision bug: isolate whether a long
-    // accumulated history (this test member has 12+ images built up over
-    // many test rounds today, some from much earlier test messages) is what
-    // makes the model claim it can't see photos, by sending ONLY the most
-    // recent couple of messages instead of the full history. Revert to
-    // `[...messages]` once the bug is found either way.
-    const conversation = messages.slice(-2);
+    // Confirmed the photo-vision bug: a heavily-tested member account with
+    // 12+ accumulated photos in its full history made the model claim it
+    // couldn't see any image at all, while the exact same photo alone (or
+    // any conversation with only a couple of images) was read correctly
+    // every time. This chat has no history cap anywhere else (loadHistory
+    // in the app just loads everything ever sent), so a real member's
+    // history would eventually hit the same wall too. Cap what actually
+    // gets sent to the API to the most recent messages -- plenty of
+    // context for a support chat, and keeps image count comfortably low.
+    const HISTORY_LIMIT = 30;
+    const conversation = messages.slice(-HISTORY_LIMIT);
     let finalText = '';
     // Guards against Claude calling the same logging tool twice within
     // one exchange (e.g. re-confirming after an earlier round already
@@ -618,16 +607,7 @@ Deno.serve(async (req) => {
       if (textBlocks) finalText = textBlocks;
     }
 
-    // TEMPORARY diagnostic for the photo-vision bug: the previous version of
-    // this only checked the LAST message, which is wrong whenever a photo is
-    // followed by a separate text message (the image sits in an earlier
-    // message, not the last one) -- count image blocks across the WHOLE
-    // conversation actually sent to Claude instead. Remove once found.
-    const countImages = (arr: any[]) =>
-      arr.reduce((sum: number, m: any) => sum + (Array.isArray(m?.content) ? m.content.filter((c: any) => c?.type === 'image').length : 0), 0);
-    const debugPrefix = `[DEBUG sent_to_claude=${countImages(conversation)} full_history=${countImages(messages)}] `;
-
-    return new Response(JSON.stringify({ reply: debugPrefix + (finalText || 'One moment.') }), {
+    return new Response(JSON.stringify({ reply: finalText || 'One moment.' }), {
       headers: { ...corsHeaders, 'content-type': 'application/json' },
     });
   } catch (err) {
