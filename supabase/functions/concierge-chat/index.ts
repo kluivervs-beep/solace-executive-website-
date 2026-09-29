@@ -385,7 +385,13 @@ Deno.serve(async (req) => {
 
     const SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}\n\n${VILLA_CATALOG}\n\n${buildDateContext()}\n\n${buildAddressInstruction(profile?.full_name, profile?.title)}${notesContext}${rewardsContext}${historyContext}${recentRequestContext}\n\nReminder: reply in the same language as the member's most recent message below, regardless of what language any names, service titles, or earlier messages above are in. Service and reward titles stored in the system are often Dutch even for English-speaking members; never let that pull your reply into Dutch.`;
 
-    const conversation = [...messages];
+    // TEMPORARY diagnostic for the photo-vision bug: isolate whether a long
+    // accumulated history (this test member has 12+ images built up over
+    // many test rounds today, some from much earlier test messages) is what
+    // makes the model claim it can't see photos, by sending ONLY the most
+    // recent couple of messages instead of the full history. Revert to
+    // `[...messages]` once the bug is found either way.
+    const conversation = messages.slice(-2);
     let finalText = '';
     // Guards against Claude calling the same logging tool twice within
     // one exchange (e.g. re-confirming after an earlier round already
@@ -617,11 +623,9 @@ Deno.serve(async (req) => {
     // followed by a separate text message (the image sits in an earlier
     // message, not the last one) -- count image blocks across the WHOLE
     // conversation actually sent to Claude instead. Remove once found.
-    const imageBlockCount = messages.reduce(
-      (sum: number, m: any) => sum + (Array.isArray(m?.content) ? m.content.filter((c: any) => c?.type === 'image').length : 0),
-      0
-    );
-    const debugPrefix = `[DEBUG total_images_in_conversation=${imageBlockCount}] `;
+    const countImages = (arr: any[]) =>
+      arr.reduce((sum: number, m: any) => sum + (Array.isArray(m?.content) ? m.content.filter((c: any) => c?.type === 'image').length : 0), 0);
+    const debugPrefix = `[DEBUG sent_to_claude=${countImages(conversation)} full_history=${countImages(messages)}] `;
 
     return new Response(JSON.stringify({ reply: debugPrefix + (finalText || 'One moment.') }), {
       headers: { ...corsHeaders, 'content-type': 'application/json' },
