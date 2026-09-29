@@ -1,0 +1,43 @@
+## Can Bellotera
+- slug: can-bellotera
+- area: not stated in source PDF beyond "Ibiza" (set in open countryside: orchards, olive trees, hills visible from every terrace; no town/district named)
+- bedrooms: 6 (5 double bedrooms plus a self-contained guest apartment)
+- bathrooms: 5
+- max_guests: 14
+- has_pool: true
+- living_area_m2: 400 (source states "more than 400 m2")
+- plot_area_m2: 5000
+- description: Can Bellotera sits on a five-thousand-square-metre countryside plot, its terracotta roofline and arched colonnade framed by orange groves and open hills. Inside, sun-washed lounges and terracotta-floored living spaces flow out to wraparound terraces and a sweeping stone pool deck. With five double bedrooms and a private guest apartment sleeping fourteen in total, it suits a large family or group wanting space, quiet, and a genuine slice of rural Ibiza.
+- amenities:
+  - Large private pool set in a lawned garden with sun loungers
+  - Air conditioning throughout every bedroom
+  - Three separate lounges plus a dedicated dining room
+  - Two fully equipped kitchens
+  - Covered terraces and balconies with countryside and hill views
+  - Outdoor barbecue area
+  - Wi-Fi and in-room safe
+  - Surrounded by orange and olive groves for total privacy
+- photos saved (in order, hero first): hero.jpg, terrace.jpg, pool.jpg, view.jpg, living-room.jpg, dining-room.jpg, kitchen.jpg, bedroom-1.jpg, bathroom.jpg, bedroom-2.jpg
+- agency/broker branding spotted: none. Checked all 18 pages for logos, letterhead, watermarks, or contact details; the PDF contains only one short unbranded Spanish description block (page 1) and photos, no third-party name or contact info anywhere. (A "Televes" brand name is visible on a roof-mounted satellite dish in one photo, but that's just the antenna manufacturer, not a broker, so it's harmless and not in any extracted photo.)
+
+## Villa Deseo
+- slug: villa-deseo
+- area: Can Furnet, Ibiza (hillside, about 5 minutes from Ibiza Town and Pacha, with sweeping views to Dalt Vila, Formentera and the port)
+- bedrooms: 8
+- bathrooms: 8.5
+- max_guests: 20
+- has_pool: true
+- living_area_m2: 800
+- plot_area_m2: 17000
+- description: Perched above Ibiza Town in Can Furnet, Villa Deseo pairs eight elegant en-suite bedrooms with a laguna-style pool set apart from the main house for total privacy, all wrapped in seventeen thousand square metres of gardens and pine woodland. Two vast terraces host alfresco dining for sixteen beneath woven pendant lights, while a rooftop jacuzzi and a private tennis court round out a property with no adjoining neighbours in sight. Unbroken views stretch to Dalt Vila, Formentera and the port, making it a rare combination of proximity to the city and complete seclusion.
+- amenities:
+  - Laguna-style infinity pool, detached from the house for extra privacy
+  - Rooftop jacuzzi for sunset views before a night out
+  - Private full-size tennis / basketball court
+  - Wood-fired oven for pizzas and asados
+  - Alfresco dining table seating up to 16, plus billiards table and grand piano
+  - Panoramic views of Dalt Vila, Formentera and the port
+  - Concierge service and daily cleaning included
+  - Totally private with no adjoining neighbours, 5 minutes from Ibiza Town and Pacha
+- photos saved (in order, hero first): hero.jpg, aerial.jpg, pool-view.jpg, pool-night.jpg, lounge-terrace.jpg, dining.jpg, living-room.jpg, kitchen.jpg, bedroom-1.jpg, bathroom.jpg
+- agency/broker branding spotted: none. Checked all 56 pages for logos, letterhead, watermarks, or contact info; found none. One inconsistency worth flagging: the closing title card (page 56) reads "VILLA PARADISE / Can Furnet" instead of "Villa Deseo." This looks like a leftover from a reused PDF template rather than a broker name, but confirm the villa's correct name with your partner before publishing since the source document itself is inconsistent on this point.

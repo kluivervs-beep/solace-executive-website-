@@ -1,0 +1,43 @@
+## Villa Alfa
+- slug: villa-alfa
+- area: Es Canar (east coast of Ibiza)
+- bedrooms: 5
+- bathrooms: 5 + 1 guest toilet
+- max_guests: 10
+- has_pool: true
+- living_area_m2: 846
+- plot_area_m2: 17300
+- description: A contemporary retreat on Ibiza's east coast, set on a sprawling plot amid pine forest. Clean architectural lines, double-height glazing and a lift connecting all three levels give this villa an effortless, resort-like flow. Guests enjoy a private gymnasium, a chill-out terrace framed by mature trees, and interiors bathed in natural light. Perfect for a party that wants space to spread out without ever feeling apart.
+- amenities:
+  - Heated private pool with sun terrace
+  - Private gymnasium and lift access to all floors
+  - Covered al fresco dining terrace with built-in BBQ
+  - Fully equipped designer kitchen
+  - Five en-suite double bedrooms, most with private terrace access
+  - Second living area with relaxed lounge and home office corner
+  - Air conditioning, Wi-Fi and sound system throughout
+  - Private parking within a 17,300 m² pine-forest plot
+- photos saved (in order, hero first): hero.jpg, exterior.jpg, pool-terrace.jpg, living-room.jpg, kitchen.jpg, bedroom-1.jpg, bathroom.jpg, relax-lounge.jpg, gym.jpg
+- agency/broker branding spotted: none spotted. No agency name, logo, watermark, or third-party contact details appear anywhere across all 21 pages.
+
+## Villa Prada
+- slug: villa-prada
+- area: Talamanca, Jesús (Ibiza town)
+- bedrooms: 7
+- bathrooms: 5 + 1 guest toilet
+- max_guests: 14
+- has_pool: true
+- living_area_m2: not stated
+- plot_area_m2: not stated
+- description: A bold, art-filled villa in the sought-after Talamanca area, just minutes from Ibiza town. Spread across five characterful levels, the interiors mix vivid statement pieces and playful design with sun-drenched terraces overlooking open countryside and the old town skyline. A dramatic lacquered-red dining table sets the scene for glamorous evenings, while the pool terrace and its resident giraffe sculpture make for an unmistakable holiday backdrop. Ideal for a lively group after both beach days and Ibiza's famed nightlife on its doorstep.
+- amenities:
+  - Private pool with sun terrace and countryside views
+  - Five minutes from Ibiza town and Pacha
+  - Walking distance to Talamanca Beach
+  - Striking dining terrace with statement lacquered table, seats 12+
+  - Seven bedrooms across five levels, six with double beds
+  - Bold, gallery-style interiors with original art throughout
+  - Fully fitted kitchen
+  - Multiple lounge and chill-out areas, indoors and out
+- photos saved (in order, hero first): hero.jpg, pool-aerial.jpg, pool-dusk.jpg, living-room.jpg, outdoor-dining.jpg, kitchen.jpg, bedroom-1.jpg, bedroom-2.jpg, bathroom.jpg
+- agency/broker branding spotted: none spotted. Every page only carries the property's own "VILLA PRADA / Jesus, Ibiza" banner; no third-party agency name, logo, watermark, or contact info appears across all 31 pages. One unrelated note: the "Key Features" text block (page 5) refers to the property once as "Villa Extravaganza" instead of "Villa Prada" — almost certainly leftover template text from a different listing that wasn't updated, not a broker name. Worth a quick sanity check but not something to publish either way.

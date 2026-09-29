@@ -1,0 +1,43 @@
+## Villa San Antonio
+- slug: villa-san-antonio
+- area: San Antonio
+- bedrooms: 5
+- bathrooms: 4
+- max_guests: 10
+- has_pool: true
+- living_area_m2: 360
+- plot_area_m2: not stated
+- description: A modern two-floor retreat set behind bougainvillea and palms in San Antonio, built for large families or groups without compromising on privacy. The main house's three bedrooms are joined by a self-contained two-bedroom annex, wrapped around a sun-drenched garden, private pool and shaded terrace. Inside, easy contemporary interiors meet a fully equipped kitchen, fireplace and smart TV throughout, with the buzz of San Rafael's restaurants and Ibiza Town just minutes away.
+- amenities:
+  - Private swimming pool with sun terrace
+  - Landscaped garden and shaded pergola lounge
+  - Self-contained two-bedroom annex for extra privacy
+  - Fully equipped kitchen with dishwasher and coffee machine
+  - Air conditioning, central heating and fireplace
+  - Barbecue and ping-pong table
+  - 5-minute walk to UNVRS club
+  - Minutes from San Rafael village and Ibiza Town
+- photos saved (in order, hero first): hero.jpg, pool.jpg, view-aerial.jpg, dining.jpg, kitchen.jpg, living-room.jpg, bedroom-1.jpg, bedroom-2.jpg, bathroom.jpg
+- agency/broker branding spotted: none spotted. This is a plain listing-sheet PDF (10 pages, not 13 as expected) showing only the internal reference number "550438" and the location tag "San Antonio" as identifiers. No agency name, logo, letterhead, watermark, or third-party contact details appear anywhere in the document.
+
+## Villa Nilo
+- slug: villa-nilo
+- area: Roca Llisa
+- bedrooms: 5
+- bathrooms: 5
+- max_guests: 10
+- has_pool: true
+- living_area_m2: not stated
+- plot_area_m2: not stated
+- description: Set within the gated community of Roca Llisa and overlooking the island's golf course, Villa Nilo is a bold, contemporary retreat built for groups who want privacy without sacrificing energy. Bright open-plan living spaces flow out to a private pool, while a rooftop terrace with Jacuzzi, lounge and dining area takes in sweeping hill and countryside views. A separate club room with its own bar and DJ setup rounds out a villa equally suited to a quiet family week or an unforgettable weekend with friends.
+- amenities:
+  - Private swimming pool
+  - Rooftop terrace with Jacuzzi, lounge and dining area
+  - Separate club room with bar and DJ deck
+  - Gated Roca Llisa community with golf course views
+  - Bright, open-plan living and dining spaces
+  - Landscaped garden with mature trees and bougainvillea
+  - Private parking for multiple cars
+  - Minutes from Ibiza Town, Santa Eulalia and Cala Olivera
+- photos saved (in order, hero first): hero.jpg, pool.jpg, living-room.jpg, dining.jpg, kitchen.jpg, rooftop-terrace.jpg, bedroom-1.jpg, bedroom-2.jpg, bathroom.jpg, garden.jpg
+- agency/broker branding spotted: none spotted for any real-estate agency, letterhead, or watermark. The brochure is a bespoke, unbranded villa PDF. One incidental item to flag: a photo of the DJ mixer in the basement club room (deep in the PDF, in the nightclub section) carries a visible sticker reading "soundandlights.eu". This is a sound-equipment rental/supplier sticker on the gear itself, not a real-estate or booking agency, and I did not include that photo (or any nightclub/club-room photos) in the extracted set regardless. Also worth flagging separately: several pages further into the club area show a moodier "party room" with round beds, blacklight mushroom murals, and a framed vintage "Marihuana" poster. It's tasteful for some audiences but off-brand for Solace's five-star tone, so I excluded all of those photos and did not reference them in the amenities copy beyond the neutral "club room with bar and DJ deck" line.

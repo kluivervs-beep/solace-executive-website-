@@ -1,0 +1,307 @@
+<title>Villa Launch Post</title>
+<style>
+  :root{
+    --ink:#0F1B24; --ink2:#1C2B37; --cream:#F5F1E6; --cream-dim:#D8CFC0;
+    --gold:#B4923D; --gold-light:#D4BE8C; --border:rgba(212,190,140,0.22);
+    --bg:#0B1319; --card:#141F28;
+  }
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme="dark"]){ --bg:#F3EFE6; --card:#FFFFFF; }
+  }
+  :root[data-theme="light"]{ --bg:#F3EFE6; --card:#FFFFFF; }
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg); margin:0; font-family:'Montserrat',sans-serif;
+    color:var(--ink); display:flex; justify-content:center;
+    padding:32px 16px 56px;
+  }
+  .wrap{ width:100%; max-width:1040px; }
+  h1.page-title{
+    font-family:'Cormorant',serif; font-weight:500; font-size:28px;
+    color:var(--ink); text-align:center; margin:0 0 6px;
+  }
+  p.page-sub{
+    text-align:center; color:#6b6255; font-size:13px; margin:0 0 34px;
+    letter-spacing:.02em;
+  }
+  :root:not([data-theme="light"]) p.page-sub{ color:var(--cream-dim); }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) h1.page-title{ color:var(--cream);} }
+  :root[data-theme="dark"] h1.page-title{ color:var(--cream); }
+
+  .layout{ display:grid; grid-template-columns: 380px 1fr; gap:40px; align-items:start; }
+  @media (max-width: 820px){ .layout{ grid-template-columns: 1fr; justify-items:center; } }
+
+  /* Phone / IG post mockup */
+  .phone{
+    width:360px; max-width:100%; background:var(--ink); border-radius:34px;
+    padding:14px; box-shadow:0 30px 60px rgba(0,0,0,0.35);
+    border:1px solid rgba(255,255,255,0.06);
+  }
+  .screen{ background:#000; border-radius:22px; overflow:hidden; }
+  .ig-head{
+    display:flex; align-items:center; gap:10px; padding:12px 12px 10px;
+    background:#0e161c;
+  }
+  .ig-avatar{
+    width:32px; height:32px; border-radius:50%;
+    background:linear-gradient(135deg,var(--gold-light),var(--gold));
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Cormorant',serif; font-weight:600; color:#0F1B24; font-size:15px;
+  }
+  .ig-uname{ font-size:12.5px; font-weight:600; color:var(--cream); }
+  .ig-uloc{ font-size:10.5px; color:var(--cream-dim); }
+  .ig-dots{ margin-left:auto; color:var(--cream-dim); font-size:16px; letter-spacing:1px; }
+
+  .carousel{ position:relative; width:100%; aspect-ratio:1/1; background:#000; overflow:hidden; }
+  .carousel img{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    opacity:0; transition:opacity 420ms ease;
+  }
+  .carousel img.active{ opacity:1; }
+  .carousel-scrim{
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(0,0,0,0.32) 0%, rgba(0,0,0,0) 28%, rgba(0,0,0,0) 68%, rgba(0,0,0,0.55) 100%);
+    pointer-events:none;
+  }
+  .carousel-tag{
+    position:absolute; top:12px; left:12px; z-index:2;
+    font-family:'Montserrat',sans-serif; font-size:9.5px; letter-spacing:1.6px;
+    color:#F5F1E6; border:1px solid rgba(245,241,230,0.55); border-radius:4px;
+    padding:4px 8px; background:rgba(15,27,36,0.25); backdrop-filter:blur(2px);
+  }
+  .carousel-name{
+    position:absolute; left:14px; right:14px; bottom:14px; z-index:2;
+  }
+  .carousel-name .n{ font-family:'Cormorant',serif; font-size:22px; color:#F5F1E6; line-height:1.1; }
+  .carousel-name .a{ font-family:'Montserrat',sans-serif; font-size:10.5px; color:var(--gold-light); letter-spacing:.04em; margin-top:2px; }
+
+  .carousel-nav{
+    position:absolute; top:50%; transform:translateY(-50%); z-index:3;
+    width:30px; height:30px; border-radius:50%; border:none;
+    background:rgba(15,27,36,0.45); color:#F5F1E6; font-size:15px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    backdrop-filter:blur(3px);
+  }
+  .carousel-nav:hover{ background:rgba(15,27,36,0.7); }
+  .carousel-nav.prev{ left:10px; } .carousel-nav.next{ right:10px; }
+
+  .carousel-dots{ position:absolute; top:10px; left:50%; transform:translateX(-50%); display:flex; gap:4px; z-index:2; }
+  .carousel-dots span{ width:5px; height:5px; border-radius:50%; background:rgba(245,241,230,0.35); }
+  .carousel-dots span.on{ background:#F5F1E6; }
+
+  .ig-actions{ display:flex; align-items:center; gap:14px; padding:10px 12px 4px; background:#0e161c; }
+  .ig-actions .icon{ font-size:19px; color:var(--cream); }
+  .ig-actions .icon.right{ margin-left:auto; }
+  .ig-likes{ padding:6px 12px 0; font-size:12px; font-weight:600; color:var(--cream); background:#0e161c; }
+  .ig-caption{
+    padding:6px 12px 16px; font-size:12px; line-height:1.55; color:var(--cream);
+    background:#0e161c;
+  }
+  .ig-caption b{ color:var(--cream); }
+  .ig-caption .more{ color:var(--cream-dim); }
+
+  /* Copy panel */
+  .panel{ display:flex; flex-direction:column; gap:18px; }
+  .card{
+    background:var(--card); border:1px solid var(--border); border-radius:16px;
+    padding:22px 24px;
+  }
+  .card h2{
+    font-family:'Montserrat',sans-serif; font-size:10.5px; letter-spacing:2px;
+    text-transform:uppercase; color:var(--gold); margin:0 0 12px;
+  }
+  .caption-text{
+    font-family:'Montserrat',sans-serif; font-size:14px; line-height:1.75;
+    color:var(--ink); white-space:pre-wrap; margin:0;
+  }
+  :root:not([data-theme="light"]) .caption-text{ color:var(--cream); }
+  :root[data-theme="dark"] .caption-text{ color:var(--cream); }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .caption-text{ color:var(--cream);} }
+
+  .hashtags{ margin-top:14px; font-size:12.5px; color:var(--gold-light); line-height:1.7; }
+
+  .link-row{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  }
+  .link-pill{
+    font-family:'Montserrat',sans-serif; font-size:13px; color:var(--ink);
+    background:rgba(180,146,61,0.1); border:1px solid var(--border);
+    border-radius:10px; padding:10px 14px; flex:1; min-width:220px;
+    word-break:break-all;
+  }
+  :root:not([data-theme="light"]) .link-pill{ color:var(--cream); }
+  :root[data-theme="dark"] .link-pill{ color:var(--cream); }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .link-pill{ color:var(--cream);} }
+
+  .copy-btn{
+    font-family:'Montserrat',sans-serif; font-size:12px; font-weight:600;
+    letter-spacing:.04em; color:#0F1B24; background:var(--gold-light);
+    border:none; border-radius:10px; padding:10px 16px; cursor:pointer;
+    white-space:nowrap; transition:background 150ms ease;
+  }
+  .copy-btn:hover{ background:var(--gold); }
+  .copy-btn.copied{ background:#7BAE8A; color:#0F1B24; }
+
+  .thumbs{ display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; }
+  .thumbs button{
+    width:44px; height:44px; border-radius:8px; overflow:hidden; padding:0;
+    border:2px solid transparent; cursor:pointer; background:none;
+  }
+  .thumbs button.on{ border-color:var(--gold); }
+  .thumbs img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  .note{ font-size:11.5px; color:#8a8074; line-height:1.6; }
+  :root:not([data-theme="light"]) .note{ color:#9a8f7f; }
+</style>
+
+<div class="wrap">
+  <h1 class="page-title">Villa Launch — Social Post</h1>
+  <p class="page-sub">Instagram-preview met de villafoto's · caption en link hieronder klaar om te plakken</p>
+
+  <div class="layout">
+    <!-- Phone mockup -->
+    <div class="phone">
+      <div class="screen">
+        <div class="ig-head">
+          <div class="ig-avatar">S</div>
+          <div>
+            <div class="ig-uname">solace.executive</div>
+            <div class="ig-uloc">Ibiza, Spanje</div>
+          </div>
+          <div class="ig-dots">&#8942;</div>
+        </div>
+        <div class="carousel" id="carousel">
+          <div class="carousel-dots" id="dots"></div>
+          <button class="carousel-nav prev" id="prevBtn" aria-label="Vorige">&#8249;</button>
+          <button class="carousel-nav next" id="nextBtn" aria-label="Volgende">&#8250;</button>
+        </div>
+        <div class="ig-actions">
+          <span class="icon">&#9825;</span>
+          <span class="icon">&#128172;</span>
+          <span class="icon">&#10148;</span>
+          <span class="icon right">&#128278;</span>
+        </div>
+        <div class="ig-likes">Geliked door <b>anna_v</b> en <b>238 anderen</b></div>
+        <div class="ig-caption"><b>solace.executive</b> Villa's, nu bij Solace Executive. <span class="more">Lees meer &rarr;</span></div>
+      </div>
+    </div>
+
+    <!-- Copy panel -->
+    <div class="panel">
+      <div class="card">
+        <h2>Caption (kopieer &amp; plak)</h2>
+        <p class="caption-text" id="captionText">Villa's. Nu bij Solace Executive.
+
+Van een intieme retraite voor zes tot een landgoed van 25.000 vierkante meter: onze selectie privévilla's op Ibiza is live. Elke villa volledig verzorgd, van de eerste vraag tot de laatste dag.
+
+Privézwembaden. Eigen chef op aanvraag. Tennisbanen, wellnessruimtes en uitzicht tot aan Formentera. Voor een weekend met vrienden of een zomer met de familie.
+
+Lidmaatschap op aanvraag of persoonlijke aanbeveling. Stuur ons een bericht om de mogelijkheden te bespreken.</p>
+        <div class="hashtags">#SolaceExecutive #Ibiza #PrivateVillas #IbizaVillas #LuxuryConcierge #IbizaLife</div>
+        <button class="copy-btn" id="copyCaption" style="margin-top:16px;">Kopieer caption</button>
+      </div>
+
+      <div class="card">
+        <h2>Link (apart te plakken)</h2>
+        <div class="link-row">
+          <div class="link-pill">solaceexecutive.com/villas.html</div>
+          <button class="copy-btn" id="copyLink">Kopieer link</button>
+        </div>
+        <p class="note" style="margin-top:12px;">Instagram-captions ondersteunen geen klikbare links, vandaar apart: zet 'm in bio of als eerste comment. Werkt zodra de villa-pagina live staat.</p>
+      </div>
+
+      <div class="card">
+        <h2>Foto's in dit bericht</h2>
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var photos = [
+    { src: 'photos/villa-jondal-hero.jpg', name: 'Villa Jondal', area: 'Cala Jondal' },
+    { src: 'photos/ibiza-finca-pool.jpg', name: 'Hacienda Puig Redo', area: 'Zuid-Ibiza' },
+    { src: 'photos/villa-alfa-pool.jpg', name: 'Villa Alfa', area: 'Es Canar' },
+    { src: 'photos/villa-deseo-pool.jpg', name: 'Villa Deseo', area: 'Can Furnet' },
+    { src: 'photos/villa-nilo-rooftop.jpg', name: 'Villa Nilo', area: 'Roca Llisa' },
+    { src: 'photos/villa-prada-pool.jpg', name: 'Villa Prada', area: 'Talamanca' },
+    { src: 'photos/can-bellotera-pool.jpg', name: 'Can Bellotera', area: 'Landelijk Ibiza' },
+    { src: 'photos/villa-majestic-pool.jpg', name: 'Villa Majestic', area: 'Can Sire' }
+  ];
+
+  var carousel = document.getElementById('carousel');
+  var dotsWrap = document.getElementById('dots');
+  var thumbsWrap = document.getElementById('thumbs');
+  var current = 0;
+  var imgs = [];
+
+  photos.forEach(function(p, i){
+    var img = document.createElement('img');
+    img.src = p.src;
+    img.alt = p.name;
+    if (i === 0) img.className = 'active';
+    carousel.appendChild(img);
+    imgs.push(img);
+
+    var dot = document.createElement('span');
+    if (i === 0) dot.className = 'on';
+    dotsWrap.appendChild(dot);
+
+    var thumbBtn = document.createElement('button');
+    if (i === 0) thumbBtn.className = 'on';
+    var thumbImg = document.createElement('img');
+    thumbImg.src = p.src;
+    thumbBtn.appendChild(thumbImg);
+    thumbBtn.addEventListener('click', function(){ show(i); });
+    thumbsWrap.appendChild(thumbBtn);
+  });
+
+  var overlay = document.createElement('div');
+  overlay.className = 'carousel-scrim';
+  carousel.appendChild(overlay);
+
+  var tag = document.createElement('div');
+  tag.className = 'carousel-tag';
+  tag.textContent = 'NIEUW · VILLA\'S';
+  carousel.appendChild(tag);
+
+  var nameBox = document.createElement('div');
+  nameBox.className = 'carousel-name';
+  nameBox.innerHTML = '<div class="n"></div><div class="a"></div>';
+  carousel.appendChild(nameBox);
+
+  function show(i){
+    current = (i + photos.length) % photos.length;
+    imgs.forEach(function(img, idx){ img.className = idx === current ? 'active' : ''; });
+    Array.prototype.forEach.call(dotsWrap.children, function(d, idx){ d.className = idx === current ? 'on' : ''; });
+    Array.prototype.forEach.call(thumbsWrap.children, function(b, idx){ b.className = idx === current ? 'on' : ''; });
+    nameBox.querySelector('.n').textContent = photos[current].name;
+    nameBox.querySelector('.a').textContent = photos[current].area;
+  }
+  show(0);
+
+  document.getElementById('prevBtn').addEventListener('click', function(){ show(current - 1); });
+  document.getElementById('nextBtn').addEventListener('click', function(){ show(current + 1); });
+
+  function copyBlock(btnId, text){
+    var btn = document.getElementById(btnId);
+    btn.addEventListener('click', function(){
+      var finish = function(){
+        var original = btn.textContent;
+        btn.textContent = 'Gekopieerd!';
+        btn.classList.add('copied');
+        setTimeout(function(){ btn.textContent = original; btn.classList.remove('copied'); }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(finish, finish);
+      } else {
+        finish();
+      }
+    });
+  }
+  copyBlock('copyCaption', document.getElementById('captionText').textContent.trim());
+  copyBlock('copyLink', 'solaceexecutive.com/villas.html');
+})();
+</script>

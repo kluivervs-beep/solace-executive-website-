@@ -1,0 +1,22 @@
+## Villa Jondal
+- slug: villa-jondal
+- area: Cala Jondal, Ibiza
+- bedrooms: 13
+- bathrooms: 17
+- max_guests: not stated in PDF (no guest-capacity figure given anywhere in the 73 pages; the "80 PAX" figure refers to the entertainment/dining room's event capacity, not sleeping capacity. Based on 13 bedrooms, a reasonable working estimate would be around 24-26 guests, but this is not sourced from the document itself)
+- has_pool: true (two pools on the property, plus a separate turf-surrounded plunge pool near the gym)
+- living_area_m2: 1300 (labelled "Area" in the villa overview)
+- plot_area_m2: 50000 (labelled "Land" in the villa overview, shown as "50.000m2" using European decimal notation)
+- description: Set high above a private cove in Cala Jondal, Villa Jondal is a sprawling estate spread across three separate buildings connected by tropical gardens, stone pathways and sweeping lawns. Inside, en-suite bedrooms and soaring living spaces mix historic character with contemporary design, furnished with commissioned artwork and pieces gathered from the owners' travels. Beyond the two swimming pools, guests find a private wellness pavilion, a fully equipped gym, an outdoor kitchen and even a private club room, all serviced by full-time staff in the manner of a boutique hotel. Just minutes from Ibiza's most celebrated restaurants and clubs, it is a residence built equally for quiet family retreats and for hosting in style.
+- amenities:
+  - Two swimming pools with panoramic sea views
+  - Direct access to the beach below the property
+  - Private wellness pavilion with massage treatments
+  - Fully equipped outdoor gym
+  - Al fresco dining pavilion seating up to 80 guests
+  - Private club-style entertainment lounge with bar
+  - Outdoor kitchen and barbecue pavilion
+  - Manicured tropical gardens with Balinese-style lounging areas
+  - Parking for 20 cars
+- photos saved (in order, hero first): hero.jpg, exterior-dusk.jpg, pool.jpg, living-room.jpg, dining-terrace.jpg, bedroom-1.jpg, bedroom-2.jpg, bathroom.jpg, spa.jpg, terrace.jpg, view.jpg, nightclub.jpg
+- agency/broker branding spotted: none spotted. No third-party agency name, logo, letterhead, watermark, or contact email/phone was found anywhere in the 73 pages. Two pages did contain a small blurred/pixelated rectangle placed deliberately over part of the image (page 45/46, on an outdoor-kitchen window reflection and on a BBQ grill surface; and page 68/71, over a bathroom faucet handle) — these look like intentional redactions already made by whoever produced this PDF (possibly obscuring a reflection, a brand name on a fixture, or similar), not an oversight on my part. I avoided using any of those pages as extracted photos. Also worth noting purely for your own reference (not agency-related): the property description repeatedly name-drops celebrity guests (Cristiano Ronaldo, Rihanna, Rita Ora, "Olivier Rousteig" - likely a misspelling of Olivier Rousteing) — you may want to keep or drop those claims at your discretion since they can't be verified and could carry legal/publicity risk if used in Solace's own marketing copy.

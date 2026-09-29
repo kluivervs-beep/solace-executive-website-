@@ -76,6 +76,37 @@ This chat only displays plain text, it does not render Markdown. Never use **bol
 
 Always reply in the same language as the member's most recent message (Dutch or English), even if earlier messages in this conversation were in the other language. If their latest message is in English, your entire reply must be in English; if it's in Dutch, reply entirely in Dutch. Judge the language from that message alone, not from the conversation as a whole.`;
 
+// Our Ibiza villa network. Unlike yacht charters, jets and cars (where you
+// only know the service exists in general terms), you should know these
+// specific villas by name and be able to describe them in detail, since
+// members will ask about them directly after seeing them on the site or
+// in the app. Never mention a source PDF, a villa-management partner, or
+// any brand/agency name, exactly like the confidentiality rule for yachts,
+// jets and cars. Prices are never stated here; if asked, say pricing is
+// quoted per stay once the team confirms dates, same as every other
+// service.
+const VILLA_CATALOG = `IBIZA VILLAS YOU KNOW IN DETAIL:
+
+1. Villa San Antonio (San Antonio): 5 bedrooms, 4 bathrooms, sleeps up to 10, private pool, 360m² living area. A modern two-floor retreat behind bougainvillea and palms, main house plus a self-contained two-bedroom annex, sun garden, shaded pergola lounge, fully equipped kitchen, fireplace, barbecue and ping-pong table. 5 minutes' walk to UNVRS, minutes from San Rafael and Ibiza Town.
+
+2. Villa Nilo (Roca Llisa): 5 bedrooms, 5 bathrooms, sleeps up to 10, private pool. Contemporary villa in the gated Roca Llisa community overlooking the golf course. Open-plan living opening to the pool, rooftop terrace with Jacuzzi, lounge and dining area with hill and countryside views, separate club room with bar and DJ deck, landscaped garden, parking for multiple cars. Minutes from Ibiza Town, Santa Eulalia and Cala Olivera.
+
+3. Villa Alfa (Es Canar, east coast): 5 bedrooms (all en-suite, most with private terrace), 5 bathrooms plus guest toilet, sleeps up to 10, heated private pool, 846m² living area on a 17,300m² pine-forest plot. Double-height glazing, lift to all three levels, private gym, covered al fresco dining terrace with built-in BBQ, designer kitchen, second living area with home office corner.
+
+4. Villa Prada (Talamanca, Jesús): 7 bedrooms, 5 bathrooms plus guest toilet, sleeps up to 14, private pool. Bold, art-filled villa across five levels with sun terraces overlooking countryside and the old town skyline, statement lacquered-red dining table seating 12+, gallery-style interiors, pool terrace with a giraffe sculpture. 5 minutes from Ibiza town and Pacha, walking distance to Talamanca Beach.
+
+5. Villa Jondal (Cala Jondal): 13 bedrooms, 17 bathrooms, roughly 24-26 guests, two swimming pools, 1,300m² living area on a 50,000m² plot. A sprawling estate above a private cove across three buildings connected by tropical gardens, with direct beach access, a private wellness pavilion, outdoor gym, al fresco dining pavilion seating up to 80, private club-style entertainment lounge, outdoor kitchen, parking for 20 cars. Minutes from Ibiza's best restaurants and clubs.
+
+6. Villa Majestic (Can Sire, near Jesús / Ibiza Town): 3 bedrooms, 2 bathrooms, sleeps up to 6, private pool, 200m² living area on a 700m² plot. A modern, minimalist villa 3km from Ibiza Town in a quiet residential setting, fenced pool terrace with a Balinese daybed and chill-out corners, private parking for 2-3 cars, fully equipped kitchen. Good fit for a smaller group of friends or family.
+
+7. Hacienda Puig Redo (south Ibiza): 10 bedrooms and 16 bathrooms in the main house plus a separate 3-bedroom guesthouse, roughly 24-26 guests, 1,200m² living area on a fully walled 25,000m² plot. One of the island's largest private estates: heated saltwater pool with outdoor jacuzzi, full-size tennis court, petanque court, wellness suite with infrared sauna, steam room and Technogym fitness room, a private music room ("The Club") with dance floor, bar, DJ booth and Pioneer sound system, covered outdoor dining pavilion for up to 30, professional outdoor kitchen, in-house private chef and sommelier available on request, designer-landscaped grounds with century-old trees. The exact address stays private for the owner; describe the estate itself freely, just don't state or guess a street address.
+
+8. Can Bellotera (rural Ibiza, countryside setting among orange and olive groves): 6 bedrooms (5 doubles plus a self-contained guest apartment), 5 bathrooms, sleeps up to 14, private pool, 400m² living area on a 5,000m² plot. A terracotta-roofed countryside house with arched colonnades, three lounges, a dedicated dining room, two fully equipped kitchens, covered terraces with hill views, and a barbecue area. Good fit for a large family or group wanting quiet and a genuine rural Ibiza feel.
+
+9. Villa Deseo (Can Furnet, hillside 5 minutes from Ibiza Town and Pacha): 8 en-suite bedrooms, 8 bathrooms, sleeps up to 20, private pool, 800m² living area on a 17,000m² plot. A laguna-style infinity pool set apart from the main house, rooftop jacuzzi, private tennis/basketball court, wood-fired oven, alfresco dining for 16, billiards table and grand piano, with panoramic views over Dalt Vila, Formentera and the port. Fully private with no neighbours in sight, yet close to town.
+
+When a member asks generally about villas or Ibiza stays, feel free to suggest one or two that fit what they describe (group size, area, vibe) the same way you would recommend a restaurant. Gather the same details as any other request (dates, group size, any specific preference) before logging it.`;
+
 // Nothing else in this prompt states the actual calendar date, so
 // without this the model has no real way to resolve "morgen",
 // "overmorgen", "volgende week", etc. into an actual date, and those
@@ -335,7 +366,7 @@ Deno.serve(async (req) => {
             .join('\n')}`
         : '';
 
-    const SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}\n\n${buildDateContext()}\n\n${buildAddressInstruction(profile?.full_name, profile?.title)}${notesContext}${rewardsContext}${historyContext}${recentRequestContext}\n\nReminder: reply in the same language as the member's most recent message below, regardless of what language any names, service titles, or earlier messages above are in. Service and reward titles stored in the system are often Dutch even for English-speaking members; never let that pull your reply into Dutch.`;
+    const SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}\n\n${VILLA_CATALOG}\n\n${buildDateContext()}\n\n${buildAddressInstruction(profile?.full_name, profile?.title)}${notesContext}${rewardsContext}${historyContext}${recentRequestContext}\n\nReminder: reply in the same language as the member's most recent message below, regardless of what language any names, service titles, or earlier messages above are in. Service and reward titles stored in the system are often Dutch even for English-speaking members; never let that pull your reply into Dutch.`;
 
     const conversation = [...messages];
     let finalText = '';

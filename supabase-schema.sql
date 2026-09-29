@@ -1398,6 +1398,39 @@ create policy "Public can view active yachts"
   on public.yachts for select
   using (active = true);
 
+-- Ibiza villa rentals from our villa-management partner. Same pattern as
+-- yachts above: entered by hand from the partner's own PDF spec sheets,
+-- price_from is our own marked-up rate (10%, same as yachts) and the
+-- partner's own rate/name is never stored or shown. Unlike the PDFs the
+-- partner also sends for yachts, these villa PDFs never state a price at
+-- all (rates are quoted separately, per season) -- price_from stays null
+-- until Kluiver has an actual rate to enter for a given villa.
+create table public.villas (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  area text not null,
+  bedrooms integer,
+  bathrooms integer,
+  max_guests integer,
+  has_pool boolean not null default true,
+  living_area_m2 integer,
+  plot_area_m2 integer,
+  description text,
+  amenities text[] not null default '{}',
+  price_from numeric,
+  photo_path text not null,
+  photos text[] not null default '{}',
+  active boolean not null default true,
+  sort_order integer not null default 0,
+  created_at timestamptz default now()
+);
+
+alter table public.villas enable row level security;
+
+create policy "Public can view active villas"
+  on public.villas for select
+  using (active = true);
+
 -- Schedule the sync (run once in the Supabase SQL Editor). Replace
 -- SYNC_SECRET_VALUE with the value stored in Edge Functions -> Secrets ->
 -- SYNC_SECRET (same one sync-empty-legs uses) before running. Runs every

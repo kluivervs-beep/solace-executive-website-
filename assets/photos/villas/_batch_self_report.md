@@ -1,0 +1,20 @@
+## Villa Majestic
+- slug: villa-majestic
+- area: Can Sire, near Jesús / Ibiza Town
+- bedrooms: 3
+- bathrooms: 2
+- max_guests: 6
+- has_pool: true
+- living_area_m2: 200
+- plot_area_m2: 700
+- description: A modern, minimalist villa in a quiet residential pocket just three kilometres from Ibiza Town, close enough to walk into the island's nightlife yet private behind its own fenced garden. Spacious, light-filled rooms open onto a fenced pool terrace with a Balinese daybed and several chill-out corners, built for a group of friends or family who want room to spread out.
+- amenities:
+  - Private pool and fenced garden
+  - Balinese daybed and chill-out areas
+  - Air conditioning throughout
+  - Private parking for 2-3 cars
+  - Fully equipped kitchen
+  - Quiet residential setting, no through traffic
+  - 3km from Ibiza Town and its nightlife
+- photos saved (in order, hero first): hero.jpg, pool.jpg, pool-loungers.jpg, living-room.jpg, dining.jpg, kitchen.jpg, bedroom-1.jpg, bedroom-2.jpg, bathroom.jpg, bathroom-view.jpg
+- agency/broker branding spotted: none spotted
