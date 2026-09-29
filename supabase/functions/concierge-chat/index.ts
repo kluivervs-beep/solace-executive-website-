@@ -371,6 +371,24 @@ Deno.serve(async (req) => {
           .join('\n')}`
       : '';
 
+    // Curated highlights shown on the member's home screen -- if a member
+    // asks "what's new" or "any current offers", this is what they mean.
+    const { data: opportunities } = await supabase
+      .from('opportunities')
+      .select('title, title_en, description, description_en, tag')
+      .eq('active', true)
+      .order('sort_order')
+      .limit(5);
+
+    const opportunitiesContext = opportunities?.length
+      ? `\n\nCurrent highlights shown on the member's home screen (answer with these if asked "what's new" or about current offers; title/description here are Dutch, the _en fields are the English versions, use whichever matches the member's language):\n${opportunities
+          .map(
+            (o: { title: string; title_en: string | null; description: string | null; description_en: string | null; tag: string }) =>
+              `- [${o.tag}] ${o.title}${o.title_en ? ` / ${o.title_en}` : ''}${o.description ? `: ${o.description}` : ''}`
+          )
+          .join('\n')}`
+      : '';
+
     const notesContext = profile?.concierge_notes
       ? `\n\nKnown preferences for this member, from past conversations:\n${profile.concierge_notes}`
       : '';
