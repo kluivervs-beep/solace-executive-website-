@@ -25,7 +25,7 @@ function whatsappHref(villa) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
 }
 
-function cardHtml(villa) {
+function cardHtml(villa, index) {
   const chips = [];
   if (villa.bedrooms) chips.push(t('villas.bedrooms').replace('{n}', villa.bedrooms));
   if (villa.bathrooms) chips.push(t('villas.bathrooms').replace('{n}', villa.bathrooms));
@@ -34,11 +34,13 @@ function cardHtml(villa) {
 
   const area = lang() === 'en' && villa.area_en ? villa.area_en : villa.area;
   const description = lang() === 'en' && villa.description_en ? villa.description_en : villa.description;
+  const photoCount = Array.isArray(villa.photos) && villa.photos.length > 0 ? villa.photos.length : 1;
 
   return `
     <article class="villa-card">
-      <div class="villa-card-photo">
+      <div class="villa-card-photo" data-villa-index="${index}" role="button" tabindex="0" aria-label="${t('villas.viewPhotos')}">
         <img src="${villa.photo_path}" alt="${villa.name}" loading="lazy">
+        ${photoCount > 1 ? `<span class="villa-photo-count"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M4 5h13a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm16 2.5V17a3 3 0 0 1-3 3H6.5a1 1 0 1 0 0 2H17a5 5 0 0 0 5-5V7.5a1 1 0 1 0-2 0ZM7 9a2 2 0 1 1 0 4 2 2 0 0 1 0-4Zm-3 9 4-4 3 3 5-5 4 4v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-.5Z"/></svg>${photoCount}</span>` : ''}
       </div>
       <div class="villa-card-body">
         <p class="villa-card-name">${villa.name}</p>
@@ -63,13 +65,74 @@ function cardHtml(villa) {
   `;
 }
 
+let villaList = [];
+let lightboxIndex = 0;
+
+function photosFor(villa) {
+  return Array.isArray(villa.photos) && villa.photos.length > 0 ? villa.photos : [villa.photo_path];
+}
+
+function openLightbox(villaIndex) {
+  lightboxIndex = 0;
+  const overlay = document.getElementById('villaLightbox');
+  const villa = villaList[villaIndex];
+  if (!overlay || !villa) return;
+  overlay.dataset.villaIndex = String(villaIndex);
+  renderLightbox();
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  const overlay = document.getElementById('villaLightbox');
+  if (!overlay) return;
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function renderLightbox() {
+  const overlay = document.getElementById('villaLightbox');
+  if (!overlay) return;
+  const villaIndex = Number(overlay.dataset.villaIndex);
+  const villa = villaList[villaIndex];
+  if (!villa) return;
+  const photos = photosFor(villa);
+  lightboxIndex = ((lightboxIndex % photos.length) + photos.length) % photos.length;
+
+  overlay.querySelector('.villa-lightbox-img').src = photos[lightboxIndex];
+  overlay.querySelector('.villa-lightbox-name').textContent = villa.name;
+  overlay.querySelector('.villa-lightbox-count').textContent = `${lightboxIndex + 1} / ${photos.length}`;
+  overlay.querySelector('.villa-lightbox-prev').style.display = photos.length > 1 ? '' : 'none';
+  overlay.querySelector('.villa-lightbox-next').style.display = photos.length > 1 ? '' : 'none';
+}
+
+function stepLightbox(delta) {
+  lightboxIndex += delta;
+  renderLightbox();
+}
+
+function setupLightbox() {
+  const overlay = document.getElementById('villaLightbox');
+  if (!overlay) return;
+  overlay.querySelector('.villa-lightbox-close').addEventListener('click', closeLightbox);
+  overlay.querySelector('.villa-lightbox-backdrop').addEventListener('click', closeLightbox);
+  overlay.querySelector('.villa-lightbox-prev').addEventListener('click', () => stepLightbox(-1));
+  overlay.querySelector('.villa-lightbox-next').addEventListener('click', () => stepLightbox(1));
+  document.addEventListener('keydown', (e) => {
+    if (!overlay.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') stepLightbox(-1);
+    if (e.key === 'ArrowRight') stepLightbox(1);
+  });
+}
+
 async function load() {
   const grid = document.getElementById('villasGrid');
   if (!grid) return;
 
   const { data, error } = await supabase
     .from('villas')
-    .select('name, area, area_en, bedrooms, bathrooms, max_guests, has_pool, description, description_en, price_from, photo_path')
+    .select('name, area, area_en, bedrooms, bathrooms, max_guests, has_pool, description, description_en, price_from, photo_path, photos')
     .eq('active', true)
     .order('sort_order', { ascending: true });
 
@@ -78,7 +141,21 @@ async function load() {
     return;
   }
 
+  villaList = data;
   grid.innerHTML = data.map(cardHtml).join('');
+  grid.querySelectorAll('[data-villa-index]').forEach((el) => {
+    const open = () => openLightbox(Number(el.dataset.villaIndex));
+    el.addEventListener('click', open);
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        open();
+      }
+    });
+  });
 }
 
-document.addEventListener('DOMContentLoaded', load);
+document.addEventListener('DOMContentLoaded', () => {
+  setupLightbox();
+  load();
+});
