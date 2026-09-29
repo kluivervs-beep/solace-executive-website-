@@ -325,6 +325,52 @@ Deno.serve(async (req) => {
           .join('\n')}`
       : '';
 
+    // Fetched live (unlike VILLA_CATALOG above, which is hand-written) so
+    // this never goes stale as boats are added, removed, or repriced.
+    // Villas don't change often enough yet to justify the same live-fetch
+    // treatment, but this table does. Never reveal the broker or the raw
+    // wholesale rate, exactly like villas -- price_from here is already
+    // Solace's own marked-up rate.
+    const { data: yachts } = await supabase
+      .from('yachts')
+      .select('name, model, length_m, guests_day, guests_night, cabins, base_harbour, price_from')
+      .eq('active', true)
+      .order('sort_order');
+
+    const yachtsContext = yachts?.length
+      ? `\n\nYachts currently in our network (you know these by name, just like the villas above; never mention a broker or wholesale rate, only the price shown here):\n${yachts
+          .map((y: { name: string; model: string; length_m: number | null; guests_day: number | null; guests_night: number | null; cabins: string | null; base_harbour: string | null; price_from: number | null }) => {
+            const bits = [y.model];
+            if (y.length_m) bits.push(`${y.length_m}m`);
+            if (y.guests_day) bits.push(`up to ${y.guests_day} day guests${y.guests_night ? ` / ${y.guests_night} overnight` : ''}`);
+            if (y.cabins) bits.push(y.cabins);
+            if (y.base_harbour) bits.push(`based in ${y.base_harbour}`);
+            if (y.price_from) bits.push(`from €${y.price_from}/day`);
+            return `- ${y.name}: ${bits.join(', ')}`;
+          })
+          .join('\n')}`
+      : '';
+
+    // Empty legs are time-sensitive (gone once the flight departs or is
+    // booked), so members should hear about a matching one proactively
+    // when they mention a relevant route, not just when they ask directly.
+    const { data: emptyLegs } = await supabase
+      .from('empty_legs')
+      .select('origin, destination, departure_at, aircraft, max_passengers, price_from')
+      .eq('active', true)
+      .gte('departure_at', new Date().toISOString())
+      .order('departure_at')
+      .limit(15);
+
+    const emptyLegsContext = emptyLegs?.length
+      ? `\n\nCurrently available empty leg flights (positioning flights at a reduced rate -- proactively mention one if it matches what a member is asking about, e.g. a similar route or date):\n${emptyLegs
+          .map(
+            (e: { origin: string; destination: string; departure_at: string; aircraft: string; max_passengers: number | null; price_from: number }) =>
+              `- ${e.origin} → ${e.destination}, ${new Date(e.departure_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}, ${e.aircraft}${e.max_passengers ? `, max ${e.max_passengers} pax` : ''}, from €${e.price_from}`
+          )
+          .join('\n')}`
+      : '';
+
     const notesContext = profile?.concierge_notes
       ? `\n\nKnown preferences for this member, from past conversations:\n${profile.concierge_notes}`
       : '';
@@ -368,7 +414,7 @@ Deno.serve(async (req) => {
             .join('\n')}`
         : '';
 
-    const SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}\n\n${VILLA_CATALOG}\n\n${buildDateContext()}\n\n${buildAddressInstruction(profile?.full_name, profile?.title)}${notesContext}${rewardsContext}${historyContext}${recentRequestContext}\n\nReminder: reply in the same language as the member's most recent message below, regardless of what language any names, service titles, or earlier messages above are in. Service and reward titles stored in the system are often Dutch even for English-speaking members; never let that pull your reply into Dutch.`;
+    const SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}\n\n${VILLA_CATALOG}${yachtsContext}${emptyLegsContext}\n\n${buildDateContext()}\n\n${buildAddressInstruction(profile?.full_name, profile?.title)}${notesContext}${rewardsContext}${historyContext}${recentRequestContext}\n\nReminder: reply in the same language as the member's most recent message below, regardless of what language any names, service titles, or earlier messages above are in. Service and reward titles stored in the system are often Dutch even for English-speaking members; never let that pull your reply into Dutch.`;
 
     // Confirmed the photo-vision bug: a heavily-tested member account with
     // 12+ accumulated photos in its full history made the model claim it
