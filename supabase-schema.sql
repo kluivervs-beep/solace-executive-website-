@@ -1769,3 +1769,23 @@ create policy "members can mark their own nudges seen"
   on public.member_nudges for update
   using (auth.uid() = member_id)
   with check (auth.uid() = member_id);
+
+-- Lets an applicant grant notification permission AFTER already submitting
+-- their access request (on the "Request sent" screen, since that's a much
+-- clearer moment to ask than mid-form) and still have the resulting push
+-- token attached to their row. access_requests has no anon UPDATE policy
+-- at all (by design -- see the SELECT lockdown comment above), so this is a
+-- narrow security definer function rather than opening one up: it can only
+-- ever touch push_token, and only on a still-pending row, never anything
+-- already approved/rejected.
+create or replace function public.set_access_request_push_token(p_request_id uuid, p_push_token text)
+returns void as $$
+begin
+  update public.access_requests
+  set push_token = p_push_token
+  where id = p_request_id and status = 'pending';
+end;
+$$ language plpgsql security definer set search_path = public;
+
+revoke all on function public.set_access_request_push_token(uuid, text) from public;
+grant execute on function public.set_access_request_push_token(uuid, text) to anon, authenticated;
