@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["BY2Z6G2JLC.com.kluiver.vs.solace-executive-1"],
+        "components": [
+          {
+            "/": "/join.html",
+            "comment": "Referral links open the app directly to Request Access with the code pre-filled, instead of Safari"
+          }
+        ]
+      }
+    ]
+  }
+}
