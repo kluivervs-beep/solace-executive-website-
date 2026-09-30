@@ -1704,3 +1704,38 @@ create policy "members can view their own nudges"
 --   );
 --   $$
 -- );
+
+-- Profile avatar upload. Uses expo-image-picker, already declared and
+-- already in a compiled build for the concierge photo-attachment feature
+-- (NSPhotoLibraryUsageDescription/NSCameraUsageDescription in app.json),
+-- so this needed no new native permission or build -- ships as a plain JS
+-- change. Fixed filename per member (not a timestamped one like concierge
+-- attachments) so re-uploading just overwrites instead of piling up old
+-- avatars in storage. Public read like the other photo buckets; write is
+-- restricted to the member's own folder, same pattern as
+-- concierge-attachments.
+alter table public.profiles add column if not exists avatar_url text;
+
+insert into storage.buckets (id, name, public)
+values ('avatars', 'avatars', true)
+on conflict (id) do nothing;
+
+create policy "Anyone can view avatars"
+  on storage.objects for select
+  using (bucket_id = 'avatars');
+
+create policy "Members can upload their own avatar"
+  on storage.objects for insert
+  with check (
+    bucket_id = 'avatars'
+    and auth.role() = 'authenticated'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+create policy "Members can replace their own avatar"
+  on storage.objects for update
+  using (
+    bucket_id = 'avatars'
+    and auth.role() = 'authenticated'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
