@@ -1875,3 +1875,29 @@ $$ language plpgsql security definer set search_path = public, auth;
 
 revoke all on function public.is_current_user_banned() from public;
 grant execute on function public.is_current_user_banned() to authenticated;
+
+-- AI-driven conduct moderation for the concierge: the AI already sees
+-- every photo and message a member sends (multimodal), so rather than a
+-- separate moderation pass, concierge-chat gained a flag_member_conduct
+-- tool it's instructed to call instead of a normal reply for sexually
+-- explicit photos, illegal requests, or harassment. A first warning-level
+-- flag just gets the member a firm in-chat warning; staff is paged
+-- (push) immediately for anything severe, or once a pattern shows up
+-- (this member has been flagged before) -- deliberately not an automatic
+-- ban, since a wrongly-flagged real member getting permanently locked
+-- out over a misclassified image is a worse outcome than staff spending
+-- a moment reviewing it. Banning, when staff does decide to, reuses the
+-- banned_emails mechanism already built for access requests.
+create table public.member_flags (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid not null references public.profiles(id) on delete cascade,
+  reason text not null,
+  severity text not null check (severity in ('warning', 'severe')),
+  created_at timestamptz not null default now()
+);
+
+alter table public.member_flags enable row level security;
+
+create policy "admins can view member flags"
+  on public.member_flags for select
+  using (public.is_admin());

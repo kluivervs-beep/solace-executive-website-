@@ -70,6 +70,8 @@ You can also help with:
 - Logging a change or cancellation request on an existing booking, with flag_change_request. Never try to change or cancel a booking yourself; always hand it to the human team, since they manage the actual logistics.
 - Remembering a durable preference the member mentions, like a home airport, a recurring request, or a dietary preference, with update_member_preferences. Call this quietly whenever something sounds like it should apply to future requests too; no need to announce that you are saving it.
 
+If a member sends a sexually explicit or otherwise inappropriate photo, an illegal request, or abusive/harassing language toward you or the team, call flag_member_conduct instead of a normal reply. Never engage with, describe, or comment on the content itself.
+
 Keep replies short: 2-4 sentences, unless the member has raised several distinct things at once (see below). Never invent prices, availability, or confirm bookings — only the human team does that. If asked about cost, explain that an accurate quote depends on the specifics you're gathering, and the team will provide one once the request is logged.
 
 Write the way a sharp, warm human concierge would text or speak, not the way an AI writes. Never use em dashes or en dashes (— or –) in your replies; use a comma, a period, or "en"/"and" instead. Avoid stiff connector words like "echter", "daarnaast", "tevens", or "furthermore". Keep sentences plain and conversational.
@@ -241,6 +243,26 @@ const TOOLS = [
       required: ['preference_summary'],
     },
   },
+  {
+    name: 'flag_member_conduct',
+    description:
+      "Use this instead of a normal reply when a member sends something that violates Solace Executive's conduct policy: sexually explicit or otherwise inappropriate photos, illegal requests, or abusive/harassing language toward you or the team. Do not engage with or comment on the content itself, just call this tool.",
+    input_schema: {
+      type: 'object',
+      properties: {
+        reason: {
+          type: 'string',
+          description: 'One short, factual line describing what was sent and why it violates policy, in English, for staff review. No need to describe explicit content in detail.',
+        },
+        severity: {
+          type: 'string',
+          enum: ['warning', 'severe'],
+          description: '"severe" for anything illegal or seriously abusive (staff is notified immediately regardless of history); "warning" for a first-time boundary-pushing message (staff is only notified if this member has been flagged before).',
+        },
+      },
+      required: ['reason', 'severity'],
+    },
+  },
 ];
 
 const corsHeaders = {
@@ -275,6 +297,32 @@ async function notifyStaff(service: string, notes: string, memberEmail: string, 
     }
   } catch (notifyErr) {
     console.error('Formspree notify error:', notifyErr);
+  }
+}
+
+// Push, not email: unlike a routine logged request, staff explicitly
+// wants to know about this kind of thing immediately, the same way they
+// get paged for a new access request or a member's self-cancellation.
+async function notifyStaffOfFlag(
+  supabase: ReturnType<typeof createClient>,
+  memberEmail: string,
+  reason: string,
+  severity: 'warning' | 'severe',
+  flagCount: number
+) {
+  try {
+    const { data: admins } = await supabase.from('profiles').select('push_token').eq('is_admin', true).not('push_token', 'is', null);
+    const title = severity === 'severe' ? 'Ernstige melding: conciërge' : `Gemarkeerd lid (${flagCount}e keer)`;
+    const body = `${memberEmail || 'Onbekend lid'}: ${reason}`;
+    for (const admin of admins || []) {
+      await fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', accept: 'application/json' },
+        body: JSON.stringify({ to: admin.push_token, title, body, sound: 'default', data: { type: 'concierge' } }),
+      });
+    }
+  } catch (e) {
+    console.error('Flag notification failed (non-fatal):', e);
   }
 }
 
@@ -677,6 +725,24 @@ Deno.serve(async (req) => {
           .update({ concierge_notes: updated })
           .eq('id', memberId);
         toolResultContent = updateError ? 'Could not save preference.' : 'Preference saved.';
+      } else if (toolUseBlock.name === 'flag_member_conduct') {
+        const { reason, severity } = toolUseBlock.input as { reason: string; severity: 'warning' | 'severe' };
+        const { count: priorCount } = await supabase
+          .from('member_flags')
+          .select('id', { count: 'exact', head: true })
+          .eq('member_id', memberId);
+        await supabase.from('member_flags').insert({ member_id: memberId, reason, severity });
+
+        // Severe conduct always goes to staff immediately regardless of
+        // history; a first-time warning only escalates once there's a
+        // pattern (this member has been flagged before), so staff isn't
+        // paged for every single boundary-pushing message.
+        if (severity === 'severe' || (priorCount || 0) > 0) {
+          await notifyStaffOfFlag(supabase, memberEmail, reason, severity, (priorCount || 0) + 1);
+        }
+
+        toolResultContent =
+          'Flagged for staff review. Tell the member firmly but professionally, in their own language, that this is not appropriate for Solace Executive and that repeated violations can result in losing access to their membership. Do not apologize on their behalf or continue the topic.';
       }
 
       conversation.push({ role: 'assistant', content: data.content });
