@@ -1122,7 +1122,7 @@
     return `
       <div class="request-row">
         <div>
-          <div class="req-name">${r.service}</div>
+          <div class="req-name">${escapeHtml(r.service)}</div>
           <div class="req-meta">${t('dash.submitted').replace('{time}', timeAgo(r.created_at))}</div>
           ${progressDotsHtml(r.status)}
         </div>
