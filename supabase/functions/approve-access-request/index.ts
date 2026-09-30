@@ -98,6 +98,25 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Claim the request atomically before doing any of the actual work below.
+    // There was no guard against approving the same request twice (a
+    // double-click, or two staff members approving at once), which would
+    // send the applicant two separate invite/login emails. The status <>
+    // 'approved' condition is checked against the row's live value at the
+    // moment this update locks it, so only the first concurrent call can
+    // ever win the claim.
+    const { data: claimedReq } = await supabase
+      .from('access_requests')
+      .update({ status: 'approved' })
+      .eq('id', request_id)
+      .neq('status', 'approved')
+      .select('id');
+    if (!claimedReq?.length) {
+      return new Response(JSON.stringify({ ok: true, alreadyApproved: true }), {
+        headers: { ...corsHeaders, 'content-type': 'application/json' },
+      });
+    }
+
     // Try creating a brand-new account first (invite). If that email is
     // already registered, fall back to a login link for the existing one.
     let actionLink: string | null = null;
@@ -147,8 +166,6 @@ Deno.serve(async (req) => {
     if (!resendRes.ok) {
       console.error('Resend send failed:', resendRes.status, await resendRes.text());
     }
-
-    await supabase.from('access_requests').update({ status: 'approved' }).eq('id', request_id);
 
     return new Response(JSON.stringify({ ok: true, isNewAccount, emailed: resendRes.ok }), {
       headers: { ...corsHeaders, 'content-type': 'application/json' },

@@ -47,12 +47,25 @@ Deno.serve(async (req) => {
     });
 
     for (const p of matches) {
+      // Claim the bonus atomically: this UPDATE's row lock is what actually
+      // prevents a double-award if the function is triggered twice for the
+      // same day (manual trigger overlapping the cron run, a retry after a
+      // timeout, etc). Filtering matches above on birthday_bonus_year is not
+      // enough on its own -- two concurrent invocations could both pass that
+      // read-only check before either had written anything back.
+      const { data: claimed, error: claimErr } = await supabase
+        .from('profiles')
+        .update({ birthday_bonus_year: year })
+        .eq('id', p.id)
+        .or(`birthday_bonus_year.is.null,birthday_bonus_year.neq.${year}`)
+        .select('id');
+      if (claimErr || !claimed?.length) continue;
+
       await supabase.from('point_transactions').insert({
         member_id: p.id,
         amount: BONUS_POINTS,
         reason: 'Verjaardagscadeau',
       });
-      await supabase.from('profiles').update({ birthday_bonus_year: year }).eq('id', p.id);
 
       if (p.push_token) {
         const firstName = (p.full_name || '').trim().split(/\s+/)[0] || '';

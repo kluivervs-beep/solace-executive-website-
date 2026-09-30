@@ -531,7 +531,27 @@ Deno.serve(async (req) => {
             .single();
           const hasPriorityWindow = !!priorityProfile?.priority_until && new Date(priorityProfile.priority_until) > new Date();
           const hasPriorityCredit = (priorityProfile?.priority_credits || 0) > 0;
-          const grantedPriority = !urgent && (hasPriorityWindow || hasPriorityCredit);
+
+          // Claim the credit atomically BEFORE deciding grantedPriority, not
+          // after: reading priority_credits then writing back
+          // (currentValue - 1) is a read-then-write race -- two requests
+          // fired close together could both read the same last credit and
+          // both get priority for it. The gt('priority_credits', 0) guard is
+          // checked against the row's live value at the moment each update
+          // actually locks it, so only one concurrent claim can ever
+          // succeed; the other affects zero rows and correctly falls back
+          // to "no credit available".
+          let creditConsumed = false;
+          if (!urgent && !hasPriorityWindow && hasPriorityCredit) {
+            const { data: claimed } = await supabase
+              .from('profiles')
+              .update({ priority_credits: priorityProfile!.priority_credits - 1 })
+              .eq('id', memberId)
+              .gt('priority_credits', 0)
+              .select('id');
+            creditConsumed = !!claimed?.length;
+          }
+          const grantedPriority = !urgent && (hasPriorityWindow || creditConsumed);
 
           const { error: insertError } = await supabase.from('requests').insert({
             member_id: memberId,
@@ -540,6 +560,14 @@ Deno.serve(async (req) => {
             status: 'review',
             is_urgent: !!urgent || grantedPriority,
           });
+          if (insertError && creditConsumed) {
+            // Refund: the credit was already claimed but the request never
+            // actually got logged, so the member shouldn't be out a credit.
+            await supabase
+              .from('profiles')
+              .update({ priority_credits: priorityProfile!.priority_credits })
+              .eq('id', memberId);
+          }
           toolResultContent = insertError
             ? `Could not log the request: ${insertError.message}`
             : grantedPriority
@@ -548,12 +576,6 @@ Deno.serve(async (req) => {
           if (!insertError) {
             requestLogged = true;
             await notifyStaff(service, notes, memberEmail, !!urgent || grantedPriority);
-            if (grantedPriority && hasPriorityCredit && !hasPriorityWindow) {
-              await supabase
-                .from('profiles')
-                .update({ priority_credits: (priorityProfile!.priority_credits || 0) - 1 })
-                .eq('id', memberId);
-            }
           }
         }
       } else if (toolUseBlock.name === 'check_request_status') {
