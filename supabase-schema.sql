@@ -2009,3 +2009,28 @@ $$;
 
 revoke all on function public.is_current_user_frozen() from public;
 grant execute on function public.is_current_user_frozen() to authenticated;
+
+-- Freeze/delete moved off the Access requests screen onto its own Members
+-- screen (that screen is about intake, this is about managing accounts
+-- that already exist) -- this lists every real member directly by id
+-- instead of the email-batch lookup access_requests needed.
+create or replace function public.admin_list_members()
+returns table(id uuid, full_name text, email text, is_admin boolean, is_frozen boolean, freeze_reason text, created_at timestamptz)
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'Forbidden';
+  end if;
+  return query
+    select p.id, p.full_name, lower(u.email), coalesce(p.is_admin, false), p.is_frozen, p.freeze_reason, p.created_at
+    from public.profiles p
+    join auth.users u on u.id = p.id
+    order by p.created_at desc nulls last;
+end;
+$$;
+
+revoke all on function public.admin_list_members() from public;
+grant execute on function public.admin_list_members() to authenticated;
