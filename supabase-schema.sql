@@ -1802,3 +1802,76 @@ grant execute on function public.set_access_request_push_token(uuid, text) to an
 -- instant than true presence, plenty fast enough for this purpose, and
 -- just an ordinary column write/read with no realtime channel involved.
 alter table public.profiles add column if not exists last_active_at timestamptz;
+
+-- Prevents duplicate access requests / accounts for the same email, and a
+-- permanent blacklist for members who abused the platform. Deleting the
+-- account (or the member deleting their own) naturally clears the
+-- "already a member" check since it just queries auth.users live, so a
+-- fresh request with that email works again -- exactly the behavior
+-- Kluiver asked for. A ban, by contrast, is keyed on the email itself in
+-- its own table, so it survives account deletion (that's the whole point
+-- of a ban) and must be explicitly lifted.
+create table public.banned_emails (
+  email text primary key,
+  reason text,
+  banned_at timestamptz not null default now(),
+  banned_by uuid references public.profiles(id)
+);
+
+alter table public.banned_emails enable row level security;
+
+create policy "admins can view banned emails"
+  on public.banned_emails for select
+  using (public.is_admin());
+
+create policy "admins can ban emails"
+  on public.banned_emails for insert
+  with check (public.is_admin());
+
+create policy "admins can unban emails"
+  on public.banned_emails for delete
+  using (public.is_admin());
+
+-- Called from RequestAccessScreen before submitting, so the applicant
+-- gets an immediate, specific answer instead of a generic "something went
+-- wrong" or (worse) a silent duplicate. security definer since anon has
+-- no read access to auth.users, access_requests, or banned_emails at all.
+create or replace function public.check_email_status(p_email text)
+returns text as $$
+declare
+  v_email text := lower(trim(p_email));
+begin
+  if exists (select 1 from public.banned_emails where email = v_email) then
+    return 'banned';
+  end if;
+  if exists (select 1 from auth.users where lower(email) = v_email) then
+    return 'already_member';
+  end if;
+  if exists (select 1 from public.access_requests where lower(email) = v_email and status = 'pending') then
+    return 'pending_request';
+  end if;
+  return 'available';
+end;
+$$ language plpgsql security definer set search_path = public, auth;
+
+revoke all on function public.check_email_status(text) from public;
+grant execute on function public.check_email_status(text) to anon, authenticated;
+
+-- Called right after a successful sign-in (LoginScreen): a ban is on the
+-- email, not the account, so it has to be checked with whatever identity
+-- the now-authenticated session actually has -- auth.uid() here, not a
+-- client-supplied email, so a banned member can't just claim they're
+-- someone else's email to skip the check.
+create or replace function public.is_current_user_banned()
+returns boolean as $$
+begin
+  return exists (
+    select 1 from public.banned_emails b
+    join auth.users u on lower(u.email) = b.email
+    where u.id = auth.uid()
+  );
+end;
+$$ language plpgsql security definer set search_path = public, auth;
+
+revoke all on function public.is_current_user_banned() from public;
+grant execute on function public.is_current_user_banned() to authenticated;
