@@ -1754,3 +1754,18 @@ create policy "Members can replace their own avatar"
 -- gets introduced later.
 update public.profiles set is_member_active = true where is_member_active = false;
 alter table public.profiles alter column is_member_active set default true;
+
+-- Push notifications alone aren't a reliable enough channel for an
+-- announcement/nudge to actually reach someone: they might not have
+-- granted notification permission, might be on an older TestFlight build
+-- that predates this feature entirely, or might just miss the banner.
+-- Giving member_nudges its own seen flag (same shape as requests.seen_by_member)
+-- lets the Home screen's notification bell also surface unread nudges as a
+-- durable, catch-up-able inbox -- whenever the member next opens an app
+-- version that has this code, not only in the instant the push arrived.
+alter table public.member_nudges add column if not exists seen boolean not null default false;
+
+create policy "members can mark their own nudges seen"
+  on public.member_nudges for update
+  using (auth.uid() = member_id)
+  with check (auth.uid() = member_id);
