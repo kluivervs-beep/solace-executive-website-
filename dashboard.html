@@ -513,6 +513,7 @@
       <a data-view="bookings" id="navBookings" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg><span>Beheer</span><span class="nav-badge" id="beheerBadge" hidden></span></a>
       <a data-view="access-requests" id="navAccessRequests" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Toegangsaanvragen</span><span class="nav-badge" id="accessRequestsBadge" hidden></span></a>
       <a data-view="empty-legs" id="navEmptyLegs" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 16l20-6-4 10-4-3-4 3-2-4z"/></svg><span>Empty Legs</span></a>
+      <a data-view="announce" id="navAnnounce" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Melding</span></a>
     </nav>
 
     <div class="dash-side-foot">
@@ -908,6 +909,36 @@
       </section>
     </section>
 
+    <section class="dash-view" data-view="announce" hidden>
+      <div class="dash-welcome">
+        <div>
+          <p class="eyebrow">MELDING</p>
+          <h1>Stuur een pushmelding naar alle leden.</h1>
+        </div>
+      </div>
+
+      <section class="dash-panel playbook-panel">
+        <div class="dash-panel-head">
+          <div>
+            <h2>Nieuwe melding</h2>
+            <p class="dash-panel-sub">Voor kleine dingen als "nu ook een profielfoto instellen in Profiel!" Gaat direct naar iedereen met meldingen aan, dus gebruik het spaarzaam.</p>
+          </div>
+        </div>
+        <form id="announceForm">
+          <div class="field">
+            <label for="annTitle">Titel</label>
+            <input type="text" id="annTitle" required maxlength="60" placeholder="Bijv. Nieuw: profielfoto">
+          </div>
+          <div class="field">
+            <label for="annBody">Bericht</label>
+            <textarea id="annBody" rows="3" required maxlength="180" placeholder="Bijv. Je kunt nu een profielfoto instellen in je Profiel. Tik erop om het te proberen."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-small" id="annSubmitBtn">Verstuur naar alle leden</button>
+          <p class="inbox-empty" id="annResult" hidden></p>
+        </form>
+      </section>
+    </section>
+
     <section class="dash-view" data-view="account" hidden>
       <div class="dash-welcome">
         <div>
@@ -1291,6 +1322,7 @@
     if (name === 'bookings') { loadBookings(); markAdminBookingsSeen(); }
     if (name === 'access-requests') { loadAccessRequests(); markAdminAccessRequestsSeen(); }
     if (name === 'empty-legs') loadEmptyLegs();
+    if (name === 'announce') resetAnnounceForm();
     if (name === 'billing') loadBilling();
   }
 
@@ -1986,6 +2018,41 @@
     loadEmptyLegs();
   });
 
+  function resetAnnounceForm() {
+    document.getElementById('announceForm').reset();
+    document.getElementById('annResult').hidden = true;
+  }
+
+  document.getElementById('announceForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const title = document.getElementById('annTitle').value.trim();
+    const body = document.getElementById('annBody').value.trim();
+    if (!title || !body) return;
+    if (!confirm(`Weet je zeker dat je dit naar alle leden wil sturen?\n\n"${title}"\n${body}`)) return;
+
+    const submitBtn = document.getElementById('annSubmitBtn');
+    const resultEl = document.getElementById('annResult');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Versturen...';
+    resultEl.hidden = true;
+
+    const { data, error } = await supabase.functions.invoke('broadcast-announcement', {
+      body: { title, body },
+    });
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Verstuur naar alle leden';
+
+    if (error || data?.error) {
+      resultEl.textContent = 'Mislukt: ' + (data?.error || error.message);
+      resultEl.hidden = false;
+      return;
+    }
+    resultEl.textContent = `Verstuurd naar ${data.sent} lid/leden.`;
+    resultEl.hidden = false;
+    document.getElementById('announceForm').reset();
+  });
+
   async function loadEmptyLegs() {
     const { data: rows, error } = await supabase
       .from('empty_legs')
@@ -2383,6 +2450,7 @@
       document.getElementById('navBookings').hidden = false;
       document.getElementById('navAccessRequests').hidden = false;
       document.getElementById('navEmptyLegs').hidden = false;
+      document.getElementById('navAnnounce').hidden = false;
       checkAdminNotifications();
       setInterval(checkAdminNotifications, 45000);
     }
