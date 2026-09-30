@@ -1901,3 +1901,111 @@ alter table public.member_flags enable row level security;
 create policy "admins can view member flags"
   on public.member_flags for select
   using (public.is_admin());
+
+-- Staff wants to be able to freeze a member's account (soft, reversible --
+-- e.g. "we need to check something") or delete it outright (hard,
+-- permanent), directly from the Access requests screen, with every such
+-- action logged the way a card issuer would log an account action. Freeze
+-- is a plain column flip rather than a ban: it's not tied to the email
+-- (banned_emails already covers "never again"), it's reversible, and the
+-- member is shown the reason rather than a generic lockout message.
+alter table public.profiles add column if not exists is_frozen boolean not null default false;
+alter table public.profiles add column if not exists freeze_reason text;
+
+create table public.admin_actions (
+  id uuid primary key default gen_random_uuid(),
+  admin_id uuid references public.profiles(id) on delete set null,
+  target_member_id uuid references public.profiles(id) on delete set null,
+  target_email text,
+  action text not null check (action in ('freeze', 'unfreeze', 'delete_account')),
+  reason text,
+  created_at timestamptz not null default now()
+);
+
+alter table public.admin_actions enable row level security;
+
+create policy "admins can view admin actions"
+  on public.admin_actions for select
+  using (public.is_admin());
+
+-- Lets the Access requests screen show each approved member's current
+-- frozen state without giving the client any broader read access to
+-- auth.users -- admin-gated (raises, doesn't just return empty, so a
+-- non-admin caller can't quietly probe it) and batched over every email on
+-- screen in one round trip instead of one call per row.
+create or replace function public.admin_get_members_status(p_emails text[])
+returns table(email text, member_id uuid, is_frozen boolean, freeze_reason text)
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'Forbidden';
+  end if;
+  return query
+    select lower(u.email), p.id, p.is_frozen, p.freeze_reason
+    from auth.users u
+    join public.profiles p on p.id = u.id
+    where lower(u.email) = any(select lower(e) from unnest(p_emails) as e);
+end;
+$$;
+
+revoke all on function public.admin_get_members_status(text[]) from public;
+grant execute on function public.admin_get_members_status(text[]) to authenticated;
+
+-- Freeze/unfreeze a member's account by email (matches what the Access
+-- requests screen has on hand). A plain RPC is enough here -- unlike full
+-- deletion, this never touches auth.users, so it doesn't need the service
+-- role / an edge function. Every call is logged to admin_actions.
+create or replace function public.admin_set_member_frozen(p_email text, p_frozen boolean, p_reason text default null)
+returns void
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+declare
+  v_member_id uuid;
+begin
+  if not public.is_admin() then
+    raise exception 'Forbidden';
+  end if;
+
+  select id into v_member_id from auth.users where lower(email) = lower(trim(p_email));
+  if v_member_id is null then
+    raise exception 'No member account found for this email';
+  end if;
+
+  update public.profiles
+  set is_frozen = p_frozen,
+      freeze_reason = case when p_frozen then p_reason else null end
+  where id = v_member_id;
+
+  insert into public.admin_actions (admin_id, target_member_id, target_email, action, reason)
+  values (auth.uid(), v_member_id, lower(trim(p_email)), case when p_frozen then 'freeze' else 'unfreeze' end, p_reason);
+end;
+$$;
+
+revoke all on function public.admin_set_member_frozen(text, boolean, text) from public;
+grant execute on function public.admin_set_member_frozen(text, boolean, text) to authenticated;
+
+-- Called right after sign-in (LoginScreen), same pattern as
+-- is_current_user_banned -- checked against the now-authenticated
+-- session's own auth.uid(), not a client-supplied email. Returns the
+-- reason as its own column (rather than a single coalesced string) so the
+-- app can fall back to its own translated default message when staff
+-- didn't type one.
+create or replace function public.is_current_user_frozen()
+returns table(frozen boolean, reason text)
+language sql
+security definer
+set search_path = public, auth
+stable
+as $$
+  select coalesce(p.is_frozen, false), p.freeze_reason
+  from public.profiles p
+  where p.id = auth.uid();
+$$;
+
+revoke all on function public.is_current_user_frozen() from public;
+grant execute on function public.is_current_user_frozen() to authenticated;
