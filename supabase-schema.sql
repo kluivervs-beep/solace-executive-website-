@@ -1662,3 +1662,45 @@ create trigger notify_member_cancelled_trigger
 -- password instead of waiting on email. Email is kept as the fallback
 -- for everyone else (the common case: they don't have the app yet).
 alter table public.access_requests add column if not exists push_token text;
+
+-- Log of proactive "we thought of you" pushes sent by daily-nudges, so it
+-- can enforce a cooldown per member and members can see their own history.
+create table if not exists public.member_nudges (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid not null references public.profiles(id) on delete cascade,
+  nudge_type text not null,
+  message text not null,
+  created_at timestamptz default now()
+);
+
+alter table public.member_nudges enable row level security;
+
+create policy "members can view their own nudges"
+  on public.member_nudges for select
+  using (auth.uid() = member_id);
+
+-- Runs daily at 09:00 Amsterdam time. Fixed a real bug while wiring this
+-- up: birthday-check-daily's cron job was still using an old SYNC_SECRET
+-- value from before the secret was rotated on 2026-09-23, so it had been
+-- silently failing with 401 every single night since then (the birthday
+-- bonus still worked if triggered manually with the current secret, just
+-- never on its own schedule). All four sync-secret-gated cron jobs
+-- (birthday-check, sync-empty-legs, sync-instagram, daily-nudges) were
+-- rescheduled together with the current secret so they can't drift apart
+-- like that again silently.
+--
+-- select cron.schedule(
+--   'daily-nudges-daily',
+--   '0 9 * * *',
+--   $$
+--   select net.http_post(
+--     url := 'https://weiihajterqholxppgsl.supabase.co/functions/v1/daily-nudges',
+--     headers := jsonb_build_object(
+--       'Content-Type', 'application/json',
+--       'Authorization', 'Bearer sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr',
+--       'x-sync-secret', 'SYNC_SECRET_VALUE'
+--     ),
+--     body := '{}'::jsonb
+--   );
+--   $$
+-- );
