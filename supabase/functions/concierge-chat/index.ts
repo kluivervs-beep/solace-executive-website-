@@ -169,7 +169,8 @@ const TOOLS = [
         },
         notes: {
           type: 'string',
-          description: 'Full detail gathered from the conversation, in the language the member used.',
+          description:
+            'Full detail gathered from the conversation, in the language the member used. This is shown directly to the human team as their main working reference, so structure it as short bullet lines (one per line, prefixed with "- "), e.g. "- Datum: vrijdag 14 juni, 20:00\\n- Aantal personen: 2\\n- Dieetwens: geen schaaldieren" rather than one long paragraph, so it can be scanned at a glance.',
         },
         urgent: {
           type: 'boolean',

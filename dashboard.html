@@ -2036,7 +2036,7 @@
     // keep the everyday work queue uncluttered.
     const { data: rows } = await supabase
       .from('requests')
-      .select('id, service, status, member_id, arrival_info, venue_info, dress_code, created_at, profiles!inner(full_name)')
+      .select('id, service, notes, status, member_id, arrival_info, venue_info, dress_code, created_at, profiles!inner(full_name)')
       .order('created_at', { ascending: false });
 
     allBookings = rows || [];
@@ -2081,6 +2081,7 @@
       row.innerHTML = `
         <div style="flex:1">
           <div class="playbook-item-title">${escapeHtml(r.profiles?.full_name || 'Onbekend lid')} &middot; ${escapeHtml(r.service)}</div>
+          ${r.notes ? `<div style="margin-top:6px; padding:10px 12px; background:rgba(180,146,61,0.08); border-radius:8px; font-size:13px; line-height:1.5; white-space:pre-wrap;">${escapeHtml(r.notes)}</div>` : ''}
           <div class="field" style="margin-top:8px"><label>Status</label><select data-field="status">${statusOptions}</select></div>
           <div class="field"><label>Aankomst</label><input type="text" data-field="arrival_info" value="${escapeHtml(r.arrival_info || '')}" placeholder="bv. Black Car, 19:30"></div>
           <div class="field"><label>Locatie</label><input type="text" data-field="venue_info" value="${escapeHtml(r.venue_info || '')}" placeholder="bv. Nobu Amsterdam, VIP tafel"></div>
