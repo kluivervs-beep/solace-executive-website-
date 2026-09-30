@@ -12,13 +12,23 @@
 // Requires these secrets (Edge Functions -> Secrets):
 //   RESEND_API_KEY            — resend.com -> API keys
 //   SUPABASE_SERVICE_ROLE_KEY — Project Settings -> API -> service_role
+//   REQUEST_STATUS_SECRET     — any random string you generate yourself
 // SUPABASE_URL is already injected automatically by Supabase.
+//
+// Unlike every other webhook-style function here, this one had no secret
+// check at all -- anyone with the public anon key could POST a forged
+// {record, old_record} body and trigger a real "your request was
+// confirmed" email, sent from our own domain, to any member's real
+// email address (a phishing vector). After setting REQUEST_STATUS_SECRET
+// above, go to Database -> Webhooks -> this hook -> HTTP Headers and add
+// x-webhook-secret: <the same value>.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.110.2?bundle';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!;
+const REQUEST_STATUS_SECRET = Deno.env.get('REQUEST_STATUS_SECRET')!;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
@@ -54,6 +64,10 @@ function buildEmailHtml(name: string, service: string, statusLabel: string): str
 
 Deno.serve(async (req) => {
   try {
+    if (req.headers.get('x-webhook-secret') !== REQUEST_STATUS_SECRET) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+    }
+
     const payload = await req.json();
     const record = payload.record;
     const oldRecord = payload.old_record;
