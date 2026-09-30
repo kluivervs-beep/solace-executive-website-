@@ -21,6 +21,33 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!;
 const REDIRECT_TO = 'https://solaceexecutive.com/reset-password.html';
 
+// generateLink's own action_link always points at Supabase's own
+// /auth/v1/verify endpoint, which -- if opened directly -- consumes the
+// one-time token server-side and redirects with the session in a URL hash
+// fragment. That's fine for a browser (supabase-js auto-detects it), but a
+// hash fragment isn't something a native Universal Link handler can read
+// cleanly, and consuming the token before the recipient even sees it also
+// defeats the "don't burn it on a mail-scanner's background fetch" point
+// of the token_hash-deferred-verify pattern reset-password.html (and now
+// SetPasswordScreen in the app) already use. Pulling the raw token/type
+// out and building our own link to our own domain sidesteps Supabase's
+// /verify redirect entirely -- reset-password.html is registered in the
+// AASA file, so this opens directly in the app when it's installed.
+function toOwnActivationLink(actionLink: string): { url: string; token: string; type: string } | null {
+  try {
+    const u = new URL(actionLink);
+    const token = u.searchParams.get('token');
+    const type = u.searchParams.get('type');
+    if (!token || !type) return null;
+    const own = new URL(REDIRECT_TO);
+    own.searchParams.set('token_hash', token);
+    own.searchParams.set('type', type);
+    return { url: own.toString(), token, type };
+  } catch {
+    return null;
+  }
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -153,6 +180,14 @@ Deno.serve(async (req) => {
       });
     }
 
+    const ownLink = toOwnActivationLink(actionLink);
+    if (!ownLink) {
+      return new Response(JSON.stringify({ error: 'Could not build activation link' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'content-type': 'application/json' },
+      });
+    }
+
     const resendRes = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'content-type': 'application/json' },
@@ -160,7 +195,7 @@ Deno.serve(async (req) => {
         from: 'Solace Executive <hello@solaceexecutive.com>',
         to: [reqRow.email],
         subject: 'Welkom bij Solace Executive',
-        html: buildEmailHtml(reqRow.full_name || 'lid', actionLink, isNewAccount),
+        html: buildEmailHtml(reqRow.full_name || 'lid', ownLink.url, isNewAccount),
       }),
     });
     if (!resendRes.ok) {
@@ -169,13 +204,14 @@ Deno.serve(async (req) => {
 
     // If the applicant already had the app installed when they applied and
     // notification permission was already granted, their request row carries
-    // a push_token -- send them the real actionLink directly as a push, so
-    // tapping it jumps straight to setting a password instead of waiting on
-    // an email that might land in spam. This is sent directly to Expo's push
-    // API (not through the shared send-push function, which only accepts
-    // tokens already tied to an existing profiles row -- this applicant
-    // doesn't have one yet at this point). Best-effort: email above is
-    // already the guaranteed path, so a push failure here is silent.
+    // a push_token -- send the raw token_hash/type directly as push data, so
+    // tapping it opens SetPasswordScreen in-app immediately (see
+    // handleNotificationData in RootNavigator), no email, no browser, no
+    // website login step at all. Sent directly to Expo's push API (not
+    // through the shared send-push function, which only accepts tokens
+    // already tied to an existing profiles row -- this applicant doesn't
+    // have one yet at this point). Best-effort: email above is already the
+    // guaranteed path, so a push failure here is silent.
     if (reqRow.push_token) {
       try {
         await fetch('https://exp.host/--/api/v2/push/send', {
@@ -186,7 +222,7 @@ Deno.serve(async (req) => {
             title: 'Goed nieuws!',
             body: 'Uw aanvraag is goedgekeurd. Tik hier om uw account te activeren.',
             sound: 'default',
-            data: { type: 'access_approved', actionLink },
+            data: { type: 'account_setup', tokenHash: ownLink.token, otpType: ownLink.type },
           }),
         });
       } catch (e) {

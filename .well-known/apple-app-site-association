@@ -7,6 +7,10 @@
           {
             "/": "/join.html",
             "comment": "Referral links open the app directly to Request Access with the code pre-filled, instead of Safari"
+          },
+          {
+            "/": "/reset-password.html",
+            "comment": "Account activation (new member approval) and forgot-password links open the app directly to set a password, instead of Safari + the website dashboard"
           }
         ]
       }
