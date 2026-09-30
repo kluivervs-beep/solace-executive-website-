@@ -1557,3 +1557,43 @@ drop trigger if exists notify_new_experience_trigger on public.member_experience
 create trigger notify_new_experience_trigger
   after insert on public.member_experiences
   for each row execute function public.notify_new_experience();
+
+-- A member can self-cancel their own open request from the app (see the
+-- "Members can cancel their own open requests" policy above), but staff
+-- had zero visibility into it happening -- no email, no push, nothing --
+-- unless someone happened to reopen the dashboard/app and notice the
+-- status had changed. Scoped to auth.uid() = new.member_id specifically so
+-- this only fires for a genuine member self-cancellation, not when staff
+-- themselves sets a request to cancelled (which would just notify staff
+-- about their own action).
+create or replace function public.notify_member_cancelled()
+returns trigger as $$
+declare
+  admin_row record;
+begin
+  if new.status = 'cancelled' and old.status is distinct from 'cancelled' and auth.uid() = new.member_id then
+    for admin_row in select push_token from public.profiles where is_admin and push_token is not null loop
+      perform net.http_post(
+        url := 'https://weiihajterqholxppgsl.supabase.co/functions/v1/send-push',
+        headers := jsonb_build_object(
+          'Content-Type', 'application/json',
+          'apikey', 'sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr',
+          'Authorization', 'Bearer sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr'
+        ),
+        body := jsonb_build_object(
+          'push_token', admin_row.push_token,
+          'title', 'Aanvraag geannuleerd door lid',
+          'body', new.service,
+          'data', jsonb_build_object('type', 'booking', 'requestId', new.id)
+        )
+      );
+    end loop;
+  end if;
+  return new;
+end;
+$$ language plpgsql security definer set search_path = public, net;
+
+drop trigger if exists notify_member_cancelled_trigger on public.requests;
+create trigger notify_member_cancelled_trigger
+  after update on public.requests
+  for each row execute function public.notify_member_cancelled();
