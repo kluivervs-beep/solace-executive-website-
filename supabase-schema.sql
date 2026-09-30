@@ -1648,3 +1648,17 @@ drop trigger if exists notify_member_cancelled_trigger on public.requests;
 create trigger notify_member_cancelled_trigger
   after update on public.requests
   for each row execute function public.notify_member_cancelled();
+
+-- The only way a prospect learned their access request was approved was
+-- an email (generateLink's invite/recovery link) -- easy to miss in spam,
+-- and multiple steps to get from inbox to a working account. If they
+-- already had the app installed when they applied (e.g. followed a
+-- referral link) and notification permission was already granted, the
+-- app can now attach a push_token to its own access_requests row at
+-- submit time (covered by the existing public insert policy, no RLS
+-- change needed -- it's a column on a row they're already allowed to
+-- insert). approve-access-request then push-notifies them immediately
+-- with the real actionLink, so tapping it jumps straight to setting a
+-- password instead of waiting on email. Email is kept as the fallback
+-- for everyone else (the common case: they don't have the app yet).
+alter table public.access_requests add column if not exists push_token text;

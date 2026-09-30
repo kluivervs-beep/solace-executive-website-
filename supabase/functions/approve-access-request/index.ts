@@ -88,7 +88,7 @@ Deno.serve(async (req) => {
 
     const { data: reqRow, error: reqError } = await supabase
       .from('access_requests')
-      .select('id, full_name, email, status')
+      .select('id, full_name, email, status, push_token')
       .eq('id', request_id)
       .single();
     if (reqError || !reqRow) {
@@ -165,6 +165,33 @@ Deno.serve(async (req) => {
     });
     if (!resendRes.ok) {
       console.error('Resend send failed:', resendRes.status, await resendRes.text());
+    }
+
+    // If the applicant already had the app installed when they applied and
+    // notification permission was already granted, their request row carries
+    // a push_token -- send them the real actionLink directly as a push, so
+    // tapping it jumps straight to setting a password instead of waiting on
+    // an email that might land in spam. This is sent directly to Expo's push
+    // API (not through the shared send-push function, which only accepts
+    // tokens already tied to an existing profiles row -- this applicant
+    // doesn't have one yet at this point). Best-effort: email above is
+    // already the guaranteed path, so a push failure here is silent.
+    if (reqRow.push_token) {
+      try {
+        await fetch('https://exp.host/--/api/v2/push/send', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', accept: 'application/json' },
+          body: JSON.stringify({
+            to: reqRow.push_token,
+            title: 'Goed nieuws!',
+            body: 'Uw aanvraag is goedgekeurd. Tik hier om uw account te activeren.',
+            sound: 'default',
+            data: { type: 'access_approved', actionLink },
+          }),
+        });
+      } catch (e) {
+        console.error('Access-approved push failed (non-fatal):', e);
+      }
     }
 
     return new Response(JSON.stringify({ ok: true, isNewAccount, emailed: resendRes.ok }), {
