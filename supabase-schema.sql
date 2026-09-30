@@ -62,11 +62,31 @@ alter table public.profiles
 -- browser. Direct edits via the Table Editor / SQL Editor, and calls
 -- made with the service_role key (the concierge-chat edge function),
 -- bypass this and go through unchanged.
+--
+-- CRITICAL FIX (found in a full RLS audit): "Members can update their own
+-- profile" has no `with check`, so Postgres never restricted which COLUMNS
+-- a member can change on their own row -- only that it has to be their own
+-- row. This function originally only pinned back is_member_active, leaving
+-- every other sensitive column added since (is_admin, points_balance,
+-- points_lifetime, priority_credits, priority_until,
+-- profile_complete_bonus_claimed, birthday_bonus_year, beta_features) with
+-- zero protection: any authenticated member could
+-- `update profiles set is_admin = true where id = auth.uid()` and grant
+-- themselves full admin access to every other member's data. Pinning all
+-- of them back here, the same way is_member_active already was.
 create or replace function public.protect_membership_fields()
 returns trigger as $$
 begin
   if auth.role() = 'authenticated' then
     new.is_member_active := old.is_member_active;
+    new.is_admin := old.is_admin;
+    new.points_balance := old.points_balance;
+    new.points_lifetime := old.points_lifetime;
+    new.priority_credits := old.priority_credits;
+    new.priority_until := old.priority_until;
+    new.profile_complete_bonus_claimed := old.profile_complete_bonus_claimed;
+    new.birthday_bonus_year := old.birthday_bonus_year;
+    new.beta_features := old.beta_features;
   end if;
   return new;
 end;
@@ -87,6 +107,16 @@ set search_path = public, auth
 as $$
   select id from auth.users where email = lookup_email limit 1;
 $$;
+
+-- SECURITY FIX (found in a full RLS audit): this was meant to be
+-- service_role-only (see comment above), like redeem_reward_for_member
+-- below, but was missing the revoke/grant pair that actually enforces
+-- that -- Postgres grants EXECUTE on new functions to PUBLIC by default,
+-- so any authenticated (and likely anon) client could call
+-- rpc/get_profile_id_by_email to check whether an email belongs to a
+-- member at all, a privacy leak for a discreet concierge service.
+revoke execute on function public.get_profile_id_by_email(text) from public, anon, authenticated;
+grant execute on function public.get_profile_id_by_email(text) to service_role;
 
 -- Phone number (shown on Account) and salutation preference ('dhr',
 -- 'mevr', or null for no preference), used by the AI concierge to
@@ -142,6 +172,14 @@ as $$
   join public.profiles p on p.id = u.id
   where u.id = member_uuid;
 $$;
+
+-- SECURITY FIX (same audit as get_profile_id_by_email above): this
+-- security-definer function bypasses RLS by design, and was missing the
+-- lockdown to match -- any authenticated client could call
+-- rpc/get_member_contact with any uuid and get that member's email + full
+-- name directly.
+revoke execute on function public.get_member_contact(uuid) from public, anon, authenticated;
+grant execute on function public.get_member_contact(uuid) to service_role;
 
 -- Generic flag for gating in-development features to specific accounts
 -- (e.g. the owner) before a full rollout to all members.
@@ -468,15 +506,28 @@ insert into storage.buckets (id, name, public)
 values ('concierge-attachments', 'concierge-attachments', true)
 on conflict (id) do nothing;
 
+-- SECURITY FIX (found in a full RLS audit): the SELECT policy had no role
+-- check at all (fully open, even to anon, for LISTING/enumerating the
+-- bucket via the API -- direct public-URL fetches of a known path are
+-- unaffected either way, since the bucket itself is public by design, see
+-- above), and INSERT had no per-member folder scoping, so any authenticated
+-- member could write into another member's folder (the app itself always
+-- uploads to `${member_id}/...`, see ConciergeScreen.tsx, but nothing
+-- server-side enforced that). Restricting listing to authenticated users
+-- and insert to the caller's own folder prefix closes both gaps.
 drop policy if exists "Anyone can view concierge attachments" on storage.objects;
 create policy "Anyone can view concierge attachments"
   on storage.objects for select
-  using (bucket_id = 'concierge-attachments');
+  using (bucket_id = 'concierge-attachments' and auth.role() = 'authenticated');
 
 drop policy if exists "Authenticated users can upload concierge attachments" on storage.objects;
 create policy "Authenticated users can upload concierge attachments"
   on storage.objects for insert
-  with check (bucket_id = 'concierge-attachments' and auth.role() = 'authenticated');
+  with check (
+    bucket_id = 'concierge-attachments'
+    and auth.role() = 'authenticated'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
 
 -- Lightweight billing: staff record what a member owes for a fulfilled
 -- request (no in-app payment collection, settled outside the app), and the
