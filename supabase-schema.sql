@@ -1789,3 +1789,16 @@ $$ language plpgsql security definer set search_path = public;
 
 revoke all on function public.set_access_request_push_token(uuid, text) from public;
 grant execute on function public.set_access_request_push_token(uuid, text) to anon, authenticated;
+
+-- Staff wants a live "who's online now" green dot in the concierge member
+-- list. First attempt used Supabase Realtime Presence (a shared channel
+-- both the member's own tracking and staff's observing hook joined), but
+-- two hooks on one client subscribing to/binding the same channel topic
+-- broke the whole Chats screen in production with no error detail
+-- available to debug from. A plain heartbeat column sidesteps that entire
+-- class of problem: the member's own app just updates this timestamp
+-- periodically while foregrounded (see useHeartbeat, app-side), and staff
+-- treats anyone updated within the last couple of minutes as online. Less
+-- instant than true presence, plenty fast enough for this purpose, and
+-- just an ordinary column write/read with no realtime channel involved.
+alter table public.profiles add column if not exists last_active_at timestamptz;
