@@ -116,10 +116,16 @@ Deno.serve(async (req) => {
       .limit(5);
     const opportunitiesList = (opportunities || []).map((o) => `- [${o.tag}] ${o.title}: ${o.description || ''}`).join('\n');
 
+    // is_member_active is set only by stripe-webhook on a real subscription
+    // payment/cancellation -- with no membership fee charged yet, it's false
+    // for every profile including staff's own accounts, which silently
+    // matched zero rows here. Just a push token is enough to qualify.
+    // Deliberately NOT excluding admins: Kluiver wants his own admin
+    // account (used in "View as Member" mode) to receive these too, so he
+    // can see exactly what members get in real time rather than guessing.
     const { data: members, error: membersError } = await supabase
       .from('profiles')
       .select('id, full_name, push_token, concierge_notes, birthday')
-      .eq('is_member_active', true)
       .not('push_token', 'is', null);
     if (membersError) throw membersError;
 

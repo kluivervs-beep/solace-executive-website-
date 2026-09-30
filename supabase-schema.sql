@@ -1739,3 +1739,18 @@ create policy "Members can replace their own avatar"
     and auth.role() = 'authenticated'
     and (storage.foldername(name))[1] = auth.uid()::text
   );
+
+-- There is no membership fee yet (confirmed: Kluiver treats every current
+-- and future app user as an active member during this pre-revenue phase),
+-- so is_member_active -- only ever set by stripe-webhook on a real Stripe
+-- subscription event -- was stuck false for every single profile,
+-- including Kluiver's own admin account. This silently broke: the
+-- dashboard.html chat unlock/reward-teaser gating (always showed "locked"
+-- to everyone), and would have broken any future is_member_active-gated
+-- push broadcast (daily-nudges/broadcast-announcement were already fixed
+-- to not depend on it). Backfilling true and flipping the column default
+-- means every member just works without a payment step, while leaving
+-- stripe-webhook itself in place (harmless, unused) in case a paid tier
+-- gets introduced later.
+update public.profiles set is_member_active = true where is_member_active = false;
+alter table public.profiles alter column is_member_active set default true;
