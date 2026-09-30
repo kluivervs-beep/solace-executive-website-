@@ -127,13 +127,27 @@ Deno.serve(async (req) => {
     const { error: upsertError } = await supabase.from('empty_legs').upsert(kept, { onConflict: 'source_ref' });
     if (upsertError) throw upsertError;
 
+    // source_ref comes from regex-parsing the partner's HTML page, not a
+    // trusted API response -- building a `(...)"a","b"` filter string by
+    // hand out of it would let a stray quote/paren in a scraped ref corrupt
+    // or manipulate the query. Fetching existing refs and diffing in JS,
+    // then deleting by an actual array via .in(), sidesteps that entirely.
     const keptRefs = kept.map((f) => f.source_ref);
-    const { error: deleteError } = await supabase
+    const { data: existingRefs } = await supabase
       .from('empty_legs')
-      .delete()
-      .eq('source', 'jetservicenl')
-      .not('source_ref', 'in', `(${keptRefs.map((r) => `"${r}"`).join(',')})`);
-    if (deleteError) throw deleteError;
+      .select('source_ref')
+      .eq('source', 'jetservicenl');
+    const staleRefs = (existingRefs || [])
+      .map((r) => r.source_ref)
+      .filter((ref) => !keptRefs.includes(ref));
+    if (staleRefs.length > 0) {
+      const { error: deleteError } = await supabase
+        .from('empty_legs')
+        .delete()
+        .eq('source', 'jetservicenl')
+        .in('source_ref', staleRefs);
+      if (deleteError) throw deleteError;
+    }
 
     return new Response(JSON.stringify({ ok: true, synced: kept.length }), {
       headers: { 'content-type': 'application/json' },

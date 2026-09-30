@@ -70,11 +70,12 @@ async function syncPosts() {
     if (upsertError) throw upsertError;
 
     const keptIds = rows.map((r) => r.media_id);
-    const { error: deleteError } = await supabase
-      .from('instagram_posts')
-      .delete()
-      .not('media_id', 'in', `(${keptIds.map((id) => `"${id}"`).join(',')})`);
-    if (deleteError) throw deleteError;
+    const { data: existingRows } = await supabase.from('instagram_posts').select('media_id');
+    const staleIds = (existingRows || []).map((r) => r.media_id).filter((id) => !keptIds.includes(id));
+    if (staleIds.length > 0) {
+      const { error: deleteError } = await supabase.from('instagram_posts').delete().in('media_id', staleIds);
+      if (deleteError) throw deleteError;
+    }
   }
 
   return rows.length;
@@ -93,19 +94,21 @@ async function syncProfileAndStories() {
   const storiesBody = await storiesRes.json();
   const activeStories = storiesRes.ok ? storiesBody.data || [] : [];
 
-  await supabase.from('instagram_profile').upsert({
+  const { error: profileError } = await supabase.from('instagram_profile').upsert({
     id: 'main',
     username: profileRes.ok ? profileBody.username || null : null,
     profile_picture_url: profileRes.ok ? profileBody.profile_picture_url || null : null,
     has_active_story: activeStories.length > 0,
     updated_at: new Date().toISOString(),
   });
+  if (profileError) throw profileError;
 
   // Stories are a 24h rolling window -- easiest correct behaviour is to
   // replace the table wholesale each run rather than diffing.
-  await supabase.from('instagram_stories').delete().not('media_id', 'is', null);
+  const { error: storiesDeleteError } = await supabase.from('instagram_stories').delete().not('media_id', 'is', null);
+  if (storiesDeleteError) throw storiesDeleteError;
   if (activeStories.length > 0) {
-    await supabase.from('instagram_stories').insert(
+    const { error: storiesInsertError } = await supabase.from('instagram_stories').insert(
       activeStories.map((s: { id: string; media_type: string; media_url: string; permalink: string; timestamp: string }) => ({
         media_id: s.id,
         media_type: s.media_type,
@@ -114,6 +117,7 @@ async function syncProfileAndStories() {
         posted_at: s.timestamp,
       }))
     );
+    if (storiesInsertError) throw storiesInsertError;
   }
 
   return activeStories.length;
