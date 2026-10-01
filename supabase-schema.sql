@@ -2034,3 +2034,11 @@ $$;
 
 revoke all on function public.admin_list_members() from public;
 grant execute on function public.admin_list_members() to authenticated;
+
+-- Lets the Live Activity / widget pick a themed icon (plane for a jet, boat
+-- for a yacht, etc.) instead of one generic icon for every request. Set by
+-- the AI itself in log_request/flag_change_request, since it already
+-- understands the full conversation -- far more reliable than the app
+-- guessing a category from the free-text `service` summary afterwards.
+alter table public.requests add column if not exists category text not null default 'other'
+  check (category in ('jet', 'yacht', 'watch', 'restaurant', 'hotel', 'car', 'event', 'other'));

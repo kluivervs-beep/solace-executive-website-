@@ -178,8 +178,14 @@ const TOOLS = [
           type: 'boolean',
           description: 'True if the member signaled real time pressure (needed tomorrow, urgent, etc).',
         },
+        category: {
+          type: 'string',
+          enum: ['jet', 'yacht', 'watch', 'restaurant', 'hotel', 'car', 'event', 'other'],
+          description:
+            'What kind of request this is, used to pick the right icon in the app (a plane for a jet, a boat for a yacht, etc). Pick "other" only when nothing else genuinely fits.',
+        },
       },
-      required: ['service', 'notes'],
+      required: ['service', 'notes', 'category'],
     },
   },
   {
@@ -562,10 +568,11 @@ Deno.serve(async (req) => {
         if (requestLogged) {
           toolResultContent = 'Already logged earlier in this conversation. Do not log it again, just tell the member it is taken care of.';
         } else {
-          const { service, notes, urgent } = toolUseBlock.input as {
+          const { service, notes, urgent, category } = toolUseBlock.input as {
             service: string;
             notes: string;
             urgent?: boolean;
+            category: string;
           };
 
           // A redeemed "priority" reward silently did nothing before this:
@@ -608,6 +615,7 @@ Deno.serve(async (req) => {
             notes,
             status: 'review',
             is_urgent: !!urgent || grantedPriority,
+            category,
           });
           if (insertError && creditConsumed) {
             // Refund: the credit was already claimed but the request never
@@ -707,6 +715,7 @@ Deno.serve(async (req) => {
             notes: change_details,
             status: 'review',
             is_urgent: true,
+            category: 'other',
           });
           toolResultContent = insertError
             ? `Could not log the change request: ${insertError.message}`
