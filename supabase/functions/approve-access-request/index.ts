@@ -155,7 +155,7 @@ Deno.serve(async (req) => {
 
     const { data: reqRow, error: reqError } = await supabase
       .from('access_requests')
-      .select('id, full_name, email, status, push_token')
+      .select('id, full_name, email, status, push_token, city, gender, birthday, instagram, looking_for')
       .eq('id', request_id)
       .single();
     if (reqError || !reqRow) {
@@ -197,6 +197,20 @@ Deno.serve(async (req) => {
 
     if (!inviteRes.error) {
       actionLink = inviteRes.data.properties?.action_link ?? null;
+      // Carry what the applicant told us over to their new profile.
+      const newUserId = inviteRes.data.user?.id;
+      if (newUserId) {
+        await supabase
+          .from('profiles')
+          .update({
+            city: reqRow.city || null,
+            birthday: reqRow.birthday || null,
+            instagram: reqRow.instagram || null,
+            looking_for: reqRow.looking_for || null,
+            preferences: reqRow.gender ? { gender: reqRow.gender } : {},
+          })
+          .eq('id', newUserId);
+      }
     } else {
       isNewAccount = false;
       const recoveryRes = await supabase.auth.admin.generateLink({

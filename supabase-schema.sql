@@ -2472,3 +2472,12 @@ create trigger salon_on_message_trigger after insert on public.salon_messages
 do $$ begin
   begin alter publication supabase_realtime add table public.salon_messages; exception when duplicate_object then null; end;
 end $$;
+
+-- Richer membership requests: where they live, who they are, what they want.
+alter table public.access_requests add column if not exists city text;
+alter table public.access_requests add column if not exists gender text;
+alter table public.access_requests add column if not exists birthday date;
+alter table public.access_requests add column if not exists instagram text;
+alter table public.access_requests add column if not exists looking_for text;
+alter table public.profiles add column if not exists instagram text;
+alter table public.profiles add column if not exists looking_for text;
