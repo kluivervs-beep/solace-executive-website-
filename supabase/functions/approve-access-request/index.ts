@@ -95,7 +95,7 @@ function buildEmailHtml(name: string, actionLink: string, isNewAccount: boolean,
       <a href="${actionLink}" style="display:block;background:#B4923D;color:#1B1405;text-decoration:none;padding:15px 24px;border-radius:12px;font-size:12px;font-weight:bold;letter-spacing:0.22em;text-align:center;${sans}">${cta.toUpperCase()}</a>
       <p style="${sans}font-size:12px;line-height:1.6;color:#8F8777;margin:14px 0 28px;text-align:center;">Deze link is eenmalig en persoonlijk. Deel hem met niemand.</p>
       <p style="${serif}font-size:16px;line-height:1.7;color:#2A3742;margin:0 0 6px;">Het is een eer u te mogen verwelkomen.</p>
-      <img src="${SITE}/assets/signature/kluiver-signature.png" width="230" alt="Kluiver van Spronsen" style="display:block;border:0;height:auto;max-width:230px;margin:10px 0 2px -4px;">
+      <img src="${SITE}/assets/signature/kluiver-signature.png" width="200" alt="Kluiver van Spronsen" style="display:block;border:0;height:auto;max-width:200px;margin:12px 0 4px 0;">
       <div style="${serif}font-size:16px;color:#16232E;">Kluiver van Spronsen</div>
       <div style="${sans}font-size:10px;letter-spacing:0.26em;color:#B4923D;margin-top:5px;">OPRICHTER &middot; SOLACE EXECUTIVE</div>
     </div>
