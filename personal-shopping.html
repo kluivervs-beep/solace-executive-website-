@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="ps.meta.title">Personal Shopping | Solace Executive</title>
+<meta name="description" content="Elk stuk, voor u gevonden: tassen, horloges, sneakers, sieraden en rare drops. Uw concierge sourcet het exacte exemplaar. Lidmaatschap op aanvraag bij Solace Executive." data-i18n="ps.meta.description" data-i18n-attr="content">
+<meta name="theme-color" content="#0F1B24">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Personal Shopping | Solace Executive">
+<meta property="og:description" content="Elk stuk, voor u gevonden.">
+<meta property="og:image" content="assets/photos/personal-shopping.jpg">
+<meta property="og:locale" content="nl_NL">
+<link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body { background: #0F1B24; }
+
+  /* ---------- Hero ---------- */
+  .ps-hero { position: relative; height: 86vh; min-height: 560px; overflow: hidden; }
+  .ps-hero-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+  .ps-hero-scrim {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(70% 55% at 50% 50%, rgba(15,27,36,0.72) 0%, rgba(15,27,36,0.35) 100%),
+      linear-gradient(180deg, rgba(15,27,36,0.7) 0%, rgba(15,27,36,0.42) 40%, rgba(15,27,36,0.7) 72%, #0F1B24 100%);
+  }
+  .ps-title-line, .ps-sub { text-shadow: 0 2px 24px rgba(8,14,19,0.65); }
+  .ps-hero-inner { position: relative; height: 100%; display: flex; flex-direction: column; z-index: 1; }
+  .ps-header { display: flex; align-items: center; justify-content: space-between; padding: var(--space-4); }
+  .ps-header .brand { display: flex; align-items: center; gap: 12px; }
+  .ps-header .brand-mark { width: 34px; height: 34px; }
+  .ps-header .brand-word { display: flex; flex-direction: column; line-height: 1; }
+  .ps-header .brand-name { font-family: var(--font-display); font-size: 18px; letter-spacing: 0.16em; color: var(--color-ink); }
+  .ps-header .brand-sub { font-family: var(--font-sans); font-size: 9px; letter-spacing: 0.32em; color: var(--color-gold); margin-top: 3px; }
+  .ps-hero-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 var(--space-4) var(--space-6); }
+  .ps-hero-content { text-align: center; max-width: 700px; }
+  .ps-eyebrow { font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--color-gold-light); margin-bottom: 20px; }
+  .ps-title-line { display: block; font-family: var(--font-display); font-weight: 400; font-size: clamp(54px, 10vw, 112px); line-height: 0.95; letter-spacing: -0.01em; }
+  .ps-title-line--muted { color: rgba(245,241,230,0.78); }
+  .ps-title-line--bright { color: var(--color-ink); font-style: italic; margin-top: -0.1em; }
+  .ps-title-stack { margin: 0 0 24px; }
+  .ps-sub { font-family: var(--font-sans); font-size: 17px; line-height: 1.65; color: rgba(245,241,230,0.82); margin: 0 auto var(--space-5); max-width: 520px; }
+  .ps-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+  /* ---------- Phone demo ---------- */
+  .ps-demo { max-width: 1180px; margin: 0 auto; padding: var(--space-7) var(--space-4); display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: clamp(40px, 8vw, 120px); align-items: center; }
+  .ps-phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .ps-phone-glow { position: relative; }
+  .ps-phone-glow::before {
+    content: ''; position: absolute; inset: -12% -30%;
+    background: radial-gradient(closest-side, rgba(180,146,61,0.22), transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+  .ps-phone {
+    position: relative; z-index: 1;
+    width: 300px; height: 620px;
+    border-radius: 48px; padding: 10px;
+    background: linear-gradient(145deg, #2a3641 0%, #0b1218 40%, #1c2a35 100%);
+    box-shadow: 0 0 0 1px rgba(216,189,124,0.28), 0 40px 80px rgba(0,0,0,0.55), inset 0 0 0 2px rgba(255,255,255,0.04);
+  }
+  .ps-screen { position: relative; width: 100%; height: 100%; border-radius: 39px; overflow: hidden; background: var(--color-bg); display: flex; flex-direction: column; }
+  .ps-island { position: absolute; top: 9px; left: 50%; transform: translateX(-50%); width: 92px; height: 26px; background: #000; border-radius: 20px; z-index: 5; }
+  .ps-status { display: flex; justify-content: space-between; align-items: center; padding: 14px 26px 0; font-family: var(--font-sans); font-size: 12px; font-weight: 600; color: var(--color-ink); height: 44px; flex-shrink: 0; }
+  .ps-status svg { width: 15px; height: 10px; fill: var(--color-ink); }
+  .ps-chat-head { display: flex; align-items: center; gap: 10px; padding: 8px 14px 12px; border-bottom: 1px solid var(--color-border); background: rgba(22,35,46,0.9); flex-shrink: 0; }
+  .ps-chat-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--color-bg); border: 1px solid var(--color-gold-dim); display: flex; align-items: center; justify-content: center; }
+  .ps-chat-avatar img { width: 20px; height: 20px; }
+  .ps-chat-name { font-family: var(--font-sans); font-size: 13px; font-weight: 600; color: var(--color-ink); line-height: 1.2; }
+  .ps-chat-online { font-family: var(--font-sans); font-size: 10.5px; color: var(--color-ink-muted); display: flex; align-items: center; gap: 5px; }
+  .ps-chat-online::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #5BD08A; box-shadow: 0 0 6px rgba(91,208,138,0.7); }
+  .ps-chat-body {
+    flex: 1; min-height: 0; padding: 14px 12px 8px; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; overflow: hidden;
+    background: radial-gradient(120% 60% at 50% 0%, rgba(180,146,61,0.07), transparent 60%), var(--color-bg);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 36px);
+    mask-image: linear-gradient(180deg, transparent 0, #000 36px);
+  }
+  .ps-msg { max-width: 86%; font-family: var(--font-sans); font-size: 12.5px; line-height: 1.5; padding: 9px 12px; border-radius: 16px; opacity: 0; transform: translateY(8px) scale(0.98); transition: opacity 320ms var(--ease-out), transform 320ms var(--ease-out); }
+  .ps-msg.in { opacity: 1; transform: none; }
+  .ps-msg--user { align-self: flex-end; background: linear-gradient(135deg, #B4923D, #D8BD7C); color: #1B1405; border-bottom-right-radius: 5px; font-weight: 500; }
+  .ps-msg--bot { align-self: flex-start; background: var(--color-bg-elevated-2); border: 1px solid var(--color-border); color: var(--color-ink); border-bottom-left-radius: 5px; }
+  .ps-msg-meta { display: block; margin-top: 3px; font-size: 9.5px; opacity: 0.55; text-align: right; }
+  .ps-typing { display: inline-flex; gap: 4px; padding: 13px 14px; }
+  .ps-typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--color-ink-muted); animation: ps-bounce 1s infinite ease-in-out; }
+  .ps-typing span:nth-child(2) { animation-delay: 0.15s; }
+  .ps-typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes ps-bounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.45; } 30% { transform: translateY(-4px); opacity: 1; } }
+
+  .ps-card { width: 100%; padding: 4px 0 2px; }
+  .ps-card-title { font-family: var(--font-display); font-size: 17px; line-height: 1.2; color: var(--color-ink); }
+  .ps-card-sub { font-size: 10.5px; color: var(--color-ink-muted); margin: 2px 0 10px; }
+  .ps-steps { display: flex; gap: 5px; }
+  .ps-step { flex: 1; }
+  .ps-step-bar { height: 3px; border-radius: 2px; background: rgba(212,190,140,0.18); position: relative; overflow: hidden; }
+  .ps-step-bar::after { content: ''; position: absolute; inset: 0; background: var(--color-gold-light); transform: scaleX(0); transform-origin: left; transition: transform 700ms var(--ease-out); }
+  .ps-step.on .ps-step-bar::after { transform: scaleX(1); }
+  .ps-step-label { margin-top: 5px; font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-ink-muted); transition: color 300ms; }
+  .ps-step.on .ps-step-label { color: var(--color-gold-light); }
+
+  .ps-input-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px 18px; border-top: 1px solid var(--color-border); background: rgba(22,35,46,0.9); flex-shrink: 0; }
+  .ps-input { flex: 1; min-width: 0; height: 34px; padding: 0 14px; border-radius: 17px; background: var(--color-bg); border: 1px solid var(--color-border); font-family: var(--font-sans); font-size: 12px; color: var(--color-ink); display: flex; align-items: center; overflow: hidden; white-space: nowrap; }
+  .ps-input .ps-ph { color: var(--color-ink-muted); opacity: 0.8; }
+  .ps-input .ps-typed { overflow: hidden; text-overflow: clip; }
+  .ps-input.is-typing .ps-ph { display: none; }
+  .ps-input.is-typing::after { content: ''; width: 1.5px; height: 14px; background: var(--color-gold-light); margin-left: 1px; animation: ps-caret 0.8s steps(1) infinite; flex-shrink: 0; }
+  @keyframes ps-caret { 50% { opacity: 0; } }
+  .ps-send { width: 34px; height: 34px; border-radius: 50%; background: var(--color-gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 200ms var(--ease-out); }
+  .ps-send.pulse { transform: scale(0.88); }
+  .ps-send svg { width: 15px; height: 15px; stroke: #1B1405; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .ps-phone-note { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.08em; color: var(--color-ink-muted); opacity: 0.8; text-align: center; }
+
+  .ps-demo-copy .section-title { max-width: 14ch; margin-bottom: var(--space-3); }
+  .ps-demo-copy .ps-demo-body { font-family: var(--font-sans); font-size: 16px; line-height: 1.7; color: var(--color-ink-muted); max-width: 46ch; margin-bottom: var(--space-5); }
+  .ps-points { display: grid; gap: var(--space-3); max-width: 480px; }
+  .ps-point { display: grid; grid-template-columns: 32px 1fr; gap: 16px; align-items: start; padding-top: var(--space-3); border-top: 1px solid var(--color-border); }
+  .ps-point-icon { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--color-gold-dim); display: flex; align-items: center; justify-content: center; color: var(--color-gold-light); }
+  .ps-point-icon svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .ps-point h3 { font-family: var(--font-display); font-weight: 500; font-size: 22px; color: var(--color-ink); margin-bottom: 4px; }
+  .ps-point p { font-family: var(--font-sans); font-size: 14px; line-height: 1.6; color: var(--color-ink-muted); }
+
+  /* ---------- Steps ---------- */
+  .ps-section { max-width: 1180px; margin: 0 auto; padding: var(--space-6) var(--space-4); }
+  .ps-section-head { margin-bottom: var(--space-5); }
+  .ps-section-head .section-title { margin-bottom: 0; }
+  .ps-steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
+  .ps-how { padding-top: var(--space-3); border-top: 1px solid var(--color-gold-dim); }
+  .ps-how-n { font-family: var(--font-display); font-style: italic; font-size: 20px; color: var(--color-gold-light); margin-bottom: var(--space-2); display: block; }
+  .ps-how h3 { font-family: var(--font-display); font-weight: 500; font-size: 26px; color: var(--color-ink); margin-bottom: 8px; }
+  .ps-how p { font-family: var(--font-sans); font-size: 14.5px; line-height: 1.65; color: var(--color-ink-muted); }
+
+  /* ---------- Categories ---------- */
+  .ps-cats { display: flex; flex-wrap: wrap; gap: 12px; }
+  .ps-cat { font-family: var(--font-display); font-size: clamp(22px, 3vw, 30px); color: var(--color-ink); padding: 14px 28px; border: 1px solid var(--color-border); border-radius: 999px; transition: border-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out), background-color var(--dur-base) var(--ease-out); }
+  .ps-cat:hover { border-color: var(--color-gold); color: var(--color-gold-light); background: rgba(180,146,61,0.06); }
+
+  /* ---------- Form ---------- */
+  .ps-form-wrap { max-width: 760px; margin: 0 auto; padding: var(--space-6) var(--space-4) var(--space-7); }
+  .ps-form-head { text-align: center; margin-bottom: var(--space-5); }
+  .ps-form-head .section-title { margin-left: auto; margin-right: auto; max-width: 18ch; margin-bottom: var(--space-2); }
+  .ps-form-head p { font-family: var(--font-sans); font-size: 15px; line-height: 1.65; color: var(--color-ink-muted); max-width: 54ch; margin: 0 auto; }
+  .ps-form { background: var(--color-bg-elevated); border: 1px solid var(--color-border); border-radius: 16px; padding: var(--space-4); }
+  .ps-piece { padding-bottom: var(--space-3); margin-bottom: var(--space-3); border-bottom: 1px solid var(--color-border); }
+  .ps-piece-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2); }
+  .ps-piece-title { font-family: var(--font-display); font-style: italic; font-size: 20px; color: var(--color-gold-light); }
+  .ps-piece-remove { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink-muted); cursor: pointer; }
+  .ps-piece-remove:hover { color: var(--color-gold-light); }
+  .ps-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+  .ps-form .field { margin-bottom: var(--space-2); }
+  .ps-add { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-sans); font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-gold-light); cursor: pointer; margin-bottom: var(--space-4); }
+  .ps-add:hover { color: var(--color-ink); }
+  .ps-photo-note { font-family: var(--font-sans); font-size: 12.5px; line-height: 1.6; color: var(--color-ink-muted); margin-bottom: var(--space-3); padding: 12px 14px; border: 1px dashed var(--color-gold-dim); border-radius: 8px; }
+  .ps-err { color: #E58C8C; font-family: var(--font-sans); font-size: 13px; min-height: 18px; margin-bottom: var(--space-2); }
+  .ps-send-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
+  .ps-send-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+  /* ---------- App ---------- */
+  .ps-app { max-width: 1000px; margin: 0 auto; padding: var(--space-6) var(--space-4); display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: clamp(32px, 7vw, 96px); align-items: center; }
+  .ps-app .section-title { max-width: 14ch; margin-bottom: var(--space-3); }
+  .ps-app p.ps-app-body { font-family: var(--font-sans); font-size: 15.5px; line-height: 1.7; color: var(--color-ink-muted); max-width: 46ch; }
+  .ps-mini-phone { width: 240px; aspect-ratio: 1320 / 2868; border-radius: 38px; padding: 8px; background: linear-gradient(145deg, #2a3641, #0b1218 45%, #1c2a35); box-shadow: 0 0 0 1px rgba(216,189,124,0.26), 0 30px 60px rgba(0,0,0,0.5); justify-self: center; }
+  .ps-mini-phone img { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 31px; display: block; }
+
+  .ps-closing { text-align: center; padding: var(--space-6) var(--space-4) var(--space-7); }
+  .ps-closing h2 { font-family: var(--font-display); font-weight: 500; font-size: 30px; color: var(--color-ink); margin-bottom: 14px; }
+  .ps-closing p { font-family: var(--font-sans); font-size: 15px; color: var(--color-ink-muted); margin-bottom: var(--space-4); }
+  .ps-footer { text-align: center; padding: var(--space-4); border-top: 1px solid var(--color-border); }
+  .ps-footer a { font-family: var(--font-sans); font-size: 13px; color: var(--color-ink-muted); }
+  .ps-footer a:hover { color: var(--color-gold-light); }
+
+  @media (max-width: 900px) {
+    .ps-demo { grid-template-columns: 1fr; justify-items: center; padding: var(--space-6) var(--space-3); }
+    .ps-demo-copy { order: -1; width: 100%; }
+    .ps-steps-grid { grid-template-columns: 1fr; gap: var(--space-4); }
+    .ps-app { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+    .ps-app .section-title, .ps-app p.ps-app-body { margin-left: auto; margin-right: auto; }
+  }
+  @media (max-width: 640px) {
+    .ps-hero { min-height: 520px; }
+    .ps-actions { flex-direction: column; width: 100%; }
+    .ps-actions .btn { width: 100%; }
+    .ps-row { grid-template-columns: 1fr; }
+    .ps-form { padding: var(--space-3); }
+    .ps-header { padding: var(--space-3); }
+  }
+  @media (max-width: 360px) {
+    .ps-phone { transform: scale(0.9); transform-origin: top center; margin-bottom: -60px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ps-msg { transition: none; }
+    .ps-typing span, .ps-input.is-typing::after { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<section class="ps-hero">
+  <img class="ps-hero-photo" src="assets/photos/personal-shopping.jpg" alt="">
+  <div class="ps-hero-scrim"></div>
+  <div class="ps-hero-inner">
+    <header class="ps-header">
+      <a href="index.html" class="brand" aria-label="Solace Executive homepage">
+        <img src="assets/icons/monogram.svg" alt="" class="brand-mark">
+        <span class="brand-word">
+          <span class="brand-name">SOLACE</span>
+          <span class="brand-sub">EXECUTIVE</span>
+        </span>
+      </a>
+      <div class="lang-switch" role="group" aria-label="Taal / Language">
+        <button type="button" class="lang-btn" data-lang="nl">NL</button>
+        <button type="button" class="lang-btn" data-lang="en">EN</button>
+      </div>
+    </header>
+    <div class="ps-hero-main">
+      <div class="ps-hero-content">
+        <p class="ps-eyebrow reveal" data-i18n="ps.label">PERSONAL SHOPPING</p>
+        <h1 class="ps-title-stack">
+          <span class="ps-title-line ps-title-line--muted reveal" data-i18n="ps.title">Elk stuk.</span>
+          <span class="ps-title-line ps-title-line--bright reveal" data-i18n="ps.title2">Gevonden.</span>
+        </h1>
+        <p class="ps-sub reveal" data-i18n="ps.sub">De tas, de sneaker, het horloge. Vertel ons het merk, het model, de kleur en de maat, en uw concierge gaat het voor u zoeken. Ook als het nergens meer te krijgen is.</p>
+        <div class="ps-actions reveal">
+          <a href="#aanvraag" class="btn btn-primary" data-i18n="ps.cta.form">Start een aanvraag</a>
+          <a href="https://wa.me/31644917512?text=Hallo%2C%20ik%20zoek%20een%20specifiek%20stuk%20via%20personal%20shopping." target="_blank" rel="noopener" class="btn btn-outline" data-i18n="ps.cta.ask">Vraag uw concierge</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ps-demo" id="demo">
+  <div class="ps-phone-wrap">
+    <div class="ps-phone-glow">
+      <div class="ps-phone" id="psPhone" aria-hidden="true">
+        <div class="ps-screen">
+          <div class="ps-island"></div>
+          <div class="ps-status">
+            <span>9:41</span>
+            <svg viewBox="0 0 28 10" aria-hidden="true"><rect x="0" y="6" width="3" height="4" rx="1"/><rect x="5" y="4" width="3" height="6" rx="1"/><rect x="10" y="2" width="3" height="8" rx="1"/><rect x="15" y="0" width="3" height="10" rx="1"/><rect x="21" y="1" width="7" height="8" rx="2"/></svg>
+          </div>
+          <div class="ps-chat-head">
+            <div class="ps-chat-avatar"><img src="assets/icons/monogram.svg" alt=""></div>
+            <div>
+              <div class="ps-chat-name" data-i18n="ps.chat.name">Solace Executive</div>
+              <div class="ps-chat-online" data-i18n="ps.chat.online">Uw concierge, online</div>
+            </div>
+          </div>
+          <div class="ps-chat-body" id="psChat"></div>
+          <div class="ps-input-bar">
+            <div class="ps-input" id="psInput"><span class="ps-ph" data-i18n="ps.chat.placeholder">Bericht</span><span class="ps-typed" id="psTyped"></span></div>
+            <div class="ps-send" id="psSend"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="ps-phone-note" data-i18n="ps.demo.note">Voorbeeldgesprek ter illustratie</p>
+  </div>
+
+  <div class="ps-demo-copy">
+    <p class="eyebrow reveal" data-i18n="ps.demo.eyebrow">ZO WERKT HET</p>
+    <h2 class="section-title reveal"><span data-i18n="ps.demo.title">Eén bericht.</span> <em style="color:var(--color-gold-light)" data-i18n="ps.demo.title2">Wij vinden het.</em></h2>
+    <p class="ps-demo-body reveal" data-i18n="ps.demo.body">Geen webshops doorzoeken, geen wachtlijsten, geen risico op een nepexemplaar. U stuurt één bericht, wij nemen het over.</p>
+    <div class="ps-points">
+      <div class="ps-point reveal">
+        <span class="ps-point-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></span>
+        <div><h3 data-i18n="ps.demo.p1.t">Precies het exemplaar</h3><p data-i18n="ps.demo.p1.d">Model, kleur, maat en uitvoering. Wij zoeken op de details die voor u tellen.</p></div>
+      </div>
+      <div class="ps-point reveal">
+        <span class="ps-point-icon"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
+        <div><h3 data-i18n="ps.demo.p2.t">Gecontroleerd voor aankoop</h3><p data-i18n="ps.demo.p2.d">Echtheid, staat en volledige set worden gecheckt voordat u iets betaalt.</p></div>
+      </div>
+      <div class="ps-point reveal">
+        <span class="ps-point-icon"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg></span>
+        <div><h3 data-i18n="ps.demo.p3.t">Alles in één prijs</h3><p data-i18n="ps.demo.p3.d">U ontvangt vooraf een all-in prijs, inclusief levering. Geen verrassingen achteraf.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ps-section">
+  <div class="ps-section-head">
+    <p class="eyebrow reveal" data-i18n="ps.how.eyebrow">IN DRIE STAPPEN</p>
+    <h2 class="section-title reveal" data-i18n="ps.how.title">U vraagt. Wij regelen.</h2>
+  </div>
+  <div class="ps-steps-grid">
+    <div class="ps-how reveal"><span class="ps-how-n">i.</span><h3 data-i18n="ps.how.1.t">U beschrijft het stuk</h3><p data-i18n="ps.how.1.d">Merk, model, kleur, maat. Een foto helpt, maar is niet nodig.</p></div>
+    <div class="ps-how reveal"><span class="ps-how-n">ii.</span><h3 data-i18n="ps.how.2.t">Wij sourcen en controleren</h3><p data-i18n="ps.how.2.d">Uw concierge zoekt via boetieks en een privénetwerk en checkt echtheid en staat.</p></div>
+    <div class="ps-how reveal"><span class="ps-how-n">iii.</span><h3 data-i18n="ps.how.3.t">U ontvangt het</h3><p data-i18n="ps.how.3.d">Thuis, op kantoor of waar u op dat moment bent. Persoonlijk afgeleverd.</p></div>
+  </div>
+</section>
+
+<section class="ps-section">
+  <div class="ps-section-head">
+    <p class="eyebrow reveal" data-i18n="ps.cats.eyebrow">WAT U KUNT VRAGEN</p>
+    <h2 class="section-title reveal" data-i18n="ps.cats.title">Als het bestaat, zoeken wij het.</h2>
+  </div>
+  <div class="ps-cats reveal">
+    <span class="ps-cat" data-i18n="ps.cat.1">Tassen</span>
+    <span class="ps-cat" data-i18n="ps.cat.2">Horloges</span>
+    <span class="ps-cat" data-i18n="ps.cat.3">Sneakers en rare drops</span>
+    <span class="ps-cat" data-i18n="ps.cat.4">Sieraden</span>
+    <span class="ps-cat" data-i18n="ps.cat.5">Garderobes en cadeaus</span>
+    <span class="ps-cat" data-i18n="ps.cat.6">Vintage en collectors</span>
+  </div>
+</section>
+
+<section class="ps-form-wrap" id="aanvraag">
+  <div class="ps-form-head">
+    <p class="eyebrow reveal" style="display:flex;justify-content:center;" data-i18n="ps.form.eyebrow">AANVRAAG</p>
+    <h2 class="section-title reveal" data-i18n="ps.form.title">Vertel ons wat u zoekt.</h2>
+    <p class="reveal" data-i18n="ps.form.sub">Hoe preciezer, hoe sneller wij het juiste stuk vinden. Na het versturen opent WhatsApp met uw aanvraag al ingevuld, zodat u direct met uw concierge in gesprek bent.</p>
+  </div>
+  <form class="ps-form reveal" id="psForm" novalidate>
+    <div id="psPieces"></div>
+    <button type="button" class="ps-add" id="psAdd"><span aria-hidden="true">+</span> <span data-i18n="ps.form.add">Nog een stuk toevoegen</span></button>
+    <div class="field">
+      <label for="psName" data-i18n="ps.form.name">Uw naam</label>
+      <input type="text" id="psName" autocomplete="name">
+    </div>
+    <p class="ps-photo-note" data-i18n="ps.form.photo">Heeft u een foto van het exacte stuk? Stuur die direct mee in het WhatsApp-gesprek.</p>
+    <p class="ps-err" id="psErr" role="alert"></p>
+    <button type="submit" class="btn btn-primary ps-send-btn">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2a9.9 9.9 0 0 0-8.4 15.1L2 22l5-1.6A9.9 9.9 0 1 0 12.04 2zm5.8 14.1c-.25.7-1.4 1.3-1.95 1.35-.5.05-1.1.07-1.8-.12-.4-.13-.95-.3-1.6-.6-2.8-1.2-4.6-4-4.75-4.2-.15-.2-1.15-1.5-1.15-2.9 0-1.4.7-2.05 1-2.35.25-.3.55-.35.75-.35h.55c.2 0 .45-.05.65.5.25.55.85 1.9.9 2 .05.1.1.25 0 .4-.1.2-.15.3-.3.45-.15.2-.3.35-.45.55-.15.15-.3.3-.12.6.17.3.75 1.25 1.6 2 1.1 1 2 1.3 2.3 1.45.3.15.5.1.65-.1.2-.2.75-.85.95-1.15.2-.3.4-.25.65-.15.3.1 1.65.8 1.95.95.3.15.5.2.55.3.1.1.1.65-.15 1.3z"/></svg>
+      <span data-i18n="ps.form.send">Verstuur via WhatsApp</span>
+    </button>
+  </form>
+</section>
+
+<section class="ps-app">
+  <div>
+    <p class="eyebrow reveal" data-i18n="ps.app.eyebrow">VOOR LEDEN</p>
+    <h2 class="section-title reveal" data-i18n="ps.app.title">Volg elke stap in de app.</h2>
+    <p class="ps-app-body reveal" data-i18n="ps.app.body">Als lid ziet u precies waar uw verzoek staat, van in behandeling tot bevestigd. Op uw iPhone verschijnt de voortgang zelfs live in de Dynamic Island.</p>
+  </div>
+  <div class="ps-mini-phone reveal"><img src="assets/photos/app/requests.jpg" alt="" loading="lazy"></div>
+</section>
+
+<section class="ps-closing">
+  <h2 class="reveal" data-i18n="ps.closing.title">Liever eerst weten wat er nog meer kan?</h2>
+  <p class="reveal" data-i18n="ps.closing.body">Solace Executive regelt ook privéjets, jachten en executive transport, allemaal via één aanspreekpunt.</p>
+  <a href="index.html" class="btn btn-outline reveal" data-i18n="ps.closing.cta">Bekijk alle diensten</a>
+</section>
+
+<footer class="ps-footer">
+  <a href="index.html">&copy; <span id="year"></span> Solace Executive</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="i18n.js"></script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const T = (k) => (window.SolaceI18n ? window.SolaceI18n.t(k) : k);
+
+  /* ---------- Scroll reveal ---------- */
+  if (window.gsap && window.ScrollTrigger && !reducedMotion) {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('.reveal').forEach((el, i) => {
+      gsap.from(el, {
+        opacity: 0, y: 20, duration: 0.55, ease: 'power1.out', delay: (i % 6) * 0.04,
+        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' },
+      });
+    });
+  }
+
+  /* ---------- Live chat in the phone ---------- */
+  const chat = document.getElementById('psChat');
+  const input = document.getElementById('psInput');
+  const typed = document.getElementById('psTyped');
+  const sendBtn = document.getElementById('psSend');
+  const SCENARIOS = ['a', 'b'];
+  let runId = 0;
+  let scenarioIdx = 0;
+
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const nowTime = (offset) => {
+    const d = new Date(2026, 0, 1, 14, 2 + offset);
+    return d.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  function addMsg(kind, text, meta) {
+    const el = document.createElement('div');
+    el.className = 'ps-msg ps-msg--' + kind;
+    el.textContent = text;
+    if (meta) {
+      const m = document.createElement('span');
+      m.className = 'ps-msg-meta';
+      m.textContent = meta;
+      el.appendChild(m);
+    }
+    chat.appendChild(el);
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('in')));
+    return el;
+  }
+
+  function addTyping() {
+    const el = document.createElement('div');
+    el.className = 'ps-msg ps-msg--bot ps-typing';
+    el.innerHTML = '<span></span><span></span><span></span>';
+    chat.appendChild(el);
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('in')));
+    return el;
+  }
+
+  function addCard(sc) {
+    const el = document.createElement('div');
+    el.className = 'ps-msg ps-msg--bot';
+    el.style.width = '86%';
+    el.innerHTML =
+      '<div class="ps-card">' +
+        '<div class="ps-card-title"></div>' +
+        '<div class="ps-card-sub"></div>' +
+        '<div class="ps-steps">' +
+          ['st1', 'st2', 'st3'].map((s) => '<div class="ps-step"><div class="ps-step-bar"></div><div class="ps-step-label">' + T('ps.chat.' + s) + '</div></div>').join('') +
+        '</div>' +
+      '</div>';
+    el.querySelector('.ps-card-title').textContent = T('ps.chat.' + sc + '.card.title');
+    el.querySelector('.ps-card-sub').textContent = T('ps.chat.' + sc + '.card.sub');
+    chat.appendChild(el);
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('in')));
+    return el;
+  }
+
+  const stepOn = (card, n) => {
+    const steps = card.querySelectorAll('.ps-step');
+    for (let i = 0; i < n; i++) steps[i].classList.add('on');
+  };
+
+  function clearChat() {
+    chat.innerHTML = '';
+    typed.textContent = '';
+    input.classList.remove('is-typing');
+  }
+
+  function renderStatic() {
+    clearChat();
+    const sc = 'a';
+    addMsg('user', T('ps.chat.' + sc + '.user'), nowTime(0) + ' ✓✓');
+    addMsg('bot', T('ps.chat.' + sc + '.bot1'), nowTime(1));
+    const card = addCard(sc);
+    stepOn(card, 3);
+    addMsg('bot', T('ps.chat.' + sc + '.bot2'), nowTime(2));
+  }
+
+  async function play(id) {
+    const alive = () => id === runId;
+    while (alive()) {
+      const sc = SCENARIOS[scenarioIdx % SCENARIOS.length];
+      scenarioIdx++;
+      clearChat();
+      await wait(700); if (!alive()) return;
+
+      // Member types and sends
+      const userText = T('ps.chat.' + sc + '.user');
+      input.classList.add('is-typing');
+      for (let i = 1; i <= userText.length; i++) {
+        typed.textContent = userText.slice(0, i);
+        await wait(34 + Math.random() * 26); if (!alive()) return;
+      }
+      await wait(380); if (!alive()) return;
+      sendBtn.classList.add('pulse');
+      await wait(160); if (!alive()) return;
+      sendBtn.classList.remove('pulse');
+      typed.textContent = '';
+      input.classList.remove('is-typing');
+      addMsg('user', userText, nowTime(0) + ' ✓✓');
+
+      // Concierge acknowledges
+      await wait(700); if (!alive()) return;
+      let typing = addTyping();
+      await wait(1500); if (!alive()) return;
+      typing.remove();
+      addMsg('bot', T('ps.chat.' + sc + '.bot1'), nowTime(1));
+
+      // Sourcing card
+      await wait(1000); if (!alive()) return;
+      typing = addTyping();
+      await wait(1200); if (!alive()) return;
+      typing.remove();
+      const card = addCard(sc);
+      await wait(500); if (!alive()) return;
+      stepOn(card, 1);
+      await wait(1500); if (!alive()) return;
+      stepOn(card, 2);
+
+      // Found
+      await wait(900); if (!alive()) return;
+      typing = addTyping();
+      await wait(1300); if (!alive()) return;
+      typing.remove();
+      addMsg('bot', T('ps.chat.' + sc + '.bot2'), nowTime(2));
+      await wait(700); if (!alive()) return;
+      stepOn(card, 3);
+
+      await wait(4200); if (!alive()) return;
+      chat.style.transition = 'opacity 500ms';
+      chat.style.opacity = '0';
+      await wait(550); if (!alive()) return;
+      chat.style.opacity = '1';
+    }
+  }
+
+  function startChat() {
+    runId++;
+    if (reducedMotion) { renderStatic(); return; }
+    play(runId);
+  }
+  function stopChat() { runId++; }
+
+  const phone = document.getElementById('psPhone');
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? startChat() : stopChat()));
+    }, { threshold: 0.35 }).observe(phone);
+  } else {
+    startChat();
+  }
+  document.querySelectorAll('.lang-btn').forEach((b) => b.addEventListener('click', () => {
+    setTimeout(() => { if (runId > 0) startChat(); }, 0);
+  }));
+
+  /* ---------- Request form ---------- */
+  const piecesEl = document.getElementById('psPieces');
+  const MAX_PIECES = 5;
+
+  function pieceTemplate(n) {
+    const wrap = document.createElement('div');
+    wrap.className = 'ps-piece';
+    wrap.innerHTML =
+      '<div class="ps-piece-head"><span class="ps-piece-title"><span data-i18n="ps.form.piece">' + T('ps.form.piece') + '</span> ' + n + '</span>' +
+        (n > 1 ? '<button type="button" class="ps-piece-remove" data-i18n="ps.form.remove">' + T('ps.form.remove') + '</button>' : '') + '</div>' +
+      '<div class="ps-row">' +
+        '<div class="field"><label data-i18n="ps.form.brand">' + T('ps.form.brand') + '</label><input type="text" data-f="brand" placeholder="' + T('ps.form.brand.ph') + '" data-i18n="ps.form.brand.ph" data-i18n-attr="placeholder"></div>' +
+        '<div class="field"><label data-i18n="ps.form.item">' + T('ps.form.item') + '</label><input type="text" data-f="item" placeholder="' + T('ps.form.item.ph') + '" data-i18n="ps.form.item.ph" data-i18n-attr="placeholder"></div>' +
+        '<div class="field"><label data-i18n="ps.form.colour">' + T('ps.form.colour') + '</label><input type="text" data-f="colour" placeholder="' + T('ps.form.colour.ph') + '" data-i18n="ps.form.colour.ph" data-i18n-attr="placeholder"></div>' +
+        '<div class="field"><label data-i18n="ps.form.size">' + T('ps.form.size') + '</label><input type="text" data-f="size" placeholder="' + T('ps.form.size.ph') + '" data-i18n="ps.form.size.ph" data-i18n-attr="placeholder"></div>' +
+      '</div>' +
+      '<div class="field"><label><span data-i18n="ps.form.notes">' + T('ps.form.notes') + '</span> <span class="optional">(<span data-i18n="ps.form.optional">' + T('ps.form.optional') + '</span>)</span></label><textarea data-f="notes" placeholder="' + T('ps.form.notes.ph') + '" data-i18n="ps.form.notes.ph" data-i18n-attr="placeholder"></textarea></div>';
+    return wrap;
+  }
+
+  function renumber() {
+    [...piecesEl.children].forEach((p, i) => {
+      const n = p.querySelector('.ps-piece-title');
+      n.lastChild.textContent = ' ' + (i + 1);
+    });
+    document.getElementById('psAdd').style.display = piecesEl.children.length >= MAX_PIECES ? 'none' : '';
+  }
+
+  piecesEl.appendChild(pieceTemplate(1));
+  document.getElementById('psAdd').addEventListener('click', () => {
+    if (piecesEl.children.length >= MAX_PIECES) return;
+    piecesEl.appendChild(pieceTemplate(piecesEl.children.length + 1));
+    renumber();
+  });
+  piecesEl.addEventListener('click', (e) => {
+    const rm = e.target.closest('.ps-piece-remove');
+    if (!rm) return;
+    rm.closest('.ps-piece').remove();
+    renumber();
+  });
+
+  document.getElementById('psForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const err = document.getElementById('psErr');
+    err.textContent = '';
+    const lines = [T('ps.wa.hello'), ''];
+    let ok = true;
+    [...piecesEl.children].forEach((p, i) => {
+      const v = (f) => (p.querySelector('[data-f="' + f + '"]').value || '').trim();
+      if (!v('brand') || !v('item')) { ok = false; return; }
+      lines.push((i + 1) + '.');
+      lines.push(T('ps.wa.brand') + ': ' + v('brand'));
+      lines.push(T('ps.wa.item') + ': ' + v('item'));
+      if (v('colour')) lines.push(T('ps.wa.colour') + ': ' + v('colour'));
+      if (v('size')) lines.push(T('ps.wa.size') + ': ' + v('size'));
+      if (v('notes')) lines.push(T('ps.wa.notes') + ': ' + v('notes'));
+      lines.push('');
+    });
+    if (!ok) { err.textContent = T('ps.form.err'); return; }
+    const name = (document.getElementById('psName').value || '').trim();
+    if (name) lines.push(T('ps.wa.name') + ': ' + name);
+    window.open('https://wa.me/31644917512?text=' + encodeURIComponent(lines.join('\n').trim()), '_blank', 'noopener');
+  });
+</script>
+
+</body>
+</html>
