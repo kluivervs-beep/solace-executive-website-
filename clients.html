@@ -100,16 +100,13 @@
   <p class="cl-sub reveal" data-i18n="cl.sub">Sporters, ondernemers, artiesten en particulieren die discretie, precisie en resultaat verwachten.</p>
 </section>
 
-<section class="cl-section" id="clFeaturedWrap" hidden>
+<section class="cl-section" id="clCircle" hidden>
   <div class="cl-head">
     <p class="eyebrow reveal" data-i18n="cl.roster.eyebrow">ONZE KRING</p>
     <h2 class="section-title reveal" data-i18n="cl.roster.title">Een kring van prestatie en discretie.</h2>
     <p class="reveal" data-i18n="cl.roster.note">Een selectie, getoond met toestemming. Namen worden alleen vermeld als de persoon dat zelf wil.</p>
   </div>
   <div class="cl-featured" id="clFeatured"></div>
-</section>
-
-<section class="cl-section" id="clRosterWrap" hidden>
   <div id="clRoster"></div>
 </section>
 
@@ -147,54 +144,53 @@
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  /* Render only what has real content; empty sections stay hidden. */
-  (() => {
+  /* Render only what has real content; empty sections stay hidden.
+     Any text value can be a string or { nl, en }. */
+  function renderClients() {
     const data = window.SOLACE_CLIENTS || {};
+    const lang = (window.SolaceI18n && window.SolaceI18n.lang) || 'nl';
+    const L = (v) => (v && typeof v === 'object' ? (v[lang] || v.en || v.nl || '') : (v || ''));
     const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text) n.textContent = text; return n; };
     const featured = data.featured || [], roster = data.roster || [], quotes = data.quotes || [];
 
-    if (featured.length) {
-      const wrap = document.getElementById('clFeatured');
-      featured.forEach((p) => {
-        const c = el('article', 'cl-card reveal');
-        if (p.role) c.appendChild(el('div', 'cl-card-role', p.role));
-        c.appendChild(el('div', 'cl-card-name', p.name));
-        if (p.line) c.appendChild(el('p', 'cl-card-line', p.line));
-        if (p.tags) c.appendChild(el('div', 'cl-card-tags', p.tags));
-        wrap.appendChild(c);
+    const fWrap = document.getElementById('clFeatured');
+    const rWrap = document.getElementById('clRoster');
+    const qWrap = document.getElementById('clQuotes');
+    fWrap.innerHTML = rWrap.innerHTML = qWrap.innerHTML = '';
+
+    featured.forEach((p) => {
+      const c = el('article', 'cl-card');
+      if (p.role) c.appendChild(el('div', 'cl-card-role', L(p.role)));
+      c.appendChild(el('div', 'cl-card-name', p.name));
+      if (p.line) c.appendChild(el('p', 'cl-card-line', L(p.line)));
+      if (p.tags) c.appendChild(el('div', 'cl-card-tags', L(p.tags)));
+      fWrap.appendChild(c);
+    });
+    roster.forEach((g) => {
+      const row = el('div', 'cl-group');
+      row.appendChild(el('div', 'cl-group-name', L(g.category)));
+      const list = el('div', 'cl-people');
+      (g.people || []).forEach((p) => {
+        const item = el('div');
+        item.appendChild(el('div', 'cl-person-name', p.name));
+        if (p.role) item.appendChild(el('div', 'cl-person-role', L(p.role)));
+        list.appendChild(item);
       });
-      document.getElementById('clFeaturedWrap').hidden = false;
-    }
-    if (roster.length) {
-      const wrap = document.getElementById('clRoster');
-      roster.forEach((g) => {
-        const row = el('div', 'cl-group reveal');
-        row.appendChild(el('div', 'cl-group-name', g.category));
-        const list = el('div', 'cl-people');
-        (g.people || []).forEach((p) => {
-          const item = el('div');
-          item.appendChild(el('div', 'cl-person-name', p.name));
-          if (p.role) item.appendChild(el('div', 'cl-person-role', p.role));
-          list.appendChild(item);
-        });
-        row.appendChild(list);
-        wrap.appendChild(row);
-      });
-      document.getElementById('clRosterWrap').hidden = false;
-    }
-    if (quotes.length) {
-      const wrap = document.getElementById('clQuotes');
-      quotes.forEach((q) => {
-        const b = el('blockquote', 'cl-quote reveal');
-        b.appendChild(el('p', '', '“' + q.text + '”'));
-        const cite = el('cite', '', q.name);
-        b.appendChild(cite);
-        if (q.role) b.appendChild(el('small', '', q.role));
-        wrap.appendChild(b);
-      });
-      document.getElementById('clQuotesWrap').hidden = false;
-    }
-  })();
+      row.appendChild(list);
+      rWrap.appendChild(row);
+    });
+    quotes.forEach((q) => {
+      const b = el('blockquote', 'cl-quote');
+      b.appendChild(el('p', '', '\u201C' + L(q.text) + '\u201D'));
+      b.appendChild(el('cite', '', q.name));
+      if (q.role) b.appendChild(el('small', '', L(q.role)));
+      qWrap.appendChild(b);
+    });
+    document.getElementById('clCircle').hidden = !(featured.length || roster.length);
+    document.getElementById('clQuotesWrap').hidden = !quotes.length;
+  }
+  renderClients();
+  document.querySelectorAll('.lang-btn').forEach((b) => b.addEventListener('click', () => setTimeout(renderClients, 0)));
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (window.gsap && window.ScrollTrigger && !reducedMotion) {
