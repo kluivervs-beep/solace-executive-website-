@@ -291,6 +291,7 @@ input, textarea, select {
   display: flex;
   align-items: center;
   gap: var(--space-4);
+  overflow: visible; /* the Services dropdown hangs below the pill */
   transition: box-shadow var(--dur-base) var(--ease-out);
 }
 .site-header.is-scrolled .header-inner {
@@ -1936,3 +1937,58 @@ body.modal-open { overflow: hidden; }
 }
 .story-viewer-nav--prev { left: 0; }
 .story-viewer-nav--next { right: 0; }
+
+
+/* ==========================================================================
+   Services dropdown (desktop) + mobile sub-list
+   ========================================================================== */
+
+.main-nav { align-items: center; }
+.nav-dropdown { position: relative; }
+.nav-dropdown-trigger { display: inline-flex; align-items: center; gap: 6px; }
+.nav-dropdown-trigger svg { transition: transform var(--dur-base) var(--ease-out); }
+.nav-dropdown.is-open .nav-dropdown-trigger svg { transform: rotate(180deg); }
+.nav-dropdown.is-open .nav-dropdown-trigger { color: var(--color-ink); }
+.nav-dropdown.is-open .nav-dropdown-trigger::after { width: 100%; }
+
+.nav-menu {
+  position: absolute;
+  top: calc(100% + 16px);
+  left: -22px;
+  min-width: 236px;
+  padding: 10px;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 27, 36, 0.92);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out), visibility 0s linear var(--dur-base);
+  z-index: 110;
+}
+/* invisible bridge so the menu doesn't close while the pointer crosses the gap */
+.nav-menu::after { content: ''; position: absolute; left: 0; right: 0; top: -18px; height: 18px; }
+.nav-dropdown.is-open .nav-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: 0s;
+}
+.nav-menu a {
+  padding: 11px 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+.nav-menu a::after { display: none; }
+.nav-menu a:hover, .nav-menu a:focus-visible { background: rgba(212, 190, 140, 0.1); color: var(--color-gold-light); outline: none; }
+
+.mobile-sub { display: flex; flex-direction: column; gap: 2px; padding-left: var(--space-2); border-left: 1px solid var(--color-gold-dim); margin-top: -8px; }
+.mobile-sub a { font-size: 14px; color: var(--color-ink-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-menu, .nav-dropdown-trigger svg { transition: none; }
+}

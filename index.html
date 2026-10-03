@@ -20,6 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="phone-demo.css">
 </head>
 <body>
 
@@ -42,7 +43,22 @@
     </a>
 
     <nav class="main-nav" aria-label="Hoofdnavigatie">
-      <a href="#diensten" data-i18n="nav.services">Diensten</a>
+      <div class="nav-dropdown" id="navServices">
+        <a href="#diensten" class="nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false" aria-controls="navServicesMenu">
+          <span data-i18n="nav.services">Diensten</span>
+          <svg viewBox="0 0 24 24" width="10" height="10" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <div class="nav-menu liquid-glass" id="navServicesMenu" role="menu">
+          <a href="#diensten" role="menuitem" data-i18n="nav.overview">Overzicht</a>
+          <a href="fleet.html" role="menuitem" data-i18n="service.fleet">Fleet</a>
+          <a href="jets.html" role="menuitem" data-i18n="service.jets">Private Jets</a>
+          <a href="yachts.html" role="menuitem" data-i18n="service.yachts">Jachten</a>
+          <a href="villas.html" role="menuitem" data-i18n="service.villas">Villa's</a>
+          <a href="autotransport.html" role="menuitem" data-i18n="nav.autotransport">Autotransport</a>
+          <a href="personal-shopping.html" role="menuitem" data-i18n="service.shopping">Personal Shopping</a>
+          <a href="destinations.html" role="menuitem" data-i18n="nav.destinations">Bestemmingen</a>
+        </div>
+      </div>
       <a href="#wereldwijd" data-i18n="nav.network">Netwerk</a>
       <a href="#filosofie" data-i18n="nav.philosophy">Filosofie</a>
       <a href="#lidmaatschap" data-i18n="nav.intake">Lidmaatschap</a>
@@ -71,6 +87,15 @@
 
   <nav class="mobile-nav" id="mobileNav" aria-label="Mobiele navigatie">
     <a href="#diensten" data-i18n="nav.services">Diensten</a>
+    <div class="mobile-sub">
+      <a href="fleet.html" data-i18n="service.fleet">Fleet</a>
+      <a href="jets.html" data-i18n="service.jets">Private Jets</a>
+      <a href="yachts.html" data-i18n="service.yachts">Jachten</a>
+      <a href="villas.html" data-i18n="service.villas">Villa's</a>
+      <a href="autotransport.html" data-i18n="nav.autotransport">Autotransport</a>
+      <a href="personal-shopping.html" data-i18n="service.shopping">Personal Shopping</a>
+      <a href="destinations.html" data-i18n="nav.destinations">Bestemmingen</a>
+    </div>
     <a href="#wereldwijd" data-i18n="nav.network">Netwerk</a>
     <a href="#filosofie" data-i18n="nav.philosophy">Filosofie</a>
     <a href="#lidmaatschap" data-i18n="nav.intake">Lidmaatschap</a>
@@ -275,6 +300,72 @@
           </a>
         </article>
 
+      </div>
+    </div>
+  </section>
+
+  <!-- DE APP: LIVE DEMO -->
+  <section class="app-demo" id="app">
+    <div class="app-demo-inner">
+      <div class="pd-wrap">
+        <div class="pd-glow">
+          <div class="pd-phone" id="pdPhone" aria-hidden="true">
+            <div class="pd-screen">
+              <div class="pd-island" id="pdIsland">
+                <div class="pd-live">
+                  <div class="pd-live-top">
+                    <span class="pd-live-icon" id="pdLiveIcon"></span>
+                    <span class="pd-live-status" id="pdLiveStatus"></span>
+                    <span class="pd-live-pct" id="pdLivePct"></span>
+                  </div>
+                  <div>
+                    <div class="pd-live-title" id="pdLiveTitle"></div>
+                    <div class="pd-live-bar"><i id="pdLiveBar"></i></div>
+                  </div>
+                </div>
+              </div>
+              <div class="pd-status">
+                <span>9:41</span>
+                <svg viewBox="0 0 28 10" aria-hidden="true"><rect x="0" y="6" width="3" height="4" rx="1"/><rect x="5" y="4" width="3" height="6" rx="1"/><rect x="10" y="2" width="3" height="8" rx="1"/><rect x="15" y="0" width="3" height="10" rx="1"/><rect x="21" y="1" width="7" height="8" rx="2"/></svg>
+              </div>
+              <div class="pd-head">
+                <h3 data-i18n="demo.title">Concierge</h3>
+                <p data-i18n="demo.subtitle">Ask us literally anything</p>
+              </div>
+              <div class="pd-hello" id="pdHello">
+                <h4 data-i18n="demo.hello.title">Hey, how can we help?</h4>
+                <p data-i18n="demo.hello.body">Just type your request like you would to a friend. We'll take it from there.</p>
+              </div>
+              <div class="pd-body" id="pdChat"></div>
+              <div class="pd-input-bar">
+                <div class="pd-cam"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg></div>
+                <div class="pd-input" id="pdInput"><span class="pd-ph" data-i18n="demo.placeholder">Type your message...</span><span id="pdTyped"></span></div>
+                <div class="pd-send" id="pdSend"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="pd-note" data-i18n="demo.note">Voorbeeldgesprek ter illustratie</p>
+      </div>
+
+      <div class="app-demo-copy">
+        <p class="eyebrow reveal" data-i18n="demo.eyebrow">DE SOLACE APP</p>
+        <h2 class="section-title reveal"><span data-i18n="demo.heading">Eén bericht.</span> <em style="color:var(--color-gold-light)" data-i18n="demo.heading2">Wij regelen het.</em></h2>
+        <p class="app-demo-body reveal" data-i18n="demo.body">Typ uw verzoek zoals u het aan een vriend zou vragen. Uw concierge neemt het over en u volgt elke stap, live in de app.</p>
+        <div class="pd-points">
+          <div class="pd-point reveal">
+            <span class="pd-point-icon"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/></svg></span>
+            <div><h3 data-i18n="demo.p1.t">Eén aanspreekpunt</h3><p data-i18n="demo.p1.d">Jet, tafel, horloge of iets heel anders. Eén gesprek is genoeg.</p></div>
+          </div>
+          <div class="pd-point reveal">
+            <span class="pd-point-icon"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span>
+            <div><h3 data-i18n="demo.p2.t">Elke stap zichtbaar</h3><p data-i18n="demo.p2.d">Van in behandeling tot bevestigd, direct in de app. Geen navragen nodig.</p></div>
+          </div>
+          <div class="pd-point reveal">
+            <span class="pd-point-icon"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="8" rx="4"/><circle cx="8" cy="12" r="1.2"/></svg></span>
+            <div><h3 data-i18n="demo.p3.t">Live op uw iPhone</h3><p data-i18n="demo.p3.d">De voortgang verschijnt zelfs in de Dynamic Island en op het vergrendelscherm.</p></div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -701,6 +792,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="i18n.js"></script>
-<script src="script.js"></script><script type="module" src="hero-scene.js"></script><script type="module" src="empty-legs.js"></script><script type="module" src="instagram.js"></script>
+<script src="script.js"></script><script src="phone-demo.js"></script><script type="module" src="hero-scene.js"></script><script type="module" src="empty-legs.js"></script><script type="module" src="instagram.js"></script>
 </body>
 </html>

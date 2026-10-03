@@ -477,3 +477,28 @@
     });
   });
 })();
+
+
+/* Services dropdown: hover/focus on desktop, tap to toggle on touch */
+(() => {
+  const dd = document.getElementById('navServices');
+  if (!dd) return;
+  const trigger = dd.querySelector('.nav-dropdown-trigger');
+  let closeTimer = null;
+  const setOpen = (open) => {
+    dd.classList.toggle('is-open', open);
+    trigger.setAttribute('aria-expanded', String(open));
+  };
+  const canHover = window.matchMedia('(hover: hover)').matches;
+  if (canHover) {
+    dd.addEventListener('mouseenter', () => { clearTimeout(closeTimer); setOpen(true); });
+    dd.addEventListener('mouseleave', () => { closeTimer = setTimeout(() => setOpen(false), 140); });
+  }
+  dd.addEventListener('focusin', () => setOpen(true));
+  dd.addEventListener('focusout', (e) => { if (!dd.contains(e.relatedTarget)) setOpen(false); });
+  trigger.addEventListener('click', (e) => {
+    if (!canHover) { e.preventDefault(); setOpen(!dd.classList.contains('is-open')); }
+  });
+  document.addEventListener('click', (e) => { if (!dd.contains(e.target)) setOpen(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { setOpen(false); trigger.blur(); } });
+})();
