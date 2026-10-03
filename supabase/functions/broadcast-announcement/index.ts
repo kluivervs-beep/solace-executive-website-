@@ -23,6 +23,13 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Optional categories a member can switch off in Settings. Requests and
+// concierge replies are never optional and never go through this.
+function pushWanted(prefs: Record<string, boolean> | null | undefined, key: string): boolean {
+  if (prefs?.muteOptional) return false;
+  return prefs?.[key] !== false;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -68,23 +75,25 @@ Deno.serve(async (req) => {
     // can see exactly what members get in real time rather than guessing.
     const { data: members, error: membersError } = await supabase
       .from('profiles')
-      .select('id, push_token')
+      .select('id, push_token, notification_prefs')
       .not('push_token', 'is', null);
     if (membersError) throw membersError;
 
     let sent = 0;
     for (const member of members || []) {
-      await fetch('https://exp.host/--/api/v2/push/send', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', accept: 'application/json' },
-        body: JSON.stringify({
-          to: member.push_token,
-          title,
-          body,
-          sound: 'default',
-          data: { type: 'announcement' },
-        }),
-      });
+      if (pushWanted(member.notification_prefs, 'offers')) {
+        await fetch('https://exp.host/--/api/v2/push/send', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', accept: 'application/json' },
+          body: JSON.stringify({
+            to: member.push_token,
+            title,
+            body,
+            sound: 'default',
+            data: { type: 'announcement' },
+          }),
+        });
+      }
       await supabase.from('member_nudges').insert({
         member_id: member.id,
         nudge_type: 'announcement',

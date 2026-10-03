@@ -2042,3 +2042,433 @@ grant execute on function public.admin_list_members() to authenticated;
 -- guessing a category from the free-text `service` summary afterwards.
 alter table public.requests add column if not exists category text not null default 'other'
   check (category in ('jet', 'yacht', 'watch', 'restaurant', 'hotel', 'car', 'event', 'other'));
+
+-- ============================================================
+-- Black Book (curated venues), Shop (sourced pieces), settings.
+-- ============================================================
+
+alter table public.profiles add column if not exists ghost_mode boolean not null default false;
+alter table public.profiles add column if not exists notification_prefs jsonb not null default '{}'::jsonb;
+
+create table if not exists public.venues (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  city text not null,
+  country text,
+  kind text not null default 'restaurant',          -- restaurant | club | bar | cafe | hotel
+  tagline text,                                      -- e.g. "Italian, Mediterranean"
+  tagline_en text,
+  description text,
+  description_en text,
+  perk text,                                         -- e.g. "10% korting op de rekening"
+  perk_en text,
+  address text,
+  hours text,
+  image_url text,
+  featured boolean not null default false,
+  active boolean not null default true,
+  sort_order int not null default 0,
+  is_sample boolean not null default false,
+  created_at timestamptz not null default now()
+);
+alter table public.venues enable row level security;
+drop policy if exists "members read active venues" on public.venues;
+create policy "members read active venues" on public.venues for select to authenticated
+  using (active or public.is_admin());
+drop policy if exists "admins write venues" on public.venues;
+create policy "admins write venues" on public.venues for all to authenticated
+  using (public.is_admin()) with check (public.is_admin());
+
+create table if not exists public.shop_items (
+  id uuid primary key default gen_random_uuid(),
+  brand text not null,
+  name text not null,
+  category text not null default 'bags',             -- bags | watches | shoes | jewellery | other
+  price numeric,                                     -- null = price on request
+  available boolean not null default true,
+  description text,
+  description_en text,
+  image_url text,
+  active boolean not null default true,
+  sort_order int not null default 0,
+  is_sample boolean not null default false,
+  created_at timestamptz not null default now()
+);
+alter table public.shop_items enable row level security;
+drop policy if exists "members read active shop items" on public.shop_items;
+create policy "members read active shop items" on public.shop_items for select to authenticated
+  using (active or public.is_admin());
+drop policy if exists "admins write shop items" on public.shop_items;
+create policy "admins write shop items" on public.shop_items for all to authenticated
+  using (public.is_admin()) with check (public.is_admin());
+
+create table if not exists public.shop_wishlist (
+  member_id uuid not null references auth.users(id) on delete cascade,
+  item_id uuid not null references public.shop_items(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (member_id, item_id)
+);
+alter table public.shop_wishlist enable row level security;
+drop policy if exists "members manage own wishlist" on public.shop_wishlist;
+create policy "members manage own wishlist" on public.shop_wishlist for all to authenticated
+  using (member_id = auth.uid()) with check (member_id = auth.uid());
+
+-- Staff-curated photos for venues and shop items, same pattern as member-experiences.
+insert into storage.buckets (id, name, public) values ('content-photos', 'content-photos', true)
+on conflict (id) do nothing;
+drop policy if exists "Anyone can view content photos" on storage.objects;
+create policy "Anyone can view content photos" on storage.objects for select
+  using (bucket_id = 'content-photos');
+drop policy if exists "Admins can upload content photos" on storage.objects;
+create policy "Admins can upload content photos" on storage.objects for insert
+  with check (bucket_id = 'content-photos' and public.is_admin());
+drop policy if exists "Admins can delete content photos" on storage.objects;
+create policy "Admins can delete content photos" on storage.objects for delete
+  using (bucket_id = 'content-photos' and public.is_admin());
+
+-- Example rows so the screens are not empty. All fictional and flagged is_sample;
+-- delete them from the Team side once real venues and pieces are in.
+insert into public.venues (name, city, country, kind, tagline, tagline_en, description, description_en, perk, perk_en, address, hours, featured, sort_order, is_sample) values
+ ('Maison Aurèle','Paris','France','restaurant','Frans, modern','French, modern','Een rustige eetzaal met een open keuken en een korte, seizoensgebonden kaart.','A quiet dining room with an open kitchen and a short seasonal menu.','10% korting op de rekening','10% off the bill','Rue de Marignan 12, Paris','Ma-Za 19:00 tot 23:30',true,1,true),
+ ('Atelier Noord','Amsterdam','Netherlands','restaurant','Nederlands, vuur','Dutch, open fire','Alles op houtvuur, aan een lange gedeelde tafel of in een eigen nis.','Everything over wood fire, at a long shared table or in a private alcove.','Een glas van het huis bij aankomst','A glass of the house on arrival','Keizersgracht 400, Amsterdam','Di-Za 18:00 tot 00:00',true,2,true),
+ ('Casa Brisa','Ibiza','Spain','restaurant','Mediterraan, terras','Mediterranean, terrace','Vis, rijst en een terras met uitzicht op zonsondergang. Reserveren is bijna altijd nodig.','Fish, rice and a terrace facing the sunset. Booking is almost always needed.','10% korting op de rekening','10% off the bill','Cala Jondal, Ibiza','Dagelijks 13:00 tot 23:00',true,3,true),
+ ('Noir Club','London','United Kingdom','club','Club, late night','Club, late night','Kleine club met een strikte deur. Wij zetten je op de lijst.','A small club with a strict door. We put you on the list.','Tafel zonder minimum op doordeweekse avonden','No minimum table on weeknights','Mayfair, London','Do-Za 23:00 tot 04:00',false,4,true),
+ ('Salon Dorée','Dubai','United Arab Emirates','bar','Cocktails, lounge','Cocktails, lounge','Hoge ramen, lage verlichting en een barkaart die elke maand verandert.','Tall windows, low light and a bar menu that changes every month.','Een signature cocktail van het huis','A signature cocktail on the house','DIFC, Dubai','Dagelijks 17:00 tot 02:00',false,5,true),
+ ('Café Lumen','Amsterdam','Netherlands','cafe','Koffie, brunch','Coffee, brunch','Een lichte hoek voor een rustig ontbijt of een werkafspraak.','A bright corner for a quiet breakfast or a working meeting.',null,null,'Prinsengracht 220, Amsterdam','Dagelijks 08:00 tot 17:00',false,6,true),
+ ('Terrazza Verde','Milan','Italy','restaurant','Italiaans, klassiek','Italian, classic','Handgemaakte pasta en een binnentuin die in de zomer volloopt.','Handmade pasta and a courtyard garden that fills up in summer.','10% korting op de rekening','10% off the bill','Via Brera 8, Milano','Ma-Za 19:00 tot 23:00',false,7,true),
+ ('Hôtel du Parc','Monaco','Monaco','hotel','Hotel, bar','Hotel, bar','Een kleine bar op de eerste verdieping, rustig buiten de racedagen.','A small bar on the first floor, calm outside race days.','Een drankje van het huis','A drink on the house','Avenue de la Costa, Monaco','Dagelijks 16:00 tot 01:00',false,8,true)
+on conflict do nothing;
+
+insert into public.shop_items (brand, name, category, price, available, description, description_en, sort_order, is_sample) values
+ ('Voorbeeld','Kleine leren handtas','bags',null,true,'Voorbeeldstuk. Vervang door een echt stuk.','Sample piece. Replace with a real one.',1,true),
+ ('Voorbeeld','Klassieke kalfsleren tas','bags',null,true,'Voorbeeldstuk. Vervang door een echt stuk.','Sample piece. Replace with a real one.',2,true),
+ ('Voorbeeld','Automatisch horloge','watches',null,false,'Voorbeeldstuk. Vervang door een echt stuk.','Sample piece. Replace with a real one.',3,true),
+ ('Voorbeeld','Suède loafers','shoes',620,true,'Voorbeeldstuk. Vervang door een echt stuk.','Sample piece. Replace with a real one.',4,true)
+on conflict do nothing;
+
+-- ============================================================
+-- Muse board (member inspiration) and Collection (pieces we sourced).
+-- ============================================================
+
+create table if not exists public.muse_items (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid not null references auth.users(id) on delete cascade,
+  kind text not null default 'note',               -- image | link | note
+  image_url text,
+  url text,
+  note text,
+  category text not null default 'other',          -- fashion | interiors | travel | watches | cars | dining | other
+  favorite boolean not null default false,
+  created_at timestamptz not null default now()
+);
+create index if not exists muse_items_member_idx on public.muse_items (member_id, created_at desc);
+alter table public.muse_items enable row level security;
+drop policy if exists "members manage own muse items" on public.muse_items;
+create policy "members manage own muse items" on public.muse_items for all to authenticated
+  using (member_id = auth.uid()) with check (member_id = auth.uid());
+drop policy if exists "admins read muse items" on public.muse_items;
+create policy "admins read muse items" on public.muse_items for select to authenticated
+  using (public.is_admin());
+
+create table if not exists public.member_pieces (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid not null references auth.users(id) on delete cascade,
+  brand text,
+  title text not null,
+  note text,
+  image_url text,
+  price numeric,
+  acquired_on date not null default current_date,
+  created_at timestamptz not null default now()
+);
+create index if not exists member_pieces_member_idx on public.member_pieces (member_id, acquired_on desc);
+alter table public.member_pieces enable row level security;
+drop policy if exists "members read own pieces" on public.member_pieces;
+create policy "members read own pieces" on public.member_pieces for select to authenticated
+  using (member_id = auth.uid() or public.is_admin());
+drop policy if exists "admins write pieces" on public.member_pieces;
+create policy "admins write pieces" on public.member_pieces for all to authenticated
+  using (public.is_admin()) with check (public.is_admin());
+
+-- Muse photos: public read (names are unguessable), members write only inside their own folder.
+insert into storage.buckets (id, name, public) values ('muse', 'muse', true) on conflict (id) do nothing;
+drop policy if exists "Anyone can view muse photos" on storage.objects;
+create policy "Anyone can view muse photos" on storage.objects for select using (bucket_id = 'muse');
+drop policy if exists "Members upload own muse photos" on storage.objects;
+create policy "Members upload own muse photos" on storage.objects for insert to authenticated
+  with check (bucket_id = 'muse' and (storage.foldername(name))[1] = auth.uid()::text);
+drop policy if exists "Members delete own muse photos" on storage.objects;
+create policy "Members delete own muse photos" on storage.objects for delete to authenticated
+  using (bucket_id = 'muse' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- ============================================================
+-- The Salon: private member community (rooms and direct chats).
+-- ============================================================
+
+alter table public.profiles add column if not exists salon_joined_at timestamptz;
+
+create table if not exists public.salon_rooms (
+  id uuid primary key default gen_random_uuid(),
+  name text,
+  kind text not null default 'room' check (kind in ('room', 'direct')),
+  created_by uuid references auth.users(id) on delete set null,
+  created_at timestamptz not null default now(),
+  last_message_at timestamptz not null default now(),
+  last_message_preview text
+);
+
+create table if not exists public.salon_room_members (
+  room_id uuid not null references public.salon_rooms(id) on delete cascade,
+  member_id uuid not null references auth.users(id) on delete cascade,
+  role text not null default 'member',
+  last_read_at timestamptz not null default now(),
+  muted boolean not null default false,
+  joined_at timestamptz not null default now(),
+  primary key (room_id, member_id)
+);
+create index if not exists salon_room_members_member_idx on public.salon_room_members (member_id);
+
+create table if not exists public.salon_messages (
+  id uuid primary key default gen_random_uuid(),
+  room_id uuid not null references public.salon_rooms(id) on delete cascade,
+  sender_id uuid not null references auth.users(id) on delete cascade,
+  body text not null check (char_length(body) between 1 and 4000),
+  created_at timestamptz not null default now()
+);
+create index if not exists salon_messages_room_idx on public.salon_messages (room_id, created_at desc);
+
+create table if not exists public.salon_reports (
+  id uuid primary key default gen_random_uuid(),
+  message_id uuid references public.salon_messages(id) on delete set null,
+  room_id uuid references public.salon_rooms(id) on delete cascade,
+  reporter_id uuid not null references auth.users(id) on delete cascade,
+  reason text,
+  created_at timestamptz not null default now()
+);
+
+alter table public.salon_rooms enable row level security;
+alter table public.salon_room_members enable row level security;
+alter table public.salon_messages enable row level security;
+alter table public.salon_reports enable row level security;
+
+-- Membership check as a security-definer function so policies never refer to
+-- their own table (that recursion is what broke profiles once before).
+create or replace function public.is_room_member(p_room uuid)
+returns boolean language sql security definer stable set search_path = public as $$
+  select exists (select 1 from public.salon_room_members where room_id = p_room and member_id = auth.uid());
+$$;
+
+drop policy if exists "rooms visible to members" on public.salon_rooms;
+create policy "rooms visible to members" on public.salon_rooms for select to authenticated
+  using (public.is_room_member(id) or public.is_admin());
+drop policy if exists "admins delete rooms" on public.salon_rooms;
+create policy "admins delete rooms" on public.salon_rooms for delete to authenticated using (public.is_admin());
+
+drop policy if exists "members see co-members" on public.salon_room_members;
+create policy "members see co-members" on public.salon_room_members for select to authenticated
+  using (public.is_room_member(room_id) or public.is_admin());
+drop policy if exists "members update own membership" on public.salon_room_members;
+create policy "members update own membership" on public.salon_room_members for update to authenticated
+  using (member_id = auth.uid()) with check (member_id = auth.uid());
+
+drop policy if exists "members read room messages" on public.salon_messages;
+create policy "members read room messages" on public.salon_messages for select to authenticated
+  using (public.is_room_member(room_id));
+drop policy if exists "members post in their rooms" on public.salon_messages;
+create policy "members post in their rooms" on public.salon_messages for insert to authenticated
+  with check (sender_id = auth.uid() and public.is_room_member(room_id));
+drop policy if exists "delete own or admin" on public.salon_messages;
+create policy "delete own or admin" on public.salon_messages for delete to authenticated
+  using (sender_id = auth.uid() or public.is_admin());
+
+drop policy if exists "admins read reports" on public.salon_reports;
+create policy "admins read reports" on public.salon_reports for select to authenticated using (public.is_admin());
+
+-- How another member appears in the Salon: ghost mode hides name and photo.
+create or replace function public.salon_display_name(p_name text, p_ghost boolean)
+returns text language sql immutable as $$
+  select case
+    when coalesce(p_ghost, false) then
+      coalesce((select string_agg(upper(left(w, 1)) || '.', ' ') from unnest(regexp_split_to_array(trim(coalesce(p_name, '')), '\s+')) as w where w <> ''), 'Member')
+    else initcap(trim(coalesce(nullif(p_name, ''), 'Member')))
+  end;
+$$;
+
+create or replace function public.salon_directory()
+returns table(id uuid, display_name text, avatar_url text, city text, title text, is_ghost boolean)
+language sql security definer stable set search_path = public as $$
+  select p.id,
+         public.salon_display_name(p.full_name, p.ghost_mode),
+         case when coalesce(p.ghost_mode, false) then null else p.avatar_url end,
+         p.city,
+         case when coalesce(p.ghost_mode, false) then null else p.title end,
+         coalesce(p.ghost_mode, false)
+  from public.profiles p
+  where p.salon_joined_at is not null
+    and p.id <> auth.uid()
+    and not coalesce(p.is_frozen, false)
+    and not coalesce(p.is_admin, false)
+  order by p.full_name;
+$$;
+
+create or replace function public.salon_room_people(p_room uuid)
+returns table(id uuid, display_name text, avatar_url text, is_ghost boolean)
+language sql security definer stable set search_path = public as $$
+  select p.id,
+         public.salon_display_name(p.full_name, p.ghost_mode),
+         case when coalesce(p.ghost_mode, false) then null else p.avatar_url end,
+         coalesce(p.ghost_mode, false)
+  from public.salon_room_members m
+  join public.profiles p on p.id = m.member_id
+  where m.room_id = p_room and public.is_room_member(p_room);
+$$;
+
+create or replace function public.salon_create_room(p_name text, p_members uuid[])
+returns uuid language plpgsql security definer set search_path = public as $$
+declare
+  rid uuid;
+  mid uuid;
+begin
+  if auth.uid() is null then raise exception 'not authenticated'; end if;
+  if not exists (select 1 from public.profiles where id = auth.uid() and salon_joined_at is not null) then
+    raise exception 'join the salon first';
+  end if;
+  insert into public.salon_rooms (name, kind, created_by) values (left(trim(p_name), 60), 'room', auth.uid()) returning id into rid;
+  insert into public.salon_room_members (room_id, member_id, role) values (rid, auth.uid(), 'owner');
+  foreach mid in array coalesce(p_members, '{}') loop
+    if mid <> auth.uid() and exists (select 1 from public.profiles where id = mid and salon_joined_at is not null) then
+      insert into public.salon_room_members (room_id, member_id) values (rid, mid) on conflict do nothing;
+    end if;
+  end loop;
+  return rid;
+end;
+$$;
+
+create or replace function public.salon_open_direct(p_other uuid)
+returns uuid language plpgsql security definer set search_path = public as $$
+declare rid uuid;
+begin
+  if auth.uid() is null or p_other = auth.uid() then raise exception 'invalid'; end if;
+  if not exists (select 1 from public.profiles where id = p_other and salon_joined_at is not null) then
+    raise exception 'member is not in the salon';
+  end if;
+  select r.id into rid
+  from public.salon_rooms r
+  where r.kind = 'direct'
+    and exists (select 1 from public.salon_room_members where room_id = r.id and member_id = auth.uid())
+    and exists (select 1 from public.salon_room_members where room_id = r.id and member_id = p_other)
+  limit 1;
+  if rid is null then
+    insert into public.salon_rooms (kind, created_by) values ('direct', auth.uid()) returning id into rid;
+    insert into public.salon_room_members (room_id, member_id) values (rid, auth.uid()), (rid, p_other);
+  end if;
+  return rid;
+end;
+$$;
+
+create or replace function public.salon_add_members(p_room uuid, p_members uuid[])
+returns void language plpgsql security definer set search_path = public as $$
+declare mid uuid;
+begin
+  if not exists (select 1 from public.salon_room_members where room_id = p_room and member_id = auth.uid() and role = 'owner') then
+    raise exception 'only the owner can add members';
+  end if;
+  foreach mid in array coalesce(p_members, '{}') loop
+    if exists (select 1 from public.profiles where id = mid and salon_joined_at is not null) then
+      insert into public.salon_room_members (room_id, member_id) values (p_room, mid) on conflict do nothing;
+    end if;
+  end loop;
+end;
+$$;
+
+create or replace function public.salon_leave_room(p_room uuid)
+returns void language sql security definer set search_path = public as $$
+  delete from public.salon_room_members where room_id = p_room and member_id = auth.uid();
+$$;
+
+create or replace function public.salon_mark_read(p_room uuid)
+returns void language sql security definer set search_path = public as $$
+  update public.salon_room_members set last_read_at = now() where room_id = p_room and member_id = auth.uid();
+$$;
+
+create or replace function public.salon_report(p_message uuid, p_reason text)
+returns void language plpgsql security definer set search_path = public as $$
+declare rid uuid;
+begin
+  select room_id into rid from public.salon_messages where id = p_message;
+  if rid is null or not public.is_room_member(rid) then raise exception 'not allowed'; end if;
+  insert into public.salon_reports (message_id, room_id, reporter_id, reason) values (p_message, rid, auth.uid(), left(coalesce(p_reason, ''), 500));
+end;
+$$;
+
+-- Everything the list screen needs in one call: rooms, who they are with,
+-- last message and unread count.
+create or replace function public.salon_rooms_overview()
+returns table(room_id uuid, kind text, name text, other_id uuid, other_avatar text, member_count int,
+              last_message_at timestamptz, last_message_preview text, unread int, muted boolean)
+language sql security definer stable set search_path = public as $$
+  select r.id, r.kind,
+         case when r.kind = 'direct' then (select public.salon_display_name(p.full_name, p.ghost_mode) from public.salon_room_members m2 join public.profiles p on p.id = m2.member_id where m2.room_id = r.id and m2.member_id <> auth.uid() limit 1) else r.name end,
+         case when r.kind = 'direct' then (select m2.member_id from public.salon_room_members m2 where m2.room_id = r.id and m2.member_id <> auth.uid() limit 1) end,
+         case when r.kind = 'direct' then (select case when coalesce(p.ghost_mode, false) then null else p.avatar_url end from public.salon_room_members m2 join public.profiles p on p.id = m2.member_id where m2.room_id = r.id and m2.member_id <> auth.uid() limit 1) end,
+         (select count(*)::int from public.salon_room_members m3 where m3.room_id = r.id),
+         r.last_message_at, r.last_message_preview,
+         (select count(*)::int from public.salon_messages msg where msg.room_id = r.id and msg.created_at > me.last_read_at and msg.sender_id <> auth.uid()),
+         me.muted
+  from public.salon_rooms r
+  join public.salon_room_members me on me.room_id = r.id and me.member_id = auth.uid()
+  order by r.last_message_at desc;
+$$;
+
+-- New message: bump the room and ping the other members (respecting mute and
+-- the member's own notification preference).
+create or replace function public.salon_on_message()
+returns trigger language plpgsql security definer set search_path = public, net as $$
+declare
+  sender_name text;
+  room_label text;
+  rec record;
+begin
+  update public.salon_rooms
+    set last_message_at = new.created_at, last_message_preview = left(new.body, 120)
+    where id = new.room_id;
+  update public.salon_room_members set last_read_at = new.created_at where room_id = new.room_id and member_id = new.sender_id;
+
+  select public.salon_display_name(full_name, ghost_mode) into sender_name from public.profiles where id = new.sender_id;
+  select coalesce(name, 'Salon') into room_label from public.salon_rooms where id = new.room_id;
+
+  for rec in
+    select p.push_token
+    from public.salon_room_members m
+    join public.profiles p on p.id = m.member_id
+    where m.room_id = new.room_id and m.member_id <> new.sender_id and not m.muted
+      and p.push_token is not null
+      and coalesce((p.notification_prefs ->> 'salon')::boolean, true)
+      and not coalesce((p.notification_prefs ->> 'muteOptional')::boolean, false)
+  loop
+    perform net.http_post(
+      url := 'https://weiihajterqholxppgsl.supabase.co/functions/v1/send-push',
+      headers := jsonb_build_object(
+        'Content-Type', 'application/json',
+        'apikey', 'sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr',
+        'Authorization', 'Bearer sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr'
+      ),
+      body := jsonb_build_object(
+        'push_token', rec.push_token,
+        'title', case when (select kind from public.salon_rooms where id = new.room_id) = 'direct' then sender_name else room_label end,
+        'body', case when (select kind from public.salon_rooms where id = new.room_id) = 'direct' then left(new.body, 140) else sender_name || ': ' || left(new.body, 120) end,
+        'data', jsonb_build_object('type', 'salon_message', 'roomId', new.room_id)
+      )
+    );
+  end loop;
+  return new;
+end;
+$$;
+
+drop trigger if exists salon_on_message_trigger on public.salon_messages;
+create trigger salon_on_message_trigger after insert on public.salon_messages
+  for each row execute function public.salon_on_message();
+
+do $$ begin
+  begin alter publication supabase_realtime add table public.salon_messages; exception when duplicate_object then null; end;
+end $$;

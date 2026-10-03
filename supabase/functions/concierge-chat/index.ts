@@ -37,7 +37,7 @@ function describeTier(lifetime: number): string {
   return `Tier: ${current.label}. ${next.min - lifetime} points to ${next.label}.`;
 }
 
-const BASE_SYSTEM_PROMPT = `You are the AI concierge for Solace Executive, a private lifestyle management and concierge service serving busy professionals and entrepreneurs. Solace handles: executive transport, private jets, yacht charters, exclusive fleet/car rental, nightlife and guestlist access (guestlist spots and VIP tables at Amsterdam's best clubs), and broader lifestyle requests, personal shopping and sourcing (including hard-to-find or one-of-a-kind items like a specific watch or accessory), photography and videography, car detailing, barber, and other custom or exclusive requests. If a member asks for something that sounds unusual or highly specific, assume it likely fits under lifestyle management rather than telling them it's out of scope.
+const BASE_SYSTEM_PROMPT = `Your name is Solène. You are the AI concierge for Solace Executive, a private lifestyle concierge. Introduce yourself as Solène when it is natural (for example in a first reply), speak in the first person ("I") and stay warm, unhurried and discreet. You are an AI: say so plainly if a member asks, and remind them that a person on the team confirms every booking. Everything below describes the service you work for. You are the AI concierge for Solace Executive, a private lifestyle management and concierge service serving busy professionals and entrepreneurs. Solace handles: executive transport, private jets, yacht charters, exclusive fleet/car rental, nightlife and guestlist access (guestlist spots and VIP tables at Amsterdam's best clubs), and broader lifestyle requests, personal shopping and sourcing (including hard-to-find or one-of-a-kind items like a specific watch or accessory), photography and videography, car detailing, barber, and other custom or exclusive requests. If a member asks for something that sounds unusual or highly specific, assume it likely fits under lifestyle management rather than telling them it's out of scope.
 
 For nightlife and guestlist requests, ask which club or event, the date, and the group size before logging the request, exactly as you would for a dinner reservation. Never mention how Solace sources guestlist or table access, that is handled internally.
 
@@ -364,7 +364,7 @@ Deno.serve(async (req) => {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('full_name, title, concierge_notes')
+      .select('full_name, title, concierge_notes, preferences, ghost_mode')
       .eq('id', memberId)
       .single();
 
@@ -444,6 +444,60 @@ Deno.serve(async (req) => {
           .join('\n')}`
       : '';
 
+    // Structured preferences the member filled in themselves (Profile >
+    // Preferences). Applied to every booking without asking again.
+    const PREF_LABELS: Record<string, string> = {
+      dietary: 'Dietary / allergies',
+      seat_class: 'Preferred seat class',
+      hotels: 'Preferred hotels',
+      water: 'Water',
+      seating: 'Seating',
+      always: 'Always mention',
+      gender: 'Gender',
+      size_height: 'Height (cm)',
+      size_weight: 'Weight (kg)',
+      size_trouser: 'Trouser size',
+      size_tshirt: 'T-shirt size',
+      size_shoe_designer: 'Designer shoe size (EU)',
+      size_shoe_sport: 'Sport shoe size (EU)',
+      metal: 'Preferred metal',
+      hat: 'Hat / cap size',
+      colours: 'Favourite colours',
+      maisons: 'Favourite maisons',
+      maisons_other: 'Other favourite maisons',
+      style_notes: 'Style notes',
+      size_clothing: 'Clothing size',
+      size_shoe: 'Shoe size (EU)',
+      addr_home: 'Home address',
+      addr_hotel: 'Usual hotel',
+      addr_office: 'Office address',
+    };
+    const prefEntries = Object.entries((profile?.preferences || {}) as Record<string, string>)
+      .filter(([k, v]) => PREF_LABELS[k] && typeof v === 'string' && v.trim())
+      .map(([k, v]) => `- ${PREF_LABELS[k]}: ${v.trim()}`);
+    const prefsContext = prefEntries.length
+      ? `\n\nThe member's own saved preferences (apply them to every relevant booking automatically, without asking again):\n${prefEntries.join('\n')}`
+      : '';
+    // The member's Muse board: notes and links they saved as inspiration.
+    const { data: museRows } = await supabase
+      .from('muse_items')
+      .select('kind, url, note, category, favorite')
+      .eq('member_id', memberId)
+      .order('favorite', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(12);
+    const museContext = museRows?.length
+      ? `\n\nThe member's Muse board (inspiration they saved for sourcing; favourites first). Draw on it when relevant, never recite it unprompted:\n${museRows
+          .map(
+            (m: { kind: string; url: string | null; note: string | null; category: string; favorite: boolean }) =>
+              `- [${m.category}${m.favorite ? ', favourite' : ''}] ${m.kind === 'image' ? 'image' : m.kind === 'link' ? `link ${m.url}` : ''}${m.note ? ` ${m.note}` : ''}`.trim()
+          )
+          .join('\n')}`
+      : '';
+    const ghostContext = profile?.ghost_mode
+      ? `\n\nThis member has Ghost Mode on: they value discretion. Never repeat their full name in replies unless they use it first, and note that any booking should be made under initials or a neutral name where the venue allows it.`
+      : '';
+
     const notesContext = profile?.concierge_notes
       ? `\n\nKnown preferences for this member, from past conversations:\n${profile.concierge_notes}`
       : '';
@@ -487,7 +541,7 @@ Deno.serve(async (req) => {
             .join('\n')}`
         : '';
 
-    const SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}\n\n${VILLA_CATALOG}${yachtsContext}${emptyLegsContext}\n\n${buildDateContext()}\n\n${buildAddressInstruction(profile?.full_name, profile?.title)}${notesContext}${rewardsContext}${historyContext}${recentRequestContext}\n\nReminder: reply in the same language as the member's most recent message below, regardless of what language any names, service titles, or earlier messages above are in. Service and reward titles stored in the system are often Dutch even for English-speaking members; never let that pull your reply into Dutch.`;
+    const SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}\n\n${VILLA_CATALOG}${yachtsContext}${emptyLegsContext}\n\n${buildDateContext()}\n\n${buildAddressInstruction(profile?.full_name, profile?.title)}${notesContext}${prefsContext}${museContext}${ghostContext}${rewardsContext}${historyContext}${recentRequestContext}\n\nReminder: reply in the same language as the member's most recent message below, regardless of what language any names, service titles, or earlier messages above are in. Service and reward titles stored in the system are often Dutch even for English-speaking members; never let that pull your reply into Dutch.`;
 
     // Confirmed the photo-vision bug: a heavily-tested member account with
     // 12+ accumulated photos in its full history made the model claim it

@@ -45,6 +45,12 @@ Deno.serve(async (req) => {
       await admin.storage.from('concierge-attachments').remove(attachments.map((f) => `${userId}/${f.name}`));
     }
 
+    // Muse photos live in Storage under the member's own id folder.
+    const { data: musePhotos } = await admin.storage.from('muse').list(userId);
+    if (musePhotos?.length) {
+      await admin.storage.from('muse').remove(musePhotos.map((f) => `${userId}/${f.name}`));
+    }
+
     // favorites and referral_codes reference auth.users directly with no
     // cascade, so they must be cleared before deleteUser or it errors.
     // Everything else (concierge_messages, requests, invoices,

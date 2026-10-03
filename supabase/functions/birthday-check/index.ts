@@ -24,6 +24,13 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 const BONUS_POINTS = 250;
 
+// Optional categories a member can switch off in Settings. Requests and
+// concierge replies are never optional and never go through this.
+function pushWanted(prefs: Record<string, boolean> | null | undefined, key: string): boolean {
+  if (prefs?.muteOptional) return false;
+  return prefs?.[key] !== false;
+}
+
 Deno.serve(async (req) => {
   if (req.headers.get('x-sync-secret') !== SYNC_SECRET) {
     return new Response(JSON.stringify({ ok: false, error: 'unauthorized' }), { status: 401 });
@@ -37,7 +44,7 @@ Deno.serve(async (req) => {
 
     const { data: profiles, error } = await supabase
       .from('profiles')
-      .select('id, full_name, birthday, birthday_bonus_year, push_token')
+      .select('id, full_name, birthday, birthday_bonus_year, push_token, notification_prefs')
       .not('birthday', 'is', null);
     if (error) throw error;
 
@@ -67,7 +74,7 @@ Deno.serve(async (req) => {
         reason: 'Verjaardagscadeau',
       });
 
-      if (p.push_token) {
+      if (p.push_token && pushWanted(p.notification_prefs, 'birthday')) {
         const firstName = (p.full_name || '').trim().split(/\s+/)[0] || '';
         const body = firstName
           ? `Fijne verjaardag, ${firstName}! We hebben ${BONUS_POINTS} Solace Points voor je klaargezet.`

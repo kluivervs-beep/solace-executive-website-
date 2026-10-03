@@ -83,6 +83,13 @@ async function decideNudge(context: string): Promise<{ nudge_type: string; title
   return { nudge_type: nudge_type || 'general', title, body };
 }
 
+// Optional categories a member can switch off in Settings. Requests and
+// concierge replies are never optional and never go through this.
+function pushWanted(prefs: Record<string, boolean> | null | undefined, key: string): boolean {
+  if (prefs?.muteOptional) return false;
+  return prefs?.[key] !== false;
+}
+
 Deno.serve(async (req) => {
   if (req.headers.get('x-sync-secret') !== SYNC_SECRET) {
     return new Response(JSON.stringify({ ok: false, error: 'unauthorized' }), { status: 401 });
@@ -125,7 +132,7 @@ Deno.serve(async (req) => {
     // can see exactly what members get in real time rather than guessing.
     const { data: members, error: membersError } = await supabase
       .from('profiles')
-      .select('id, full_name, push_token, concierge_notes, birthday')
+      .select('id, full_name, push_token, concierge_notes, birthday, notification_prefs')
       .not('push_token', 'is', null);
     if (membersError) throw membersError;
 
@@ -133,6 +140,10 @@ Deno.serve(async (req) => {
     let skipped = 0;
 
     for (const member of members || []) {
+      if (!pushWanted(member.notification_prefs, 'offers')) {
+        skipped++;
+        continue;
+      }
       const cooldownSince = new Date(Date.now() - COOLDOWN_DAYS * 24 * 60 * 60 * 1000).toISOString();
       const { data: recentNudge } = await supabase
         .from('member_nudges')

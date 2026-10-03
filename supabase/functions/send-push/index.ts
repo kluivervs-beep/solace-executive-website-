@@ -16,6 +16,13 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Optional categories a member can switch off in Settings. Requests and
+// concierge replies are never optional and never go through this.
+function pushWanted(prefs: Record<string, boolean> | null | undefined, key: string): boolean {
+  if (prefs?.muteOptional) return false;
+  return prefs?.[key] !== false;
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -37,12 +44,19 @@ Deno.serve(async (req) => {
 
     const { data: owner } = await supabase
       .from('profiles')
-      .select('id')
+      .select('id, notification_prefs')
       .eq('push_token', push_token)
       .maybeSingle();
     if (!owner) {
       return new Response(JSON.stringify({ error: 'Unknown push_token' }), {
         status: 403,
+        headers: { ...corsHeaders, 'content-type': 'application/json' },
+      });
+    }
+
+    const optionalKey = data?.type === 'new_experience' ? 'experiences' : data?.type === 'salon_message' ? 'salon' : null;
+    if (optionalKey && !pushWanted(owner.notification_prefs, optionalKey)) {
+      return new Response(JSON.stringify({ ok: true, skipped: 'member_opted_out' }), {
         headers: { ...corsHeaders, 'content-type': 'application/json' },
       });
     }

@@ -53,24 +53,64 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-function buildEmailHtml(name: string, actionLink: string, isNewAccount: boolean): string {
-  const intro = isNewAccount
-    ? 'Uw aanvraag voor Solace Executive is goedgekeurd. Stel hieronder uw wachtwoord in om direct in te loggen.'
-    : 'Uw aanvraag voor Solace Executive is goedgekeurd. U heeft al een account, gebruik de link hieronder om in te loggen.';
-  return `<div style="background:#F3EEE2;padding:32px 16px;font-family:Georgia,'Times New Roman',serif;">
-  <div style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #E4DFD0;">
-    <div style="background:#0F1B24;padding:28px 32px;text-align:center;">
-      <div style="font-size:20px;letter-spacing:0.16em;color:#F5F1E6;">SOLACE</div>
-      <div style="font-size:10px;letter-spacing:0.32em;color:#B4923D;margin-top:4px;font-family:Arial,sans-serif;">EXECUTIVE</div>
+// Welcome email: dark masthead, paper-coloured letter, a personal
+// signature image, and a quiet dark footer. Email clients cannot load web
+// fonts, so type is Georgia (serif) with Arial for the small caps, and the
+// logo and signature are hosted images.
+const SITE = 'https://solaceexecutive.com';
+
+function escapeHtml(v: string): string {
+  return v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function buildEmailHtml(name: string, actionLink: string, isNewAccount: boolean, email: string): string {
+  const first = escapeHtml((name || 'lid').trim().split(/\s+/)[0]);
+  const now = new Date();
+  const dateLine = now.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Amsterdam' });
+  const since = now.toLocaleDateString('nl-NL', { month: 'long', year: 'numeric', timeZone: 'Europe/Amsterdam' });
+  const p1 = isNewAccount
+    ? 'Welkom bij Solace Executive. Vanaf nu staat alles op een bericht afstand: priv&eacute; reizen, de reservering die niet kan, een chauffeur bij zonsopgang, discretie wanneer het ertoe doet. U vraagt, wij regelen.'
+    : 'Welkom terug bij Solace Executive. Uw aanvraag is goedgekeurd en uw account staat klaar. Alles staat weer op een bericht afstand: priv&eacute; reizen, de reservering die niet kan, een chauffeur bij zonsopgang.';
+  const p2 =
+    'Sol&egrave;ne, onze concierge, is dag en nacht bereikbaar in de app. En u kunt mij altijd persoonlijk schrijven op <a href="mailto:hello@solaceexecutive.com" style="color:#8A6D2B;">hello@solaceexecutive.com</a>, waarmee u ook wilt, op de manier die u het prettigst vindt.';
+  const cta = isNewAccount ? 'Wachtwoord instellen' : 'Inloggen';
+  const sans = "font-family:Arial,Helvetica,sans-serif;";
+  const serif = "font-family:Georgia,'Times New Roman',serif;";
+  return `<div style="background:#E9E4D6;padding:24px 12px;${serif}">
+  <div style="max-width:560px;margin:0 auto;border-radius:14px;overflow:hidden;border:1px solid #D9D2BF;">
+    <div style="background:#0F1B24;padding:34px 24px 30px;text-align:center;border-bottom:1px solid #B4923D;">
+      <img src="${SITE}/assets/icons/email-logo.png" width="150" alt="Solace Executive" style="display:inline-block;border:0;height:auto;max-width:150px;">
+      <div style="${sans}font-size:10px;letter-spacing:0.34em;color:#A9B4BB;margin-top:14px;">PRIVATE CONCIERGE</div>
     </div>
-    <div style="padding:32px;">
-      <p style="font-size:15px;line-height:1.6;color:#1C2B37;margin:0 0 16px;">Beste ${name},</p>
-      <p style="font-size:15px;line-height:1.6;color:#1C2B37;margin:0 0 24px;">${intro}</p>
-      <a href="${actionLink}" style="display:inline-block;background:#B4923D;color:#1B1405;text-decoration:none;padding:12px 28px;border-radius:24px;font-size:13px;font-weight:bold;letter-spacing:0.04em;font-family:Arial,sans-serif;">${isNewAccount ? 'Wachtwoord instellen' : 'Inloggen'}</a>
-      <p style="font-size:12.5px;line-height:1.6;color:#5B6670;margin:24px 0 0;font-family:Arial,sans-serif;">Deze link is eenmalig en persoonlijk, deel hem niet met anderen.</p>
+    <div style="background:#F8F6F0;padding:34px 34px 30px;">
+      <div style="${serif}font-size:13px;font-style:italic;color:#8F8777;text-align:right;margin:0 0 26px;">Amsterdam &middot; ${dateLine}</div>
+      <p style="${serif}font-size:18px;line-height:1.5;color:#16232E;margin:0 0 18px;">Beste ${first},</p>
+      <p style="${serif}font-size:16px;line-height:1.75;color:#2A3742;margin:0 0 16px;">${p1}</p>
+      <p style="${serif}font-size:16px;line-height:1.75;color:#2A3742;margin:0 0 26px;">${p2}</p>
+      <div style="background:#0F1B24;border-radius:12px;padding:20px 22px;text-align:center;margin:0 0 14px;">
+        <div style="${sans}font-size:10px;letter-spacing:0.3em;color:#A9B4BB;">UW LIDMAATSCHAP</div>
+        <div style="${serif}font-size:20px;letter-spacing:0.04em;color:#E3C98B;margin-top:8px;">${escapeHtml(email)}</div>
+        <div style="${sans}font-size:11px;letter-spacing:0.12em;color:#7F8C95;margin-top:8px;">LID SINDS ${since.toUpperCase()}</div>
+      </div>
+      <a href="${actionLink}" style="display:block;background:#B4923D;color:#1B1405;text-decoration:none;padding:15px 24px;border-radius:12px;font-size:12px;font-weight:bold;letter-spacing:0.22em;text-align:center;${sans}">${cta.toUpperCase()}</a>
+      <p style="${sans}font-size:12px;line-height:1.6;color:#8F8777;margin:14px 0 28px;text-align:center;">Deze link is eenmalig en persoonlijk. Deel hem met niemand.</p>
+      <p style="${serif}font-size:16px;line-height:1.7;color:#2A3742;margin:0 0 6px;">Het is een eer u te mogen verwelkomen.</p>
+      <img src="${SITE}/assets/signature/kluiver-signature.png" width="230" alt="Kluiver van Spronsen" style="display:block;border:0;height:auto;max-width:230px;margin:10px 0 2px -4px;">
+      <div style="${serif}font-size:16px;color:#16232E;">Kluiver van Spronsen</div>
+      <div style="${sans}font-size:10px;letter-spacing:0.26em;color:#B4923D;margin-top:5px;">OPRICHTER &middot; SOLACE EXECUTIVE</div>
     </div>
-    <div style="padding:20px 32px;border-top:1px solid #E4DFD0;text-align:center;">
-      <div style="font-size:11px;color:#9a9488;font-family:Arial,sans-serif;">Solace Executive &middot; Private Concierge</div>
+    <div style="background:#0F1B24;padding:26px 24px 22px;text-align:center;">
+      <div style="${serif}font-size:16px;font-style:italic;color:#C7A25C;margin-bottom:16px;">Tafels, jets, het onboekbare.</div>
+      <div style="${sans}font-size:11px;letter-spacing:0.16em;margin-bottom:16px;">
+        <a href="https://wa.me/31644917512" style="color:#A9B4BB;text-decoration:none;">WHATSAPP</a>
+        <span style="color:#3C4A55;">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+        <a href="mailto:hello@solaceexecutive.com" style="color:#A9B4BB;text-decoration:none;">E-MAIL</a>
+        <span style="color:#3C4A55;">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+        <a href="${SITE}" style="color:#A9B4BB;text-decoration:none;">WEBSITE</a>
+        <span style="color:#3C4A55;">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+        <a href="https://instagram.com/solace.executive" style="color:#A9B4BB;text-decoration:none;">INSTAGRAM</a>
+      </div>
+      <div style="${sans}font-size:10.5px;color:#5C6A74;">&copy; ${now.getFullYear()} Solace Executive &middot; Amsterdam</div>
     </div>
   </div>
 </div>`;
@@ -195,7 +235,7 @@ Deno.serve(async (req) => {
         from: 'Solace Executive <hello@solaceexecutive.com>',
         to: [reqRow.email],
         subject: 'Welkom bij Solace Executive',
-        html: buildEmailHtml(reqRow.full_name || 'lid', ownLink.url, isNewAccount),
+        html: buildEmailHtml(reqRow.full_name || 'lid', ownLink.url, isNewAccount, reqRow.email || ''),
       }),
     });
     if (!resendRes.ok) {
