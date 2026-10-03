@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="cl.meta.title">Clients | Solace Executive</title>
+<meta name="description" content="Voor wie Solace Executive werkt: sporters, ondernemers, artiesten en particulieren die discretie, precisie en resultaat verwachten." data-i18n="cl.meta.description" data-i18n-attr="content">
+<meta name="theme-color" content="#0F1B24">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Clients | Solace Executive">
+<meta property="og:locale" content="nl_NL">
+<link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body { background: #0F1B24; }
+  .cl-header { display: flex; align-items: center; justify-content: space-between; padding: var(--space-4); max-width: 1240px; margin: 0 auto; }
+  .cl-header .brand { display: flex; align-items: center; gap: 12px; }
+  .cl-header .brand-mark { width: 34px; height: 34px; }
+  .cl-header .brand-word { display: flex; flex-direction: column; line-height: 1; }
+  .cl-header .brand-name { font-family: var(--font-display); font-size: 18px; letter-spacing: 0.16em; color: var(--color-ink); }
+  .cl-header .brand-sub { font-family: var(--font-sans); font-size: 9px; letter-spacing: 0.32em; color: var(--color-gold); margin-top: 3px; }
+
+  .cl-hero { position: relative; text-align: center; padding: var(--space-7) var(--space-4) var(--space-6); overflow: hidden; }
+  .cl-hero::before { content: ''; position: absolute; inset: -20% 0 auto; height: 70%; background: radial-gradient(closest-side, rgba(180,146,61,0.14), transparent 70%); pointer-events: none; }
+  .cl-eyebrow { position: relative; font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.28em; color: var(--color-gold-light); margin-bottom: 20px; }
+  .cl-title { position: relative; margin: 0 0 24px; }
+  .cl-title span { display: block; font-family: var(--font-display); font-weight: 400; font-size: clamp(54px, 10vw, 104px); line-height: 0.95; letter-spacing: -0.01em; color: var(--color-ink); }
+  .cl-title span + span { font-style: italic; color: var(--color-gold-light); margin-top: -0.08em; }
+  .cl-sub { position: relative; font-family: var(--font-sans); font-size: 17px; line-height: 1.65; color: var(--color-ink-muted); max-width: 52ch; margin: 0 auto; }
+
+  .cl-section { max-width: 1180px; margin: 0 auto; padding: var(--space-6) var(--space-4); }
+  .cl-section[hidden] { display: none; }
+  .cl-head { margin-bottom: var(--space-5); }
+  .cl-head .section-title { margin-bottom: var(--space-2); max-width: 20ch; }
+  .cl-head p { font-family: var(--font-sans); font-size: 14px; color: var(--color-ink-muted); }
+
+  .cl-featured { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); }
+  .cl-card { background: var(--color-bg-elevated); border: 1px solid var(--color-border); border-radius: 14px; padding: var(--space-4); display: flex; flex-direction: column; gap: 10px; transition: border-color var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out); }
+  .cl-card:hover { border-color: var(--color-gold-dim); transform: translateY(-3px); }
+  .cl-card-role { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-gold-light); }
+  .cl-card-name { font-family: var(--font-display); font-weight: 500; font-size: 34px; line-height: 1.05; color: var(--color-ink); }
+  .cl-card-line { font-family: var(--font-sans); font-size: 14px; line-height: 1.65; color: var(--color-ink-muted); }
+  .cl-card-tags { margin-top: auto; padding-top: var(--space-2); border-top: 1px solid var(--color-border); font-family: var(--font-sans); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ink-muted); }
+
+  .cl-group { display: grid; grid-template-columns: 220px 1fr; gap: var(--space-4); padding: var(--space-4) 0; border-top: 1px solid var(--color-border); }
+  .cl-group-name { font-family: var(--font-display); font-style: italic; font-size: 24px; color: var(--color-gold-light); }
+  .cl-people { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-2) var(--space-4); }
+  .cl-person-name { font-family: var(--font-sans); font-size: 15px; font-weight: 500; color: var(--color-ink); }
+  .cl-person-role { font-family: var(--font-sans); font-size: 13px; color: var(--color-ink-muted); margin-top: 2px; }
+
+  .cl-quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); }
+  .cl-quote { padding: var(--space-4); border-left: 1px solid var(--color-gold-dim); }
+  .cl-quote p { font-family: var(--font-display); font-style: italic; font-size: 22px; line-height: 1.4; color: var(--color-ink); margin-bottom: var(--space-3); }
+  .cl-quote cite { display: block; font-style: normal; font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-gold-light); }
+  .cl-quote small { display: block; margin-top: 3px; font-family: var(--font-sans); font-size: 12px; color: var(--color-ink-muted); }
+
+  .cl-why { max-width: 760px; margin: 0 auto; padding: var(--space-6) var(--space-4); text-align: center; }
+  .cl-why .section-title { max-width: none; margin-bottom: var(--space-3); }
+  .cl-why p { font-family: var(--font-sans); font-size: 16px; line-height: 1.75; color: var(--color-ink-muted); }
+
+  .cl-cta { text-align: center; padding: var(--space-6) var(--space-4) var(--space-7); }
+  .cl-cta h2 { font-family: var(--font-display); font-weight: 500; font-size: 32px; color: var(--color-ink); margin-bottom: 10px; }
+  .cl-cta p { font-family: var(--font-sans); font-size: 15px; color: var(--color-ink-muted); margin-bottom: var(--space-4); }
+  .cl-cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .cl-footer { text-align: center; padding: var(--space-4); border-top: 1px solid var(--color-border); }
+  .cl-footer a { font-family: var(--font-sans); font-size: 13px; color: var(--color-ink-muted); }
+  .cl-footer a:hover { color: var(--color-gold-light); }
+
+  @media (max-width: 900px) {
+    .cl-featured, .cl-quotes { grid-template-columns: 1fr; }
+    .cl-group { grid-template-columns: 1fr; gap: var(--space-2); }
+  }
+  @media (max-width: 600px) {
+    .cl-people { grid-template-columns: 1fr; }
+    .cl-header { padding: var(--space-3); }
+    .cl-cta-actions { flex-direction: column; }
+    .cl-cta-actions .btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header class="cl-header">
+  <a href="index.html" class="brand" aria-label="Solace Executive homepage">
+    <img src="assets/icons/monogram.svg" alt="" class="brand-mark">
+    <span class="brand-word"><span class="brand-name">SOLACE</span><span class="brand-sub">EXECUTIVE</span></span>
+  </a>
+  <div class="lang-switch" role="group" aria-label="Taal / Language">
+    <button type="button" class="lang-btn" data-lang="nl">NL</button>
+    <button type="button" class="lang-btn" data-lang="en">EN</button>
+  </div>
+</header>
+
+<section class="cl-hero">
+  <p class="cl-eyebrow reveal" data-i18n="cl.label">CLIENTS</p>
+  <h1 class="cl-title"><span class="reveal" data-i18n="cl.title">De Solace</span><span class="reveal" data-i18n="cl.title2">standaard.</span></h1>
+  <p class="cl-sub reveal" data-i18n="cl.sub">Sporters, ondernemers, artiesten en particulieren die discretie, precisie en resultaat verwachten.</p>
+</section>
+
+<section class="cl-section" id="clFeaturedWrap" hidden>
+  <div class="cl-head">
+    <p class="eyebrow reveal" data-i18n="cl.roster.eyebrow">ONZE KRING</p>
+    <h2 class="section-title reveal" data-i18n="cl.roster.title">Een kring van prestatie en discretie.</h2>
+    <p class="reveal" data-i18n="cl.roster.note">Een selectie, getoond met toestemming. Namen worden alleen vermeld als de persoon dat zelf wil.</p>
+  </div>
+  <div class="cl-featured" id="clFeatured"></div>
+</section>
+
+<section class="cl-section" id="clRosterWrap" hidden>
+  <div id="clRoster"></div>
+</section>
+
+<section class="cl-section" id="clQuotesWrap" hidden>
+  <div class="cl-head">
+    <p class="eyebrow reveal" data-i18n="cl.quotes.eyebrow">WAT ZE ZEGGEN</p>
+    <h2 class="section-title reveal" data-i18n="cl.quotes.title">Vertrouwd door wie het beste verwacht.</h2>
+  </div>
+  <div class="cl-quotes" id="clQuotes"></div>
+</section>
+
+<section class="cl-why">
+  <p class="eyebrow reveal" style="display:flex;justify-content:center;" data-i18n="cl.why.eyebrow">WAAROM LEDEN BLIJVEN</p>
+  <h2 class="section-title reveal" data-i18n="cl.why.title">Geen dienst. Een relatie.</h2>
+  <p class="reveal" data-i18n="cl.why.body">Uw concierge onthoudt uw voorkeuren, uw gewoontes en wat u nooit meer wilt hoeven uitleggen. Elk verzoek krijgt dezelfde zorg en urgentie, of het nu een privéjet is of een tafel voor vanavond.</p>
+</section>
+
+<section class="cl-cta">
+  <h2 class="reveal" data-i18n="cl.cta.title">Lid worden van Solace Executive</h2>
+  <p class="reveal" data-i18n="cl.cta.body">Lidmaatschap is op uitnodiging en na persoonlijke goedkeuring.</p>
+  <div class="cl-cta-actions reveal">
+    <a href="index.html#lidmaatschap" class="btn btn-primary" data-i18n="cl.cta.apply">Aan de slag</a>
+    <a href="https://wa.me/31644917512?text=Hallo%2C%20ik%20wil%20graag%20meer%20weten%20over%20lidmaatschap%20bij%20Solace%20Executive." target="_blank" rel="noopener" class="btn btn-outline" data-i18n="cl.cta.ask">Vraag uw concierge</a>
+  </div>
+</section>
+
+<footer class="cl-footer">
+  <a href="index.html">&copy; <span id="year"></span> Solace Executive</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="i18n.js"></script>
+<script src="clients-data.js"></script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* Render only what has real content; empty sections stay hidden. */
+  (() => {
+    const data = window.SOLACE_CLIENTS || {};
+    const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text) n.textContent = text; return n; };
+    const featured = data.featured || [], roster = data.roster || [], quotes = data.quotes || [];
+
+    if (featured.length) {
+      const wrap = document.getElementById('clFeatured');
+      featured.forEach((p) => {
+        const c = el('article', 'cl-card reveal');
+        if (p.role) c.appendChild(el('div', 'cl-card-role', p.role));
+        c.appendChild(el('div', 'cl-card-name', p.name));
+        if (p.line) c.appendChild(el('p', 'cl-card-line', p.line));
+        if (p.tags) c.appendChild(el('div', 'cl-card-tags', p.tags));
+        wrap.appendChild(c);
+      });
+      document.getElementById('clFeaturedWrap').hidden = false;
+    }
+    if (roster.length) {
+      const wrap = document.getElementById('clRoster');
+      roster.forEach((g) => {
+        const row = el('div', 'cl-group reveal');
+        row.appendChild(el('div', 'cl-group-name', g.category));
+        const list = el('div', 'cl-people');
+        (g.people || []).forEach((p) => {
+          const item = el('div');
+          item.appendChild(el('div', 'cl-person-name', p.name));
+          if (p.role) item.appendChild(el('div', 'cl-person-role', p.role));
+          list.appendChild(item);
+        });
+        row.appendChild(list);
+        wrap.appendChild(row);
+      });
+      document.getElementById('clRosterWrap').hidden = false;
+    }
+    if (quotes.length) {
+      const wrap = document.getElementById('clQuotes');
+      quotes.forEach((q) => {
+        const b = el('blockquote', 'cl-quote reveal');
+        b.appendChild(el('p', '', '“' + q.text + '”'));
+        const cite = el('cite', '', q.name);
+        b.appendChild(cite);
+        if (q.role) b.appendChild(el('small', '', q.role));
+        wrap.appendChild(b);
+      });
+      document.getElementById('clQuotesWrap').hidden = false;
+    }
+  })();
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (window.gsap && window.ScrollTrigger && !reducedMotion) {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('.reveal').forEach((el, i) => {
+      gsap.from(el, {
+        opacity: 0, y: 20, duration: 0.55, ease: 'power1.out', delay: (i % 6) * 0.04,
+        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' },
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
