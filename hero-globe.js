@@ -19,7 +19,7 @@
     ['Shanghai', 31.23, 121.47], ['Sydney', -33.87, 151.21],
   ];
 
-  var GOLD = '#D8BD7C';
+  var GOLD = '#C9A24A';
   var LAND = '#203443';
   var SEA = '#0B151D';
 
@@ -52,27 +52,19 @@
     var maplibregl = window.maplibregl;
     if (!maplibregl) return;
 
-    var style = {
-      version: 8,
-      projection: { type: 'globe' },
-      sources: { omt: { type: 'vector', url: 'https://tiles.openfreemap.org/planet' } },
-      layers: [
-        { id: 'land', type: 'background', paint: { 'background-color': LAND } },
-        { id: 'water', type: 'fill', source: 'omt', 'source-layer': 'water', paint: { 'fill-color': SEA } },
-        { id: 'borders', type: 'line', source: 'omt', 'source-layer': 'boundary', filter: ['==', ['get', 'admin_level'], 2],
-          paint: { 'line-color': 'rgba(216,189,124,0.3)', 'line-width': 0.6 } },
-      ],
-    };
+    // The full OpenFreeMap 'bright' style: blue seas, soft green land and
+    // place names. The globe projection is switched on once it has loaded.
+    var style = 'https://tiles.openfreemap.org/styles/bright';
 
     var map;
     try {
       map = new maplibregl.Map({
         container: holder,
         style: style,
-        center: [12, 24],
-        zoom: 1.9,
+        center: [12, 28],
+        zoom: 2.9,
         minZoom: 0.5,
-        maxZoom: 3,
+        maxZoom: 4,
         interactive: false,
         attributionControl: false,
         renderWorldCopies: false,
@@ -89,25 +81,26 @@
     };
 
     map.on('load', function () {
+      try { map.setProjection({ type: 'globe' }); } catch (e) { /* flat map fallback is acceptable */ }
       try {
         map.setSky({
-          'sky-color': '#0B151D',
-          'horizon-color': 'rgba(180,146,61,0.55)',
-          'fog-color': '#0F1B24',
-          'sky-horizon-blend': 0.6,
-          'horizon-fog-blend': 0.5,
-          'fog-ground-blend': 0.3,
+          'sky-color': '#bcdcf6',
+          'horizon-color': '#d6e8f7',
+          'fog-color': '#eaf2f9',
+          'sky-horizon-blend': 0.7,
+          'horizon-fog-blend': 0.6,
+          'fog-ground-blend': 0.4,
           'atmosphere-blend': ['interpolate', ['linear'], ['zoom'], 0, 1, 5, 1],
         });
-      } catch (e) { /* older build: the CSS glow still frames the globe */ }
+      } catch (e) { /* the CSS glow still frames the globe */ }
 
       map.addSource('cities', { type: 'geojson', data: points });
       map.addLayer({ id: 'cities-halo', type: 'circle', source: 'cities',
-        paint: { 'circle-radius': 14, 'circle-color': GOLD, 'circle-opacity': 0.16, 'circle-blur': 1 } });
+        paint: { 'circle-radius': 18, 'circle-color': GOLD, 'circle-opacity': 0.3, 'circle-blur': 0.9, 'circle-pitch-alignment': 'map' } });
       map.addLayer({ id: 'cities-ring', type: 'circle', source: 'cities',
-        paint: { 'circle-radius': 6, 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': GOLD, 'circle-stroke-width': 1, 'circle-stroke-opacity': 0.5, 'circle-pitch-alignment': 'map' } });
+        paint: { 'circle-radius': 8, 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': GOLD, 'circle-stroke-width': 1.5, 'circle-stroke-opacity': 0.6, 'circle-pitch-alignment': 'map' } });
       map.addLayer({ id: 'cities-core', type: 'circle', source: 'cities',
-        paint: { 'circle-radius': 2.6, 'circle-color': '#F4E8C4', 'circle-pitch-alignment': 'map' } });
+        paint: { 'circle-radius': 5, 'circle-color': GOLD, 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 1.6, 'circle-pitch-alignment': 'map' } });
 
       holder.classList.add('is-active');
       hero.classList.add('has-globe');
@@ -134,11 +127,11 @@
         if (!reduced) {
           lng += dt * 4.2;
           if (lng > 180) lng -= 360;
-          map.jumpTo({ center: [lng, 24] });
+          map.jumpTo({ center: [lng, 28] });
           // The rings breathe outwards and fade, a little out of step.
           var p = ((now - t0) / 3200) % 1;
-          map.setPaintProperty('cities-ring', 'circle-radius', 4 + p * 14);
-          map.setPaintProperty('cities-ring', 'circle-stroke-opacity', 0.55 * (1 - p));
+          map.setPaintProperty('cities-ring', 'circle-radius', 6 + p * 20);
+          map.setPaintProperty('cities-ring', 'circle-stroke-opacity', 0.7 * (1 - p));
         }
       }
       requestAnimationFrame(frame);

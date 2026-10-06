@@ -2295,29 +2295,36 @@ body.modal-open { overflow: hidden; }
   .spiral.is-live { height: 520px; }
 }
 
-/* Hero globe (see hero-globe.js): MapLibre globe behind the headline. */
+/* Hero globe (see hero-globe.js): a bright MapLibre globe rising from the
+   bottom of the hero, the headline sitting above it. */
+.hero { --g: min(1150px, 175vw); }
+.hero.has-globe { padding-bottom: calc(var(--g) * 0.27); }
 .hero .hero-map {
   position: absolute;
-  top: 50%;
   left: 50%;
-  width: min(1040px, 150vw);
+  bottom: calc(var(--g) * -0.68);
+  top: auto;
+  width: var(--g);
   aspect-ratio: 1;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   pointer-events: none;
   z-index: 1;
   opacity: 0;
   transition: opacity 1.6s ease;
 }
-.hero .hero-map.is-active { opacity: 0.92; }
+.hero .hero-map.is-active { opacity: 1; }
 .hero-map .maplibregl-canvas { outline: none; }
 .hero.has-globe .hero-ring { display: none; }
-.hero.has-globe::before {
+.hero.has-globe::after {
   content: '';
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 160px;
   z-index: 2;
   pointer-events: none;
-  background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(11, 21, 29, 0.55), transparent 75%);
+  background: linear-gradient(to bottom, rgba(15, 27, 36, 0), var(--color-bg) 92%);
 }
 
 .map-credit { font-size: 11px; color: var(--color-ink-muted); opacity: 0.7; }
