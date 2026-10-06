@@ -2145,3 +2145,101 @@ body.modal-open { overflow: hidden; }
 
 @media (prefers-reduced-motion: reduce) { .lf-live i, .lf-enter { animation: none; } }
 @media (max-width: 900px) { .live-feed .app-demo-inner { grid-template-columns: minmax(0, 1fr); } }
+
+/* ==========================================================================
+   Services as an accordion gallery (desktop). One panel opens wide, the rest
+   fold into narrow tabs; hover, focus or the slow auto-advance (gallery.js)
+   decide which. Under 1000px the plain grid above is kept.
+   ========================================================================== */
+
+@media (min-width: 1000px) {
+  .service-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1px;
+  }
+
+  .service-grid .service-card:not(.service-card--cta) {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    height: clamp(500px, 66vh, 640px);
+    padding: 0 30px 32px;
+    justify-content: flex-end;
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--color-bg);
+    transition: flex-grow 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .service-grid .service-card:not(.service-card--cta).is-active { flex-grow: 5.2; cursor: default; }
+  .service-grid .service-card--cta { flex: 1 0 100%; }
+
+  /* The photo fills the whole panel and settles as the panel opens. */
+  .service-grid .service-card:not(.service-card--cta) .service-visual {
+    position: absolute;
+    inset: 0;
+    width: auto;
+    margin: 0;
+    aspect-ratio: auto;
+  }
+  .service-grid .service-card:not(.service-card--cta) .service-visual-photo {
+    transform: scale(1.12);
+    filter: brightness(0.62) saturate(0.9);
+    transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1), filter 0.85s ease;
+  }
+  .service-grid .service-card.is-active .service-visual-photo { transform: scale(1); filter: brightness(0.92) saturate(1.05); }
+  .service-grid .service-card:not(.service-card--cta):hover .service-visual-photo { transform: scale(1.12); }
+  .service-grid .service-card.is-active:hover .service-visual-photo { transform: scale(1.03); }
+
+  .service-grid .service-visual-line { display: none; }
+
+  .service-grid .service-card:not(.service-card--cta)::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(to top, rgba(8, 15, 21, 0.92) 0%, rgba(8, 15, 21, 0.45) 38%, rgba(8, 15, 21, 0) 70%);
+  }
+
+  .service-grid .service-card:not(.service-card--cta) > h3,
+  .service-grid .service-card:not(.service-card--cta) > p,
+  .service-grid .service-card:not(.service-card--cta) > .service-link { position: relative; z-index: 2; padding: 0; }
+
+  /* Folded panels: the title stands up along the left edge. */
+  .service-grid .service-card:not(.service-card--cta) > h3 {
+    margin: 0;
+    font-size: 22px;
+    white-space: nowrap;
+    transform-origin: left bottom;
+    transform: rotate(-90deg) translate(0, 100%);
+    transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1), font-size 0.6s ease;
+  }
+  .service-grid .service-card.is-active > h3 { font-size: 34px; transform: none; margin-bottom: 12px; }
+
+  .service-grid .service-card:not(.service-card--cta) > p,
+  .service-grid .service-card:not(.service-card--cta) > .service-link {
+    max-width: 440px;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transform: translateY(14px);
+    transition: max-height 0.7s ease, opacity 0.5s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .service-grid .service-card.is-active > p,
+  .service-grid .service-card.is-active > .service-link {
+    max-height: 200px;
+    opacity: 1;
+    transform: none;
+    transition-delay: 0.25s;
+  }
+  .service-grid .service-card.is-active > .service-link { margin-top: 14px; }
+}
+
+@media (min-width: 1000px) and (prefers-reduced-motion: reduce) {
+  .service-grid .service-card:not(.service-card--cta),
+  .service-grid .service-card:not(.service-card--cta) .service-visual-photo,
+  .service-grid .service-card:not(.service-card--cta) > h3,
+  .service-grid .service-card:not(.service-card--cta) > p,
+  .service-grid .service-card:not(.service-card--cta) > .service-link { transition: none; }
+}
