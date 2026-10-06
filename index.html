@@ -766,6 +766,15 @@
       <a href="#chat" data-i18n="nav.contact">Contact</a>
     </nav>
 
+    <form class="news-form" id="newsForm" novalidate>
+      <p class="news-line" data-i18n="news.line">Hallo, ik ben Kluiver. Eens in de zoveel tijd laat ik u weten wat er nieuw is: een tafel, een jet, een avond die het waard is.</p>
+      <div class="news-row">
+        <input type="email" id="newsEmail" name="email" autocomplete="email" required data-i18n="news.placeholder" data-i18n-attr="placeholder" placeholder="uw e-mailadres" aria-label="E-mail">
+        <button type="submit" data-i18n="news.button">Houd mij op de hoogte</button>
+      </div>
+      <p class="news-note" id="newsNote" role="status" data-i18n="news.note">Geen spam. Eén klik om u af te melden.</p>
+    </form>
+
     <div class="footer-contact">
       <a href="mailto:hello@solaceexecutive.com">hello@solaceexecutive.com</a>
       <a href="https://instagram.com/solace.executive" class="footer-social" target="_blank" rel="noopener" aria-label="Solace Executive op Instagram">
@@ -778,6 +787,28 @@
     <p>&copy; <span id="year"></span> <span data-i18n="footer.copyright">Solace Executive. Lidmaatschap op aanvraag.</span></p>
   </div>
 </footer>
+<script>
+(function () {
+  var form = document.getElementById('newsForm');
+  if (!form) return;
+  var note = document.getElementById('newsNote');
+  var T = function (k, fb) { return window.SolaceI18n ? window.SolaceI18n.t(k) : fb; };
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = document.getElementById('newsEmail').value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { note.textContent = T('news.invalid', 'Dat e-mailadres lijkt niet te kloppen.'); return; }
+    var lang = (document.documentElement.lang || 'nl').slice(0, 2);
+    fetch('https://weiihajterqholxppgsl.supabase.co/rest/v1/news_signups', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: 'sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr', Authorization: 'Bearer sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr', Prefer: 'return=minimal' },
+      body: JSON.stringify({ email: email, lang: lang })
+    }).then(function (r) {
+      if (r.ok || r.status === 409) { note.textContent = T('news.thanks', 'Dank u. U hoort van ons.'); form.reset(); }
+      else { note.textContent = T('news.error', 'Dat lukte niet. Probeer het zo nog eens.'); }
+    }).catch(function () { note.textContent = T('news.error', 'Dat lukte niet. Probeer het zo nog eens.'); });
+  });
+})();
+</script>
 
 <div class="story-viewer" id="storyViewer" hidden role="dialog" aria-modal="true" aria-label="Instagram stories">
   <div class="story-viewer-bars" id="storyViewerBars"></div>

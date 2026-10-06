@@ -2498,3 +2498,18 @@ alter table public.feed_signals enable row level security;
 drop policy if exists "members manage own feed signals" on public.feed_signals;
 create policy "members manage own feed signals" on public.feed_signals for all to authenticated
   using (member_id = auth.uid()) with check (member_id = auth.uid());
+
+-- Quiet news list from the website footer: anyone may add their own address,
+-- nobody but admins can read the list.
+create table if not exists public.news_signups (
+  id uuid primary key default gen_random_uuid(),
+  email text not null check (email ~* '^[^@\s]+@[^@\s]+\.[^@\s]+$' and char_length(email) < 200),
+  lang text not null default 'nl',
+  created_at timestamptz not null default now()
+);
+create unique index if not exists news_signups_email_idx on public.news_signups (lower(email));
+alter table public.news_signups enable row level security;
+drop policy if exists "anyone can sign up for news" on public.news_signups;
+create policy "anyone can sign up for news" on public.news_signups for insert to anon, authenticated with check (true);
+drop policy if exists "admins read news signups" on public.news_signups;
+create policy "admins read news signups" on public.news_signups for select to authenticated using (public.is_admin());
