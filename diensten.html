@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Onze diensten | Solace Executive</title>
+<meta name="description" content="Alle diensten van Solace Executive in detail: executive transport, personal shopping, private jets, jachten, villa's, fleet, lifestyle en autotransport. Lidmaatschap op aanvraag.">
+<meta name="theme-color" content="#0F1B24">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Onze diensten | Solace Executive">
+<meta property="og:description" content="Van verzoek tot aankomst: alles wat Solace Executive voor u regelt.">
+<meta property="og:image" content="https://solaceexecutive.com/assets/photos/executive-transport.jpg">
+<link rel="canonical" href="https://solaceexecutive.com/diensten.html">
+<meta property="og:url" content="https://solaceexecutive.com/diensten.html">
+<link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root { --bg:#0F1B24; --surface:#16232E; --text:#F5F1E6; --muted:#A9B4BB; --stroke:rgba(212,190,140,0.16); --gold:#B4923D; --gold-light:#D8BD7C; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; line-height: 1.6; }
+  a { color: inherit; text-decoration: none; }
+  .display { font-family: 'Cormorant', serif; font-weight: 500; }
+  .display em { color: var(--gold-light); }
+  .topbar { display:flex; align-items:center; justify-content:space-between; padding:20px 24px; max-width:1200px; margin:0 auto; }
+  .brand { display:flex; align-items:center; gap:10px; font-size:14px; letter-spacing:.15em; }
+  .brand img { width:26px; height:26px; }
+  .tools { display:flex; align-items:center; gap:18px; }
+  .back-link { font-size:13px; color:var(--muted); } .back-link:hover { color:var(--gold-light); }
+  .lang { display:inline-flex; border:1px solid var(--stroke); border-radius:999px; padding:3px; }
+  .lang button { background:none; border:0; color:var(--muted); font:600 11px 'Montserrat',sans-serif; letter-spacing:.1em; padding:6px 12px; border-radius:999px; cursor:pointer; }
+  .lang button.on { background:var(--gold-light); color:var(--bg); }
+
+  .eyebrow { font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold-light); margin-bottom:18px; }
+  .hero { max-width:1200px; margin:0 auto; padding:56px 24px 40px; }
+  .hero h1 { font-size:clamp(40px,7vw,84px); line-height:1.04; margin-bottom:22px; }
+  .hero .lead { font-size:16px; color:var(--muted); max-width:560px; }
+
+  .index { max-width:1200px; margin:0 auto; padding:0 24px 24px; display:grid; grid-template-columns:repeat(2,1fr); gap:0 48px; }
+  .idx-item { display:flex; align-items:baseline; gap:18px; padding:22px 4px; border-bottom:1px solid var(--stroke); transition: padding .35s ease, color .25s ease; }
+  .idx-item:hover { padding-left:16px; color:var(--gold-light); }
+  .idx-n { font-size:11px; letter-spacing:.2em; color:var(--gold); }
+  .idx-name { font-family:'Cormorant',serif; font-size:26px; flex:1; }
+  .idx-go { color:var(--gold-light); transition: transform .3s ease; } .idx-item:hover .idx-go { transform:translateX(5px); }
+
+  .svc { max-width:1200px; margin:0 auto; padding:96px 24px; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(32px,6vw,88px); align-items:center; border-top:1px solid var(--stroke); scroll-margin-top:10px; }
+  .svc.flip .svc-text { order:2; }
+  .svc h2 { font-size:clamp(34px,5vw,58px); line-height:1.08; margin-bottom:22px; }
+  .svc-p { color:var(--muted); font-size:15.5px; max-width:520px; margin-bottom:26px; }
+  .svc-list { list-style:none; display:grid; gap:12px; margin-bottom:30px; max-width:520px; }
+  .svc-list li { position:relative; padding-left:28px; font-size:14.5px; }
+  .svc-list li::before { content:''; position:absolute; left:2px; top:.5em; width:12px; height:6px; border-left:1.6px solid var(--gold-light); border-bottom:1.6px solid var(--gold-light); transform:rotate(-45deg); }
+  .svc-actions { display:flex; align-items:center; gap:26px; flex-wrap:wrap; }
+  .svc-link { display:inline-block; border:1px solid var(--gold); color:var(--gold-light); font-size:12px; letter-spacing:.14em; text-transform:uppercase; padding:13px 24px; border-radius:999px; transition: background .25s ease, color .25s ease; }
+  .svc-link:hover { background:var(--gold-light); color:var(--bg); }
+  .back-all { font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); } .back-all:hover { color:var(--gold-light); }
+
+  .svc-photos { position:relative; }
+  .ph { border-radius:22px; overflow:hidden; border:1px solid var(--stroke); background:var(--surface); position:relative; margin:0; }
+  .ph img { width:100%; height:100%; object-fit:cover; display:block; transition: transform 1.2s cubic-bezier(.22,1,.36,1); }
+  .ph:hover img { transform:scale(1.05); }
+  .ph figcaption { position:absolute; left:0; right:0; bottom:0; padding:38px 18px 14px; font-size:12px; letter-spacing:.06em; color:var(--text); background:linear-gradient(to top, rgba(10,18,24,.8), transparent); }
+  .svc-photos.n1 .ph-0 { aspect-ratio:4/5; }
+  .svc-photos.n2 { min-height:560px; padding-bottom:26px; }
+  .svc-photos.n2 .ph-0 { width:74%; aspect-ratio:4/5; }
+  .svc-photos.n2 .ph-1 { position:absolute; right:0; bottom:0; width:50%; aspect-ratio:3/4; box-shadow:0 30px 70px -30px rgba(0,0,0,.8); }
+  .svc.flip .svc-photos.n2 .ph-0 { margin-left:auto; }
+  .svc.flip .svc-photos.n2 .ph-1 { right:auto; left:0; }
+
+  .how { max-width:1200px; margin:0 auto; padding:80px 24px; border-top:1px solid var(--stroke); }
+  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:32px; margin-top:28px; }
+  .step { border-top:1px solid var(--gold); padding-top:20px; }
+  .step b { display:block; font-family:'Cormorant',serif; font-weight:500; font-size:26px; margin-bottom:8px; }
+  .step span { color:var(--muted); font-size:14.5px; }
+
+  .cta { text-align:center; padding:70px 24px 110px; border-top:1px solid var(--stroke); }
+  .cta h3 { font-family:'Cormorant',serif; font-weight:500; font-size:34px; margin-bottom:10px; }
+  .cta p { color:var(--muted); font-size:14px; margin-bottom:24px; }
+  .btn-solid { display:inline-block; background:var(--gold-light); color:var(--bg); font-weight:600; font-size:14px; padding:15px 34px; border-radius:999px; }
+
+  .reveal { opacity:0; transform:translateY(26px); transition: opacity .9s ease, transform 1s cubic-bezier(.22,1,.36,1); }
+  .reveal.in { opacity:1; transform:none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } html { scroll-behavior:auto; } }
+  @media (max-width: 900px) {
+    .index { grid-template-columns:1fr; }
+    .svc { grid-template-columns:1fr; padding:64px 24px; }
+    .svc.flip .svc-text { order:0; }
+    .svc-photos.n2 { min-height:0; }
+    .steps { grid-template-columns:1fr; }
+  }
+
+</style>
+</head>
+<body id="top">
+  <div class="topbar">
+    <a href="index.html" class="brand"><img src="assets/icons/monogram.svg" alt="">SOLACE EXECUTIVE</a>
+    <div class="tools">
+      <a href="index.html" class="back-link"><span data-t="ui.back">← Terug</span></a>
+      <div class="lang" role="group" aria-label="Taal"><button type="button" data-lang="nl">NL</button><button type="button" data-lang="en">EN</button></div>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow"><span data-t="ui.eyebrow">ONZE DIENSTEN</span></p>
+    <h1 class="display"><span data-t="ui.t1">Van verzoek</span><br><em><span data-t="ui.t2">tot aankomst.</span></em></h1>
+    <p class="lead"><span data-t="ui.lead">Eén bericht is genoeg. Wij regelen de rest, discreet, precies en volledig.</span></p>
+  </header>
+
+  <nav class="index" aria-label="Diensten">
+<a class="idx-item" href="#transport"><span class="idx-n">01</span><span class="idx-name" data-t="n.transport">Executive Transport</span><span class="idx-go">&rarr;</span></a>
+<a class="idx-item" href="#shopping"><span class="idx-n">02</span><span class="idx-name" data-t="n.shopping">Personal Shopping</span><span class="idx-go">&rarr;</span></a>
+<a class="idx-item" href="#jets"><span class="idx-n">03</span><span class="idx-name" data-t="n.jets">Private Jets</span><span class="idx-go">&rarr;</span></a>
+<a class="idx-item" href="#yachts"><span class="idx-n">04</span><span class="idx-name" data-t="n.yachts">Jachten</span><span class="idx-go">&rarr;</span></a>
+<a class="idx-item" href="#villas"><span class="idx-n">05</span><span class="idx-name" data-t="n.villas">Villa's</span><span class="idx-go">&rarr;</span></a>
+<a class="idx-item" href="#fleet"><span class="idx-n">06</span><span class="idx-name" data-t="n.fleet">Fleet</span><span class="idx-go">&rarr;</span></a>
+<a class="idx-item" href="#lifestyle"><span class="idx-n">07</span><span class="idx-name" data-t="n.lifestyle">Lifestyle</span><span class="idx-go">&rarr;</span></a>
+<a class="idx-item" href="#autotransport"><span class="idx-n">08</span><span class="idx-name" data-t="n.autotransport">Autotransport</span><span class="idx-go">&rarr;</span></a>
+  </nav>
+
+  <section class="svc reveal" id="transport">
+    <div class="svc-text">
+      <p class="eyebrow">01 &middot; <span data-t="n2.transport">EXECUTIVE TRANSPORT</span></p>
+      <h2 class="display"><span data-t="h.transport">Uw chauffeur</span><br><em data-t="h2.transport">staat al klaar.</em></h2>
+      <p class="svc-p" data-t="p.transport">Discrete, representatieve voertuigen, wereldwijd inzetbaar en op de minuut voorgereden. Van de luchthaven naar de vergadering, van het hotel naar het diner: u stapt in, wij regelen de rest.</p>
+      <ul class="svc-list"><li><span data-t="b.transport.0">Chauffeur in een representatief voertuig</span></li><li><span data-t="b.transport.1">Luchthaven- en stationstransfers</span></li><li><span data-t="b.transport.2">Van stad naar stad, ook over de grens</span></li><li><span data-t="b.transport.3">Op de minuut voorgereden, zonder wachttijd</span></li><li><span data-t="b.transport.4">Uw eigen auto naar het buitenland, inclusief ophalen</span></li><li><span data-t="b.transport.5">Eén vast aanspreekpunt voor elke rit</span></li></ul>
+      <div class="svc-actions"><a class="svc-link" href="autotransport.html"><span data-t="l.transport">Bekijk autotransport</span> &rarr;</a><a class="back-all" href="#top" data-t="all">&larr; Alle diensten</a></div>
+    </div>
+    <div class="svc-photos n2">
+<figure class="ph ph-0"><img src="assets/photos/transport/chauffeur-bmw.jpg" alt="" loading="lazy"><figcaption data-t="c.transport.0">Voorgereden, deur open</figcaption></figure>
+<figure class="ph ph-1"><img src="assets/photos/transport/first-class.jpg" alt="" loading="lazy"><figcaption data-t="c.transport.1">Van deur tot deur</figcaption></figure>
+    </div>
+  </section>
+  <section class="svc flip reveal" id="shopping">
+    <div class="svc-text">
+      <p class="eyebrow">02 &middot; <span data-t="n2.shopping">PERSONAL SHOPPING</span></p>
+      <h2 class="display"><span data-t="h.shopping">Het stuk dat u zoekt,</span><br><em data-t="h2.shopping">gevonden en bezorgd.</em></h2>
+      <p class="svc-p" data-t="p.shopping">Van cadeaus tot volledige garderobes: wij kopen persoonlijk voor u in, bij de boetieks en merken van uw voorkeur, en leveren het thuis of op locatie af.</p>
+      <ul class="svc-list"><li><span data-t="b.shopping.0">Cadeaus uitzoeken en inkopen</span></li><li><span data-t="b.shopping.1">Complete garderobes samenstellen</span></li><li><span data-t="b.shopping.2">Inkoop bij de boetieks en merken van uw voorkeur</span></li><li><span data-t="b.shopping.3">Zoeken naar moeilijk te vinden stukken</span></li><li><span data-t="b.shopping.4">Bezorging thuis of op locatie</span></li><li><span data-t="b.shopping.5">Netjes verpakt, op het juiste moment aangeleverd</span></li></ul>
+      <div class="svc-actions"><a class="svc-link" href="personal-shopping.html"><span data-t="l.shopping">Bekijk personal shopping</span> &rarr;</a><a class="back-all" href="#top" data-t="all">&larr; Alle diensten</a></div>
+    </div>
+    <div class="svc-photos n1">
+<figure class="ph ph-0"><img src="assets/photos/personal-shopping.jpg" alt="" loading="lazy"><figcaption data-t="c.shopping.0">Persoonlijk ingekocht</figcaption></figure>
+    </div>
+  </section>
+  <section class="svc reveal" id="jets">
+    <div class="svc-text">
+      <p class="eyebrow">03 &middot; <span data-t="n2.jets">PRIVATE JETS</span></p>
+      <h2 class="display"><span data-t="h.jets">Vertrek wanneer</span><br><em data-t="h2.jets">het u uitkomt.</em></h2>
+      <p class="svc-p" data-t="p.jets">Charter op korte termijn, met wereldwijde toegang tot vlootpartners en een cabine die naar uw wens is ingericht. Wij regelen de vlucht en alles eromheen, van de rit naar het vliegveld tot de aankomst.</p>
+      <ul class="svc-list"><li><span data-t="b.jets.0">Charter op korte termijn</span></li><li><span data-t="b.jets.1">Wereldwijde toegang tot vlootpartners</span></li><li><span data-t="b.jets.2">Cabine ingericht naar uw wens</span></li><li><span data-t="b.jets.3">Slimme kansen met empty legs</span></li><li><span data-t="b.jets.4">Vervoer naar en van het vliegveld geregeld</span></li><li><span data-t="b.jets.5">Eén contactpersoon van aanvraag tot landing</span></li></ul>
+      <div class="svc-actions"><a class="svc-link" href="jets.html"><span data-t="l.jets">Bekijk private jets</span> &rarr;</a><a class="back-all" href="#top" data-t="all">&larr; Alle diensten</a></div>
+    </div>
+    <div class="svc-photos n2">
+<figure class="ph ph-0"><img src="assets/photos/jets.jpg" alt="" loading="lazy"><figcaption data-t="c.jets.0">Klaar op het platform</figcaption></figure>
+<figure class="ph ph-1"><img src="assets/photos/jets-5.jpg" alt="" loading="lazy"><figcaption data-t="c.jets.1">Uw route, uw uur</figcaption></figure>
+    </div>
+  </section>
+  <section class="svc flip reveal" id="yachts">
+    <div class="svc-text">
+      <p class="eyebrow">04 &middot; <span data-t="n2.yachts">JACHTEN</span></p>
+      <h2 class="display"><span data-t="h.yachts">Op het water,</span><br><em data-t="h2.yachts">zonder zorgen.</em></h2>
+      <p class="svc-p" data-t="p.yachts">Van dagcharter tot seizoenshuur. Bemanning, route en catering zijn vooraf op elkaar afgestemd, zodat u alleen nog hoeft aan boord te stappen.</p>
+      <ul class="svc-list"><li><span data-t="b.yachts.0">Dagcharter en weekhuur</span></li><li><span data-t="b.yachts.1">Seizoenshuur</span></li><li><span data-t="b.yachts.2">Bemanning en route vooraf afgestemd</span></li><li><span data-t="b.yachts.3">Catering aan boord naar uw smaak</span></li><li><span data-t="b.yachts.4">Een selectie van jachten om uit te kiezen</span></li><li><span data-t="b.yachts.5">Vervoer naar de haven geregeld</span></li></ul>
+      <div class="svc-actions"><a class="svc-link" href="yachts.html"><span data-t="l.yachts">Bekijk de jachten</span> &rarr;</a><a class="back-all" href="#top" data-t="all">&larr; Alle diensten</a></div>
+    </div>
+    <div class="svc-photos n2">
+<figure class="ph ph-0"><img src="assets/photos/yachts/ruby-tuesday.jpg" alt="" loading="lazy"><figcaption data-t="c.yachts.0">Aan boord, alles klaar</figcaption></figure>
+<figure class="ph ph-1"><img src="assets/photos/yachts.jpg" alt="" loading="lazy"><figcaption data-t="c.yachts.1">Open water</figcaption></figure>
+    </div>
+  </section>
+  <section class="svc reveal" id="villas">
+    <div class="svc-text">
+      <p class="eyebrow">05 &middot; <span data-t="n2.villas">VILLA'S</span></p>
+      <h2 class="display"><span data-t="h.villas">Een villa die past</span><br><em data-t="h2.villas">bij het moment.</em></h2>
+      <p class="svc-p" data-t="p.villas">Privévilla's op Ibiza, van intieme retraites tot grote landgoederen. Volledig verzorgd van check-in tot vertrek, met alles eromheen op verzoek geregeld.</p>
+      <ul class="svc-list"><li><span data-t="b.villas.0">Privévilla's op Ibiza</span></li><li><span data-t="b.villas.1">Van intieme retraite tot groot landgoed</span></li><li><span data-t="b.villas.2">Verzorgd van check-in tot vertrek</span></li><li><span data-t="b.villas.3">Vervoer bij aankomst en vertrek</span></li><li><span data-t="b.villas.4">Extra’s op verzoek, zoals een diner of boodschappen</span></li><li><span data-t="b.villas.5">Een vaste contactpersoon tijdens uw verblijf</span></li></ul>
+      <div class="svc-actions"><a class="svc-link" href="villas.html"><span data-t="l.villas">Bekijk de villa's</span> &rarr;</a><a class="back-all" href="#top" data-t="all">&larr; Alle diensten</a></div>
+    </div>
+    <div class="svc-photos n2">
+<figure class="ph ph-0"><img src="assets/photos/villas/villa-nilo/hero.jpg" alt="" loading="lazy"><figcaption data-t="c.villas.0">Een verblijf met uitzicht</figcaption></figure>
+<figure class="ph ph-1"><img src="assets/photos/villas/villa-deseo/hero.jpg" alt="" loading="lazy"><figcaption data-t="c.villas.1">Ruimte om te zijn</figcaption></figure>
+    </div>
+  </section>
+  <section class="svc flip reveal" id="fleet">
+    <div class="svc-text">
+      <p class="eyebrow">06 &middot; <span data-t="n2.fleet">FLEET</span></p>
+      <h2 class="display"><span data-t="h.fleet">Kom aan in</span><br><em data-t="h2.fleet">de auto van uw keuze.</em></h2>
+      <p class="svc-p" data-t="p.fleet">Supercars en executive SUV's door heel Europa, inclusief volledige car detailing. U kiest de auto, wij zorgen dat hij perfect en op tijd voor staat.</p>
+      <ul class="svc-list"><li><span data-t="b.fleet.0">Supercars en executive SUV’s</span></li><li><span data-t="b.fleet.1">Beschikbaar in heel Europa</span></li><li><span data-t="b.fleet.2">Volledige car detailing inbegrepen</span></li><li><span data-t="b.fleet.3">Bezorging en ophalen op uw locatie</span></li><li><span data-t="b.fleet.4">Ook te combineren met een chauffeur</span></li><li><span data-t="b.fleet.5">Eén aanspreekpunt voor de hele huur</span></li></ul>
+      <div class="svc-actions"><a class="svc-link" href="fleet.html"><span data-t="l.fleet">Bekijk de vloot</span> &rarr;</a><a class="back-all" href="#top" data-t="all">&larr; Alle diensten</a></div>
+    </div>
+    <div class="svc-photos n2">
+<figure class="ph ph-0"><img src="assets/photos/fleet/lambo-huracan.jpg" alt="" loading="lazy"><figcaption data-t="c.fleet.0">Voorgereden</figcaption></figure>
+<figure class="ph ph-1"><img src="assets/photos/fleet/porsche-boxster.jpg" alt="" loading="lazy"><figcaption data-t="c.fleet.1">Klaar voor de weg</figcaption></figure>
+    </div>
+  </section>
+  <section class="svc reveal" id="lifestyle">
+    <div class="svc-text">
+      <p class="eyebrow">07 &middot; <span data-t="n2.lifestyle">LIFESTYLE</span></p>
+      <h2 class="display"><span data-t="h.lifestyle">Voor alles wat</span><br><em data-t="h2.lifestyle">geen naam heeft.</em></h2>
+      <p class="svc-p" data-t="p.lifestyle">Fotografie en videografie, een barbier en styling aan huis, VIP-toegang. En voor maatwerk en uitzonderlijke verzoeken staan wij altijd klaar.</p>
+      <ul class="svc-list"><li><span data-t="b.lifestyle.0">Fotografie en videografie</span></li><li><span data-t="b.lifestyle.1">Barbier en styling aan huis</span></li><li><span data-t="b.lifestyle.2">VIP-toegang</span></li><li><span data-t="b.lifestyle.3">Maatwerk op verzoek</span></li><li><span data-t="b.lifestyle.4">Ook voor uitzonderlijke verzoeken</span></li><li><span data-t="b.lifestyle.5">Eén bericht is genoeg om te beginnen</span></li></ul>
+      <div class="svc-actions"><a class="back-all" href="#top" data-t="all">&larr; Alle diensten</a></div>
+    </div>
+    <div class="svc-photos n1">
+<figure class="ph ph-0"><img src="assets/photos/lifestyle.jpg" alt="" loading="lazy"><figcaption data-t="c.lifestyle.0">Naar uw wens</figcaption></figure>
+    </div>
+  </section>
+  <section class="svc flip reveal" id="autotransport">
+    <div class="svc-text">
+      <p class="eyebrow">08 &middot; <span data-t="n2.autotransport">AUTOTRANSPORT</span></p>
+      <h2 class="display"><span data-t="h.autotransport">Uw auto komt</span><br><em data-t="h2.autotransport">waar u bent.</em></h2>
+      <p class="svc-p" data-t="p.autotransport">Wij halen uw auto op bij u thuis en leveren hem af op de gewenste locatie, binnen Nederland of naar het buitenland. Professioneel en verzekerd vervoerd, van deur tot deur.</p>
+      <ul class="svc-list"><li><span data-t="b.autotransport.0">Ophalen bij u thuis</span></li><li><span data-t="b.autotransport.1">Binnen Nederland of naar het buitenland</span></li><li><span data-t="b.autotransport.2">Professioneel en verzekerd vervoerd</span></li><li><span data-t="b.autotransport.3">Van deur tot deur</span></li><li><span data-t="b.autotransport.4">Geen gedoe met inleveren of zelf wegbrengen</span></li><li><span data-t="b.autotransport.5">Eén contactpersoon die het van begin tot eind volgt</span></li></ul>
+      <div class="svc-actions"><a class="svc-link" href="autotransport.html"><span data-t="l.autotransport">Bekijk autotransport</span> &rarr;</a><a class="back-all" href="#top" data-t="all">&larr; Alle diensten</a></div>
+    </div>
+    <div class="svc-photos n1">
+<figure class="ph ph-0"><img src="assets/photos/transport.jpg" alt="" loading="lazy"><figcaption data-t="c.autotransport.0">Veilig onderweg</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="how reveal">
+    <p class="eyebrow"><span data-t="ui.how">ZO WERKT HET</span></p>
+    <div class="steps">
+      <div class="step"><b><span data-t="ui.s1t">Stuur uw verzoek</span></b><span><span data-t="ui.s1d">Typ wat u nodig heeft, zoals u het aan een vriend zou vragen.</span></span></div>
+      <div class="step"><b><span data-t="ui.s2t">Wij regelen het</span></b><span><span data-t="ui.s2d">Uw concierge neemt het over en stemt alles voor u af.</span></span></div>
+      <div class="step"><b><span data-t="ui.s3t">U volgt elke stap</span></b><span><span data-t="ui.s3d">Van in behandeling tot bevestigd, live in de app.</span></span></div>
+    </div>
+  </section>
+
+  <section class="cta reveal">
+    <h3><span data-t="ui.ctat">Nog geen lid?</span></h3>
+    <p><span data-t="ui.ctad">Lidmaatschap is op uitnodiging of persoonlijke aanbeveling.</span></p>
+    <a class="btn-solid" href="index.html#lidmaatschap"><span data-t="ui.ctab">Aan de slag</span></a>
+  </section>
+
+<script>
+(function () {
+  var EN = {"n.transport": "Executive Transport", "b.transport.0": "A chauffeur in a representative vehicle", "b.transport.1": "Airport and station transfers", "b.transport.2": "City to city, across borders too", "b.transport.3": "At your door on the minute, no waiting", "b.transport.4": "Your own car abroad, pickup included", "b.transport.5": "One point of contact for every ride", "l.transport": "See car transport", "c.transport.0": "Door open, car waiting", "c.transport.1": "Door to door", "h.transport": "Your driver", "h2.transport": "is already waiting.", "p.transport": "Discreet, representative vehicles, available worldwide and at your door on the minute. From the airport to the meeting, from the hotel to dinner: you step in, we take care of the rest.", "n2.transport": "EXECUTIVE TRANSPORT", "n.shopping": "Personal Shopping", "b.shopping.0": "Choosing and buying gifts", "b.shopping.1": "Putting together complete wardrobes", "b.shopping.2": "Buying at the boutiques and brands you prefer", "b.shopping.3": "Searching for hard-to-find pieces", "b.shopping.4": "Delivery at home or on location", "b.shopping.5": "Wrapped well and delivered at the right moment", "l.shopping": "See personal shopping", "c.shopping.0": "Bought in person", "h.shopping": "The piece you want,", "h2.shopping": "found and delivered.", "p.shopping": "From gifts to complete wardrobes: we buy in person, at the boutiques and brands you prefer, and deliver at home or on location.", "n2.shopping": "PERSONAL SHOPPING", "n.jets": "Private Jets", "b.jets.0": "Charter at short notice", "b.jets.1": "Worldwide access to fleet partners", "b.jets.2": "Cabin arranged to your preference", "b.jets.3": "Smart opportunities with empty legs", "b.jets.4": "Transport to and from the airfield arranged", "b.jets.5": "One contact from request to landing", "l.jets": "See private jets", "c.jets.0": "Ready on the apron", "c.jets.1": "Your route, your hour", "h.jets": "Leave when", "h2.jets": "it suits you.", "p.jets": "Short-notice charter, with worldwide access to fleet partners and a cabin arranged to your wishes. We arrange the flight and everything around it, from the ride to the airfield to your arrival.", "n2.jets": "PRIVATE JETS", "n.yachts": "Yachts", "b.yachts.0": "Day charter and weekly hire", "b.yachts.1": "Seasonal hire", "b.yachts.2": "Crew and route agreed in advance", "b.yachts.3": "Catering on board to your taste", "b.yachts.4": "A selection of yachts to choose from", "b.yachts.5": "Transport to the marina arranged", "l.yachts": "See the yachts", "c.yachts.0": "Aboard, everything ready", "c.yachts.1": "Open water", "h.yachts": "On the water,", "h2.yachts": "without a worry.", "p.yachts": "From day charter to seasonal hire. Crew, route and catering are matched in advance, so all you have to do is step aboard.", "n2.yachts": "YACHTS", "n.villas": "Villas", "b.villas.0": "Private villas in Ibiza", "b.villas.1": "From intimate retreat to large estate", "b.villas.2": "Looked after from check-in to departure", "b.villas.3": "Transport on arrival and departure", "b.villas.4": "Extras on request, such as a dinner or groceries", "b.villas.5": "One contact throughout your stay", "l.villas": "See the villas", "c.villas.0": "A stay with a view", "c.villas.1": "Room to be", "h.villas": "A villa that fits", "h2.villas": "the moment.", "p.villas": "Private villas in Ibiza, from intimate retreats to large estates. Fully looked after from check-in to departure, with everything around it arranged on request.", "n2.villas": "VILLAS", "n.fleet": "Fleet", "b.fleet.0": "Supercars and executive SUVs", "b.fleet.1": "Available across Europe", "b.fleet.2": "Full car detailing included", "b.fleet.3": "Delivery and pickup at your location", "b.fleet.4": "Can be combined with a chauffeur", "b.fleet.5": "One contact for the whole hire", "l.fleet": "See the fleet", "c.fleet.0": "Delivered to your door", "c.fleet.1": "Ready for the road", "h.fleet": "Arrive in", "h2.fleet": "the car of your choice.", "p.fleet": "Supercars and executive SUVs across Europe, including full car detailing. You choose the car, we make sure it arrives perfect and on time.", "n2.fleet": "FLEET", "n.lifestyle": "Lifestyle", "b.lifestyle.0": "Photography and videography", "b.lifestyle.1": "In-home barber and styling", "b.lifestyle.2": "VIP access", "b.lifestyle.3": "Custom work on request", "b.lifestyle.4": "Also for exceptional requests", "b.lifestyle.5": "One message is enough to begin", "c.lifestyle.0": "Made to measure", "h.lifestyle": "For everything that", "h2.lifestyle": "has no name.", "p.lifestyle": "Photography and videography, an in-home barber and styling, VIP access. And for custom and exceptional requests, we are always ready.", "n2.lifestyle": "LIFESTYLE", "n.autotransport": "Car transport", "b.autotransport.0": "Collection from your home", "b.autotransport.1": "Within the Netherlands or abroad", "b.autotransport.2": "Transported professionally and insured", "b.autotransport.3": "Door to door", "b.autotransport.4": "No hassle with dropping off or driving it yourself", "b.autotransport.5": "One contact who follows it from start to finish", "l.autotransport": "See car transport", "c.autotransport.0": "Safely on its way", "h.autotransport": "Your car arrives", "h2.autotransport": "where you are.", "p.autotransport": "We collect your car from your home and deliver it to the location you want, within the Netherlands or abroad. Transported professionally and insured, door to door.", "n2.autotransport": "CAR TRANSPORT", "all": "← All services", "ui.back": "← Back", "ui.eyebrow": "OUR SERVICES", "ui.t1": "From request", "ui.t2": "to arrival.", "ui.lead": "One message is all it takes. We take care of the rest, discreetly, precisely and completely.", "ui.how": "HOW IT WORKS", "ui.s1t": "Send your request", "ui.s1d": "Type what you need, the way you would ask a friend.", "ui.s2t": "We arrange it", "ui.s2d": "Your concierge takes over and coordinates everything for you.", "ui.s3t": "You follow every step", "ui.s3d": "From in progress to confirmed, live in the app.", "ui.ctat": "Not a member yet?", "ui.ctad": "Membership is by invitation or personal referral.", "ui.ctab": "Get started"};
+  var KEY = 'solace-lang';
+  var nodes = Array.prototype.slice.call(document.querySelectorAll('[data-t]'));
+  nodes.forEach(function (n) { n.setAttribute('data-nl', n.textContent); });
+  function pick() {
+    try { var s = localStorage.getItem(KEY); if (s === 'nl' || s === 'en') return s; } catch (e) {}
+    var l = (navigator.languages && navigator.languages[0]) || navigator.language || 'nl';
+    return /^nl/i.test(l) ? 'nl' : 'en';
+  }
+  function apply(lang) {
+    document.documentElement.lang = lang;
+    nodes.forEach(function (n) {
+      var k = n.getAttribute('data-t');
+      n.textContent = lang === 'en' && EN[k] ? EN[k] : n.getAttribute('data-nl');
+    });
+    document.title = lang === 'en' ? 'Our services | Solace Executive' : 'Onze diensten | Solace Executive';
+    document.querySelectorAll('.lang button').forEach(function (b) { b.classList.toggle('on', b.dataset.lang === lang); });
+  }
+  document.querySelectorAll('.lang button').forEach(function (b) {
+    b.addEventListener('click', function () { try { localStorage.setItem(KEY, b.dataset.lang); } catch (e) {} apply(b.dataset.lang); });
+  });
+  apply(pick());
+
+  var els = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (en) { en.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: 0.12 });
+    els.forEach(function (el) { io.observe(el); });
+  } else { els.forEach(function (el) { el.classList.add('in'); }); }
+})();
+
+</script>
+</body>
+</html>
