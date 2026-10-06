@@ -2310,6 +2310,7 @@ body.modal-open { overflow: hidden; }
 
 /* Hero globe (see hero-globe.js): a big bright globe filling the hero, a soft
    blue glow around it, the headline in a glass card over its lower half. */
+.hero { --gd: min(70vw, 800px); }
 .hero.has-globe {
   min-height: 0;
   justify-content: flex-start;
@@ -2319,8 +2320,8 @@ body.modal-open { overflow: hidden; }
   position: absolute;
   left: 0;
   right: 0;
-  top: 0;
-  height: clamp(480px, 64vh, 640px);
+  top: 96px;
+  height: calc(var(--gd) + 48px);
   pointer-events: none;
   z-index: 1;
   opacity: 0;
@@ -2341,9 +2342,9 @@ body.modal-open { overflow: hidden; }
 
 .hero.has-globe .hero-content {
   z-index: 3;
-  margin-top: clamp(380px, 52vh, 520px);
-  width: min(760px, 100%);
-  padding: 40px clamp(24px, 5vw, 56px) 44px;
+  margin-top: calc(96px + var(--gd) * 0.7);
+  width: min(640px, 100%);
+  padding: 30px clamp(22px, 4vw, 44px) 34px;
   border-radius: 28px;
   border: 1px solid var(--color-border);
   background: rgba(13, 24, 32, 0.8);
@@ -2392,3 +2393,10 @@ html.has-globe .site-header .header-inner { background: rgba(13, 24, 32, 0.74); 
 .services-more { margin-top: var(--space-4); text-align: center; }
 .services-more a { display: inline-block; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-gold-light); padding: 14px 28px; border: 1px solid var(--color-gold-dim); border-radius: 999px; transition: background-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out); }
 .services-more a:hover { background: var(--color-gold-light); color: var(--color-bg); }
+
+/* With the globe the headline is quieter: it sits in a card, not across the page. */
+.hero.has-globe .hero-title { font-size: clamp(2rem, 3.6vw, 3.1rem); margin-bottom: var(--space-2); }
+.hero.has-globe .hero-sub { font-size: 14.5px; line-height: 1.65; max-width: 46ch; margin-bottom: var(--space-3); }
+.hero.has-globe .eyebrow { font-size: 11px; margin-bottom: 14px; }
+.hero.has-globe .hero-actions .btn { padding: 13px 24px; font-size: 12px; }
+.hero.has-globe .hero-live { margin-bottom: 16px; }
