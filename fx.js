@@ -1,11 +1,52 @@
-/* Small hover effects, ported from React Bits to plain JS:
+/* Small effects, ported from React Bits to plain JS:
    Spotlight Card (a soft gold light follows the cursor), Glare Hover (a sheen
    sweeps over the photos) and Magnet (hero buttons lean towards the cursor).
-   Only on devices with a real pointer, and never with reduced motion. */
+   Pointer effects only on devices with a real pointer. Everything is off with
+   reduced motion, and the page is complete without any of it. */
 (function () {
-  var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (!fine || calm) return;
+  if (calm) return;
+
+  // Scroll progress: a hairline of gold along the top of the page.
+  var bar = document.createElement('div');
+  bar.className = 'fx-progress';
+  bar.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(bar);
+  var ticking = false;
+  function paintProgress() {
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ')';
+    ticking = false;
+  }
+  window.addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(paintProgress); }
+  }, { passive: true });
+  paintProgress();
+
+  // Photo wipe: service photos open from the top as they scroll into view,
+  // and the gold rule under each section title draws itself.
+  if ('IntersectionObserver' in window) {
+    // A clipped element reports no intersection, so photos are watched
+    // through their card instead.
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          var t = en.target;
+          (t.__fxTarget || t).classList.add('fx-in');
+          io.unobserve(t);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.service-visual, .section-title').forEach(function (el) {
+      el.classList.add('fx-wipe');
+      var watch = el.classList.contains('service-visual') ? el.parentElement : el;
+      watch.__fxTarget = el;
+      io.observe(watch);
+    });
+  }
+
+  var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (!fine) return;
 
   // Spotlight: the cursor position becomes two CSS variables per card.
   document.querySelectorAll('.service-card, .whatsapp-card').forEach(function (card) {
