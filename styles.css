@@ -171,6 +171,34 @@ input, textarea, select {
   margin-bottom: var(--space-2);
 }
 
+/* Shiny text: a light band sweeps across the letters now and then. A plain
+   CSS take on React Bits' ShinyText, no library needed. Set the colours and
+   the cycle length per element with the --shiny-* variables. */
+.shiny-text {
+  --shiny-color: var(--color-gold);
+  --shiny-shine: #FFF4D4;
+  --shiny-spread: 120deg;
+  --shiny-cycle: 4.5s;
+  background-image: linear-gradient(var(--shiny-spread), var(--shiny-color) 0%, var(--shiny-color) 35%, var(--shiny-shine) 50%, var(--shiny-color) 65%, var(--shiny-color) 100%);
+  background-size: 200% auto;
+  background-position: 150% center;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shiny-sweep var(--shiny-cycle) linear infinite;
+}
+
+@keyframes shiny-sweep {
+  0% { background-position: 150% center; }
+  45% { background-position: -50% center; }
+  100% { background-position: -50% center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shiny-text { animation: none; background-position: 150% center; }
+}
+
 .section-title {
   font-family: var(--font-display);
   font-weight: 500;
