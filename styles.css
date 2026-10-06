@@ -2308,37 +2308,62 @@ body.modal-open { overflow: hidden; }
   .spiral.is-live { height: 520px; }
 }
 
-/* Hero globe (see hero-globe.js): a bright MapLibre globe rising from the
-   bottom of the hero, the headline sitting above it. */
-.hero { --g: min(1150px, 175vw); }
-.hero.has-globe { padding-bottom: calc(var(--g) * 0.27); }
+/* Hero globe (see hero-globe.js): a big bright globe filling the hero, a soft
+   blue glow around it, the headline in a glass card over its lower half. */
+.hero.has-globe {
+  min-height: max(100vh, 940px);
+  justify-content: flex-end;
+  padding: 0 var(--space-3) 56px;
+}
 .hero .hero-map {
   position: absolute;
-  left: 50%;
-  bottom: calc(var(--g) * -0.68);
-  top: auto;
-  width: var(--g);
-  aspect-ratio: 1;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 76%;
   pointer-events: none;
   z-index: 1;
   opacity: 0;
   transition: opacity 1.6s ease;
+  overflow: hidden;
+  --R: 520px;
 }
 .hero .hero-map.is-active { opacity: 1; }
+.hero-map::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(125, 185, 245, 0.5) calc(var(--R) * 0.99), rgba(125, 185, 245, 0.2) calc(var(--R) * 1.05), rgba(125, 185, 245, 0) calc(var(--R) * 1.22));
+}
 .hero-map .maplibregl-canvas { outline: none; }
-.hero.has-globe .hero-ring { display: none; }
+.hero.has-globe .hero-ring, .hero.has-globe .scroll-cue { display: none; }
+
+.hero.has-globe .hero-content {
+  z-index: 3;
+  width: min(760px, 100%);
+  padding: 40px clamp(24px, 5vw, 56px) 44px;
+  border-radius: 28px;
+  border: 1px solid var(--color-border);
+  background: rgba(13, 24, 32, 0.8);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.7);
+}
 .hero.has-globe::after {
   content: '';
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 160px;
+  height: 120px;
   z-index: 2;
   pointer-events: none;
-  background: linear-gradient(to bottom, rgba(15, 27, 36, 0), var(--color-bg) 92%);
+  background: linear-gradient(to bottom, rgba(15, 27, 36, 0), var(--color-bg) 95%);
 }
 
 .map-credit { font-size: 11px; color: var(--color-ink-muted); opacity: 0.7; }
 .map-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
+/* The nav pill sits over a bright map: give it a darker glass. */
+html.has-globe .site-header .header-inner { background: rgba(13, 24, 32, 0.74); }
