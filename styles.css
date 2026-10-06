@@ -2027,3 +2027,33 @@ body.modal-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .nav-menu, .nav-dropdown-trigger svg { transition: none; }
 }
+
+/* ==========================================================================
+   Hover effects (see fx.js): spotlight and glare
+   ========================================================================== */
+
+.fx-spot { position: relative; }
+.fx-spot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(420px circle at var(--fx-x, 50%) var(--fx-y, 50%), rgba(216, 189, 124, 0.13), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+.fx-spot:hover::after { opacity: 1; }
+
+.fx-glare {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(-45deg, rgba(255, 244, 212, 0) 58%, rgba(255, 244, 212, 0.22) 70%, rgba(255, 244, 212, 0) 82%);
+  background-size: 260% 260%;
+  background-repeat: no-repeat;
+  background-position: -100% -100%;
+  transition: background-position 0.9s ease;
+}
+.service-card:hover .fx-glare { background-position: 100% 100%; }
