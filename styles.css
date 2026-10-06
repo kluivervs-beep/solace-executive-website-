@@ -2209,43 +2209,41 @@ body.modal-open { overflow: hidden; }
 }
 .service-grid .service-card:not(.service-card--cta) > h3 { grid-row: 2; }
 
-/* The description rises over the photo on hover or focus. */
-.service-grid .service-card:not(.service-card--cta) > p {
-  position: absolute;
-  left: 18px;
-  right: 18px;
-  bottom: 66px;
-  z-index: 4;
-  margin: 0;
-  padding: 0;
-  font-size: 13.5px;
-  line-height: 1.55;
-  color: #F5F1E6;
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.45s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  pointer-events: none;
-}
-.service-grid .service-card:not(.service-card--cta):hover > p,
-.service-grid .service-card:not(.service-card--cta):focus-within > p { opacity: 1; transform: none; }
-.service-grid .service-card:not(.service-card--cta)::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: clamp(340px, 50vh, 460px);
-  border-radius: 18px;
-  z-index: 3;
-  pointer-events: none;
-  background: linear-gradient(to top, rgba(8, 15, 21, 0.85), rgba(8, 15, 21, 0) 55%);
-  opacity: 0;
-  transition: opacity 0.45s ease;
-}
-.service-grid .service-card:not(.service-card--cta):hover::before,
-.service-grid .service-card:not(.service-card--cta):focus-within::before { opacity: 1; }
+/* Desktop: the photo and a caption, nothing written over the picture. The
+   description lives on the services page. */
+.service-grid .service-card:not(.service-card--cta) > p { display: none; }
+.service-grid .service-card:not(.service-card--cta)::before { display: none; }
 .service-grid .fx-spot::after { display: none; }
+
+/* Entrance: cards rise in one after another, the photo opens from the top. */
+.service-grid .service-card:not(.service-card--cta) { --i: 0; }
+.service-grid .service-card:nth-child(1) { --i: 0; }
+.service-grid .service-card:nth-child(2) { --i: 1; }
+.service-grid .service-card:nth-child(3) { --i: 2; }
+.service-grid .service-card:nth-child(4) { --i: 3; }
+.service-grid .service-card:nth-child(5) { --i: 4; }
+.service-grid .service-card:nth-child(6) { --i: 5; }
+.service-visual.fx-wipe { transition-delay: calc(var(--i, 0) * 110ms); }
+html.fx-on .service-grid .service-card:not(.service-card--cta) > h3,
+html.fx-on .service-grid .service-card:not(.service-card--cta) > .service-link {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.7s ease, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--i, 0) * 110ms + 380ms);
+}
+html.fx-on .service-grid .service-card.fx-ready > h3,
+html.fx-on .service-grid .service-card.fx-ready > .service-link { opacity: 1; transform: none; }
+
+/* Hover: the card lifts, the photo follows the cursor a little, the arrow leads. */
+.service-grid .service-card:not(.service-card--cta) { transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+.service-grid .service-card:not(.service-card--cta):hover { transform: translateY(-8px); }
+.service-grid .service-visual-photo {
+  transform: translate3d(var(--px, 0px), var(--py, 0px), 0) scale(1.08);
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.service-grid .service-card:hover .service-visual-photo { transform: translate3d(var(--px, 0px), var(--py, 0px), 0) scale(1.14); }
+.service-grid .service-link { background: linear-gradient(var(--color-gold-light), var(--color-gold-light)) left bottom / 0% 1px no-repeat; transition: background-size 0.5s ease, gap 0.3s ease; padding-bottom: 4px; width: fit-content; }
+.service-grid .service-card:hover .service-link { background-size: 100% 1px; gap: 10px; }
 
 /* Phones and tablets: swipe sideways, one card and a peek of the next. */
 @media (max-width: 999px) {
@@ -2400,3 +2398,28 @@ html.has-globe .site-header .header-inner { background: rgba(13, 24, 32, 0.74); 
 .hero.has-globe .eyebrow { font-size: 11px; margin-bottom: 14px; }
 .hero.has-globe .hero-actions .btn { padding: 13px 24px; font-size: 12px; }
 .hero.has-globe .hero-live { margin-bottom: 16px; }
+
+/* While the globe loads: no old ring or gold glow, only a calm placeholder
+   disc where the globe will appear. */
+html.globe-pending .hero .hero-ring,
+html.globe-pending .hero .hero-glow { display: none; }
+html.globe-pending .hero .hero-map::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 24px;
+  width: var(--gd);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, rgba(150, 190, 235, 0.55), rgba(70, 110, 160, 0.35) 55%, rgba(30, 55, 85, 0.25) 100%);
+  box-shadow: 0 0 80px rgba(125, 185, 245, 0.25);
+  opacity: 0;
+  animation: globe-ph 1.4s ease 0.2s forwards;
+}
+@keyframes globe-ph { to { opacity: 1; } }
+html.globe-pending .hero .hero-map { opacity: 1; }
+html.has-globe .hero .hero-glow { display: none; }
+
+html.globe-pending .hero-map .maplibregl-canvas { opacity: 0; }
+.hero-map .maplibregl-canvas { transition: opacity 1s ease; }

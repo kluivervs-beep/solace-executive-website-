@@ -25,6 +25,24 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script>
+(function () {
+  try {
+    var c = document.createElement('canvas');
+    var gl = c.getContext('webgl2') || c.getContext('webgl');
+    var calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (gl && !calm) {
+      document.documentElement.classList.add('globe-pending');
+      // If the globe has not shown up after a while, fall back to the flat ring.
+      setTimeout(function () { document.documentElement.classList.remove('globe-pending'); }, 14000);
+    }
+  } catch (e) { /* no globe, the ring stays */ }
+})();
+</script>
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin>
+<link rel="preload" as="script" href="https://unpkg.com/maplibre-gl@5.7.0/dist/maplibre-gl.js" crossorigin>
+<link rel="preload" as="style" href="https://unpkg.com/maplibre-gl@5.7.0/dist/maplibre-gl.css" crossorigin>
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="phone-demo.css">
 </head>

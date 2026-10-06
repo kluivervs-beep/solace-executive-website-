@@ -6,6 +6,10 @@
 (function () {
   var calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (calm) return;
+  document.documentElement.classList.add('fx-on');
+  if (!('IntersectionObserver' in window)) {
+    document.querySelectorAll('.service-card').forEach(function (c) { c.classList.add('fx-ready'); });
+  }
 
   // Scroll progress: a hairline of gold along the top of the page.
   var bar = document.createElement('div');
@@ -38,6 +42,11 @@
       });
     }, { threshold: 0.15 });
     document.querySelectorAll('.service-visual, .section-title').forEach(function (el) {
+      if (el.classList.contains('service-visual')) {
+        var card = el.parentElement;
+        var obs = new IntersectionObserver(function (e) { if (e[0].isIntersecting) { card.classList.add('fx-ready'); obs.disconnect(); } }, { threshold: 0.15 });
+        obs.observe(card);
+      }
       el.classList.add('fx-wipe');
       var watch = el.classList.contains('service-visual') ? el.parentElement : el;
       watch.__fxTarget = el;
@@ -55,6 +64,19 @@
       var r = card.getBoundingClientRect();
       card.style.setProperty('--fx-x', e.clientX - r.left + 'px');
       card.style.setProperty('--fx-y', e.clientY - r.top + 'px');
+    });
+  });
+
+  // Parallax: the photo drifts a few pixels with the cursor.
+  document.querySelectorAll('.service-grid .service-card:not(.service-card--cta)').forEach(function (card) {
+    card.addEventListener('pointermove', function (e) {
+      var r = card.getBoundingClientRect();
+      card.style.setProperty('--px', ((e.clientX - r.left) / r.width - 0.5) * -14 + 'px');
+      card.style.setProperty('--py', ((e.clientY - r.top) / r.height - 0.5) * -14 + 'px');
+    });
+    card.addEventListener('pointerleave', function () {
+      card.style.setProperty('--px', '0px');
+      card.style.setProperty('--py', '0px');
     });
   });
 

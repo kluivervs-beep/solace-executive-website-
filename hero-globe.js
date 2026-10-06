@@ -90,7 +90,10 @@
     var base = 'https://unpkg.com/maplibre-gl@5.7.0/dist/';
     Promise.all([load(base + 'maplibre-gl.css', 'css'), load(base + 'maplibre-gl.js', 'js')])
       .then(build)
-      .catch(function (e) { console.warn('Solace: globe unavailable, using the flat ring.', e); });
+      .catch(function (e) {
+        document.documentElement.classList.remove('globe-pending');
+        console.warn('Solace: globe unavailable, using the flat ring.', e);
+      });
   }
 
   // --- great-circle helpers -------------------------------------------------
@@ -247,6 +250,7 @@
       holder.classList.add('is-active');
       hero.classList.add('has-globe');
       document.documentElement.classList.add('has-globe');
+      setTimeout(function () { document.documentElement.classList.remove('globe-pending'); }, 1100);
       run(map);
       live(map);
     });
@@ -353,7 +357,7 @@
     requestAnimationFrame(frame);
   }
 
-  // Start once the page has settled so the globe never competes with first paint.
-  if (document.readyState === 'complete') setTimeout(start, 400);
-  else window.addEventListener('load', function () { setTimeout(start, 400); });
+  // The globe is the hero, so start as soon as the DOM is ready.
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
 })();
