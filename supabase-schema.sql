@@ -2481,3 +2481,20 @@ alter table public.access_requests add column if not exists instagram text;
 alter table public.access_requests add column if not exists looking_for text;
 alter table public.profiles add column if not exists instagram text;
 alter table public.profiles add column if not exists looking_for text;
+
+-- For You feed signals: what each member liked, skipped, lingered on or
+-- requested, so the feed can learn per member (like a short-video feed).
+create table if not exists public.feed_signals (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid not null references auth.users(id) on delete cascade,
+  item_key text not null,
+  item_type text not null,
+  signal text not null check (signal in ('like','unlike','skip','dwell','request','more','less')),
+  dwell_ms int,
+  created_at timestamptz not null default now()
+);
+create index if not exists feed_signals_member_idx on public.feed_signals (member_id, created_at desc);
+alter table public.feed_signals enable row level security;
+drop policy if exists "members manage own feed signals" on public.feed_signals;
+create policy "members manage own feed signals" on public.feed_signals for all to authenticated
+  using (member_id = auth.uid()) with check (member_id = auth.uid());
