@@ -2090,3 +2090,58 @@ body.modal-open { overflow: hidden; }
 }
 .section-title.fx-wipe.fx-in::after { transform: scaleX(1); }
 .text-center .section-title.fx-wipe::after, .section-title.center.fx-wipe::after { left: 50%; margin-left: -32px; }
+
+/* ==========================================================================
+   Live overview (see live-feed.js)
+   ========================================================================== */
+
+.live-feed .app-demo-inner { grid-template-columns: minmax(0, 1fr) minmax(0, 420px); }
+.lf-wrap { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); }
+
+.lf-card {
+  width: min(100%, 420px);
+  border: 1px solid var(--color-border);
+  border-radius: 22px;
+  background: var(--color-bg-elevated);
+  padding: 18px 16px 10px;
+  box-shadow: 0 30px 80px -40px rgba(0, 0, 0, 0.7);
+}
+.lf-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px 12px;
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--color-ink);
+}
+.lf-live { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-gold-light); }
+.lf-live i { width: 7px; height: 7px; border-radius: 50%; background: #4ADE80; box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.5); animation: lf-pulse 2s infinite; }
+@keyframes lf-pulse { 0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.5); } 70% { box-shadow: 0 0 0 8px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
+
+.lf-list { list-style: none; margin: 0; padding: 0; }
+.lf-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 10px;
+  border-top: 1px solid var(--color-border);
+  border-radius: 12px;
+  transition: background-color 0.25s ease, transform 0.25s ease;
+}
+.lf-row:first-child { border-top-color: transparent; }
+.lf-row:hover { background: rgba(216, 189, 124, 0.09); transform: translateX(3px); }
+.lf-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; background: var(--color-ink-muted); }
+.lf-row[data-state="done"] .lf-dot { background: #4ADE80; }
+.lf-row[data-state="quote"] .lf-dot, .lf-row[data-state="way"] .lf-dot { background: var(--color-gold-light); }
+.lf-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.lf-main b { font-weight: 500; font-size: 14.5px; color: var(--color-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lf-main small { font-size: 12px; color: var(--color-ink-muted); }
+.lf-chip { flex: none; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--color-gold-dim); color: var(--color-gold-light); }
+.lf-row[data-state="busy"] .lf-chip { border-color: var(--color-border); color: var(--color-ink-muted); }
+
+.lf-enter { animation: lf-in 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes lf-in { from { opacity: 0; transform: translateY(-14px); background: rgba(216, 189, 124, 0.16); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) { .lf-live i, .lf-enter { animation: none; } }
+@media (max-width: 900px) { .live-feed .app-demo-inner { grid-template-columns: minmax(0, 1fr); } }

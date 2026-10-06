@@ -370,7 +370,34 @@
     </div>
   </section>
 
-  <!-- PRIVATE JETS / WERELDWIJD NETWERK -->
+    <!-- Live overview: example requests stream in -->
+  <section class="live-feed" id="live">
+    <div class="app-demo-inner">
+      <div class="lf-copy">
+        <p class="eyebrow reveal" data-i18n="lf.eyebrow">LIVE OVERZICHT</p>
+        <h2 class="section-title reveal"><span data-i18n="lf.heading">Elke aanvraag,</span> <em style="color:var(--color-gold-light)" data-i18n="lf.heading2">in één oogopslag.</em></h2>
+        <p class="app-demo-body reveal" data-i18n="lf.body">Zie wat bevestigd is, wat in behandeling is en wat onderweg is. Nieuwe updates verschijnen vanzelf, zonder dat u hoeft te vragen.</p>
+      </div>
+      <div class="lf-wrap">
+        <div class="lf-card" aria-hidden="true">
+          <div class="lf-head"><span data-i18n="lf.card">Uw aanvragen</span><span class="lf-live"><i></i><span data-i18n="lf.live">Live</span></span></div>
+          <ul class="lf-list" id="lfList"></ul>
+        </div>
+        <p class="pd-note" data-i18n="lf.note">Voorbeelden ter illustratie</p>
+      </div>
+    </div>
+    <ul id="lfPool" hidden>
+      <li class="lf-row" data-state="done"><span class="lf-dot"></span><span class="lf-main"><b data-i18n="lf.chauffeur.t">Chauffeur naar Schiphol</b><small data-i18n="lf.chauffeur.d">Morgen 07:00</small></span><span class="lf-chip" data-i18n="lf.st.done">Bevestigd</span></li>
+      <li class="lf-row" data-state="busy"><span class="lf-dot"></span><span class="lf-main"><b data-i18n="lf.jet.t">Jet Amsterdam naar Parma</b><small data-i18n="lf.jet.d">7 oktober</small></span><span class="lf-chip" data-i18n="lf.st.busy">In behandeling</span></li>
+      <li class="lf-row" data-state="done"><span class="lf-dot"></span><span class="lf-main"><b data-i18n="lf.table.t">Tafel voor vier in Parijs</b><small data-i18n="lf.table.d">Vrijdag 20:30</small></span><span class="lf-chip" data-i18n="lf.st.done">Bevestigd</span></li>
+      <li class="lf-row" data-state="quote"><span class="lf-dot"></span><span class="lf-main"><b data-i18n="lf.yacht.t">Jacht voor het weekend</b><small data-i18n="lf.yacht.d">Ibiza</small></span><span class="lf-chip" data-i18n="lf.st.quote">Offerte klaar</span></li>
+      <li class="lf-row" data-state="way"><span class="lf-dot"></span><span class="lf-main"><b data-i18n="lf.shop.t">Personal shopping</b><small data-i18n="lf.shop.d">Amsterdam</small></span><span class="lf-chip" data-i18n="lf.st.way">Onderweg</span></li>
+      <li class="lf-row" data-state="done"><span class="lf-dot"></span><span class="lf-main"><b data-i18n="lf.villa.t">Villa op Mallorca</b><small data-i18n="lf.villa.d">12 tot 19 juli</small></span><span class="lf-chip" data-i18n="lf.st.done">Bevestigd</span></li>
+      <li class="lf-row" data-state="busy"><span class="lf-dot"></span><span class="lf-main"><b data-i18n="lf.gift.t">Cadeau voor een verjaardag</b><small data-i18n="lf.gift.d">Morgen bezorgd</small></span><span class="lf-chip" data-i18n="lf.st.busy">In behandeling</span></li>
+    </ul>
+  </section>
+
+<!-- PRIVATE JETS / WERELDWIJD NETWERK -->
   <section class="jet-feature" id="wereldwijd">
     <div class="jet-feature-inner jet-feature-inner--simple">
       <p class="eyebrow reveal" data-i18n="jet.eyebrow">PRIVATE JETS</p>
@@ -823,6 +850,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="i18n.js"></script>
-<script src="script.js"></script><script src="fx.js" defer></script><script src="phone-demo.js"></script><script type="module" src="hero-scene.js"></script><script type="module" src="empty-legs.js"></script><script type="module" src="instagram.js"></script>
+<script src="script.js"></script><script src="fx.js" defer></script><script src="live-feed.js" defer></script><script src="phone-demo.js"></script><script type="module" src="hero-scene.js"></script><script type="module" src="empty-legs.js"></script><script type="module" src="instagram.js"></script>
 </body>
 </html>
