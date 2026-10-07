@@ -2430,3 +2430,8 @@ html.globe-pending .hero-map .maplibregl-canvas { opacity: 0; }
   .lang-switch { margin-left: auto; }
   .lang-switch .lang-btn { padding-left: 10px; padding-right: 10px; }
 }
+
+@media (max-width: 640px) {
+  .hero.has-globe .hero-title { font-size: clamp(1.7rem, 7.5vw, 2.2rem); }
+  .hero.has-globe .hero-sub { font-size: 13.5px; }
+}

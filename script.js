@@ -150,7 +150,9 @@
       });
 
       // Generic scroll reveals
-      gsap.utils.toArray('.reveal').forEach((el, i) => {
+      // The hero has its own intro timeline; with the globe layout its text can sit
+      // below the 88% line, which left it hidden until the first scroll.
+      gsap.utils.toArray('.reveal').filter((el) => !el.closest('.hero')).forEach((el, i) => {
         gsap.from(el, {
           opacity: 0,
           y: 20,
