@@ -90,7 +90,9 @@
 
 @media (max-width: 600px) {
   .sx-float { right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
-  .sx-fab { padding: 15px 20px; }
+  /* Phones: a round icon button, the label stays for screen readers. */
+  .sx-fab { padding: 15px; border-radius: 50%; width: 54px; height: 54px; justify-content: center; }
+  .sx-fab > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
 @media (prefers-reduced-motion: reduce) {
   .sx-float, .sx-panel, .sx-fab, .sx-opt, .sx-opt span:last-child { transition: none; }
