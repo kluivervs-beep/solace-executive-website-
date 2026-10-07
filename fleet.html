@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Exclusive Fleet | Solace Executive</title>
-<meta name="description" content="Ferraris, Lamborghinis, Porsches and more. Our curated fleet, delivered anywhere in Europe by Solace Executive.">
+<title>Exclusieve vloot | Solace Executive</title>
+<meta name="description" content="Ferrari's, Lamborghini's, Porsches en meer. Onze selecte vloot, door Solace Executive overal in Europa afgeleverd. Lidmaatschap op aanvraag.">
 <meta name="theme-color" content="#0F1B24">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Exclusive Fleet | Solace Executive">
-<meta property="og:description" content="Ferraris, Lamborghinis, Porsches and more, delivered anywhere in Europe.">
-<meta property="og:image" content="assets/photos/fleet/ferrari-f8.jpg">
+<meta property="og:title" content="Exclusieve vloot | Solace Executive">
+<meta property="og:description" content="Ferrari's, Lamborghini's, Porsches en meer, overal in Europa afgeleverd.">
+<meta property="og:image" content="https://solaceexecutive.com/assets/photos/fleet/ferrari-f8.jpg">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:site_name" content="Solace Executive">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://solaceexecutive.com/fleet.html">
 <meta property="og:url" content="https://solaceexecutive.com/fleet.html">
 <link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
@@ -155,38 +158,133 @@
   @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(74,222,128,0.5); } 70% { box-shadow: 0 0 0 8px rgba(74,222,128,0); } 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); } }
 
   .reveal { opacity: 0; }
+
+  /* ===== Service page pattern (shared with diensten.html) ===== */
+  :root { --sv-ink:#F5F1E6; --sv-muted:#A9B4BB; --sv-stroke:rgba(212,190,140,0.16); --sv-gold:#B4923D; --sv-gold-light:#D8BD7C; --sv-ease:cubic-bezier(.22,1,.36,1); }
+  .sv-back { margin-left:auto; margin-right:20px; display:inline-flex; align-items:center; gap:8px; min-height:44px; padding:0 4px; font:500 12px/1 'Montserrat',sans-serif; letter-spacing:.14em; text-transform:uppercase; color:rgba(245,241,230,.82); transition:color .25s ease; }
+  .sv-back:hover { color:var(--sv-gold-light); }
+  .sv-back-arrow { transition:transform .3s ease; } .sv-back:hover .sv-back-arrow { transform:translateX(-4px); }
+  .sv-hdr .brand { min-height:44px; }
+  .sv-detail, .sv-how { max-width:1200px; margin:0 auto; font-family:'Montserrat',sans-serif; color:var(--sv-ink); border-top:1px solid var(--sv-stroke); }
+  .sv-detail { padding:96px 24px; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(32px,6vw,88px); align-items:center; }
+  .sv-detail *, .sv-how * { box-sizing:border-box; }
+  .sv-eyebrow { font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--sv-gold-light); margin:0 0 18px; }
+  .sv-h2 { font-family:'Cormorant',serif; font-weight:500; font-size:clamp(34px,5vw,56px); line-height:1.08; margin:0 0 22px; max-width:none; color:var(--sv-ink); }
+  .sv-h2 em { color:var(--sv-gold-light); }
+  .sv-p { color:var(--sv-muted); font-size:15.5px; line-height:1.65; max-width:520px; margin:0 0 26px; }
+  .sv-listhead { font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--sv-gold); margin:0 0 14px; }
+  .sv-list { list-style:none; display:grid; gap:12px; margin:0 0 30px; padding:0; max-width:520px; }
+  .sv-list li { position:relative; padding-left:28px; font-size:14.5px; line-height:1.55; }
+  .sv-list li::before { content:''; position:absolute; left:2px; top:.5em; width:12px; height:6px; border-left:1.6px solid var(--sv-gold-light); border-bottom:1.6px solid var(--sv-gold-light); transform:rotate(-45deg); }
+  .sv-detail.in .sv-list li { animation:svIn .8s var(--sv-ease) backwards; animation-delay:calc(.2s + var(--i,0) * .07s); }
+  .sv-list li:nth-child(2) { --i:1; } .sv-list li:nth-child(3) { --i:2; } .sv-list li:nth-child(4) { --i:3; } .sv-list li:nth-child(5) { --i:4; } .sv-list li:nth-child(6) { --i:5; }
+  .sv-actions { display:flex; align-items:center; gap:22px; flex-wrap:wrap; }
+  .sv-actions--center { justify-content:center; }
+  .sv-all { font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--sv-muted); min-height:44px; display:inline-flex; align-items:center; transition:color .25s ease; }
+  .sv-all:hover { color:var(--sv-gold-light); }
+  .sv-photos { position:relative; }
+  .sv-photos .ph { border-radius:22px; overflow:hidden; border:1px solid var(--sv-stroke); background:#16232E; position:relative; margin:0; }
+  .sv-photos .ph img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 1.2s var(--sv-ease); }
+  .sv-photos .ph:hover img { transform:scale(1.05); }
+  .sv-photos .ph figcaption { position:absolute; left:0; right:0; bottom:0; padding:38px 18px 14px; font-size:12px; letter-spacing:.06em; color:var(--sv-ink); background:linear-gradient(to top, rgba(10,18,24,.8), transparent); }
+  .sv-photos.n1 .ph-0 { aspect-ratio:4/5; }
+  .sv-photos.n2 { min-height:560px; padding-bottom:26px; }
+  .sv-photos.n2 .ph-0 { width:74%; aspect-ratio:4/5; }
+  .sv-photos.n2 .ph-1 { position:absolute; right:0; bottom:0; width:50%; aspect-ratio:3/4; box-shadow:0 30px 70px -30px rgba(0,0,0,.8); }
+  .sv-photos.n2 .ph-0 figcaption { right:34%; }
+  .sv-how { padding:80px 24px; }
+  .sv-steps { display:grid; grid-template-columns:repeat(3,1fr); gap:32px; margin-top:28px; }
+  .sv-step { border-top:1px solid var(--sv-gold); padding-top:20px; transition:border-color .3s ease; }
+  .sv-step:hover { border-top-color:var(--sv-gold-light); }
+  .sv-step b { display:block; font-family:'Cormorant',serif; font-weight:500; font-size:26px; margin-bottom:8px; }
+  .sv-step span { color:var(--sv-muted); font-size:14.5px; line-height:1.6; }
+  .sv-see { display:flex; flex-wrap:wrap; gap:0 26px; justify-content:center; align-items:center; margin-top:26px; font-family:'Montserrat',sans-serif; font-size:13px; }
+  .sv-see-l { font-size:11px; letter-spacing:.24em; color:var(--sv-gold); }
+  .sv-see a { color:var(--sv-muted); min-height:44px; display:inline-flex; align-items:center; transition:color .25s ease, transform .3s ease; }
+  .sv-see a::after { content:'\2192'; margin-left:8px; color:var(--sv-gold-light); }
+  .sv-see a:hover { color:var(--sv-gold-light); transform:translateX(3px); }
+  .sv-footer { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:0 22px; padding:16px 24px; border-top:1px solid var(--sv-stroke); font-family:'Montserrat',sans-serif; }
+  .sv-footer a { font-size:13px; color:var(--sv-muted); display:inline-block; line-height:44px; min-height:44px; padding:0 4px; transition:color .25s ease; }
+  .sv-footer a:hover { color:var(--sv-gold-light); }
+  .yacht-card, .villa-card, .lp-leg-card, .ps-point { transition:transform .5s var(--sv-ease), border-color .3s ease, box-shadow .5s ease; }
+  .yacht-card:hover, .villa-card:hover, .lp-leg-card:hover { transform:translateY(-4px); border-color:rgba(216,189,124,.38); box-shadow:0 26px 60px -34px rgba(0,0,0,.85); }
+  .yacht-card-cta, .villa-card-cta { min-height:44px; }
+  .sv-js .reveal { opacity:0; }
+  .sv-js .reveal.in { opacity:1; animation:svIn 1s var(--sv-ease) backwards; animation-delay:var(--rv-d,0s); }
+  @keyframes svIn { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
+  @media (prefers-reduced-motion: reduce) { .sv-js .reveal { opacity:1; } .sv-js .reveal.in, .sv-detail.in .sv-list li { animation:none; } .sv-photos .ph img { transition:none; } }
+  @media (max-width: 900px) {
+    .sv-detail { grid-template-columns:1fr; padding:64px 24px; }
+    .sv-photos.n2 { min-height:0; }
+    .sv-steps { grid-template-columns:1fr; }
+  }
+  @media (max-width: 640px) {
+    .sv-hdrx { padding:12px 16px !important; flex-wrap:wrap; }
+    .sv-back { order:3; flex:0 0 100%; margin:0; padding:0; }
+    .sv-hdr .lang-btn { min-height:44px; min-width:44px; }
+    .sv-hdr .lang-switch { border-radius:999px; }
+    .sv-hdr .lp-sound-toggle { width:44px; height:44px; }
+    .sv-hdr .lp-badge { display:none; }
+    .sv-detail { padding:56px 20px; }
+    .sv-actions--center { flex-direction:column; align-items:stretch; gap:12px; max-width:340px; margin-left:auto; margin-right:auto; }
+    .sv-how { padding:56px 20px; }
+  }
+
+  .nav-cta, .nav-link, .lang-t { min-height:44px; display:inline-flex; align-items:center; }
+  .lang-t { background:none; border:0; color:var(--muted); font:600 12px 'Montserrat',sans-serif; letter-spacing:.1em; padding:0 12px; border-radius:999px; cursor:pointer; transition:color .2s, background .2s; }
+  .lang-t:hover { color:var(--text); background:rgba(212,190,140,0.08); }
+  .hero .sv-back { position:absolute; top:84px; left:24px; margin:0; z-index:3; }
+  .work-card { transition:transform .5s var(--sv-ease), border-color .3s ease, box-shadow .5s ease; }
+  .work-card:hover { transform:translateY(-4px); border-color:rgba(216,189,124,.38); box-shadow:0 26px 60px -34px rgba(0,0,0,.85); }
+  .sv-detail { max-width:1200px; }
+  .btn-solid.sv-b { font-size:13px; }
+  .footer-cta .btn { min-height:44px; }
+  .footer-email a { display:inline-block; padding:14px 4px; }
+  .sv-note { margin-top:28px; }
+  @media (max-width: 480px) {
+    .navbar { padding:12px 8px; }
+    .nav-link, .nav-cta { padding:0 10px; }
+    .nav-link-secondary { display:none; }
+    .nav-logo { width:44px; height:44px; }
+    .lang-t { padding:0 8px; min-width:44px; justify-content:center; }
+    .hero .sv-back { top:76px; left:16px; }
+  }
 </style>
+<script>document.documentElement.classList.add('sv-js')</script>
+
 </head>
 <body>
 
 <div id="loader">
-  <div class="loader-top">Vehicle Rental</div>
-  <div class="loader-mid"><div class="loader-word display" id="loaderWord">Arrive</div></div>
+  <div class="loader-top" data-t="loader.top">Autoverhuur</div>
+  <div class="loader-mid"><div class="loader-word display" id="loaderWord">Arriveer</div></div>
   <div class="loader-bottom"><div class="loader-count display" id="loaderCount">000</div></div>
   <div class="loader-bar"><div class="loader-bar-fill gold-gradient" id="loaderBarFill"></div></div>
 </div>
 
 <header class="navbar">
   <div class="navbar-pill" id="navPill">
-    <a href="index.html" class="nav-logo"><img src="assets/icons/monogram.svg" alt="Solace Executive"></a>
+    <a href="index.html" class="nav-logo" aria-label="Solace Executive"><img src="assets/icons/monogram.svg" alt="Solace Executive"></a>
     <div class="nav-divider"></div>
     <a href="#fleet" class="nav-link">Fleet</a>
-    <a href="#how" class="nav-link nav-link-secondary">How it Works</a>
+    <a href="#how" class="nav-link nav-link-secondary" data-t="nav.how">Zo werkt het</a>
     <div class="nav-divider"></div>
-    <a href="https://wa.me/31644917512?text=Hallo%2C%20ik%20wil%20graag%20een%20auto%20reserveren%20via%20Solace%20Executive." target="_blank" rel="noopener" class="nav-cta">WhatsApp ↗</a>
+    <button type="button" class="lang-t" id="langT" aria-label="Taal / Language">EN</button>
+    <a href="index.html#lidmaatschap" class="nav-cta" data-t="nav.cta">Aan de slag</a>
   </div>
 </header>
 
 <section class="hero" id="top">
-  <img src="assets/photos/fleet/ferrari-f8.jpg" alt="">
+  <img src="assets/photos/fleet/ferrari-f8.jpg" alt="" >
   <div class="hero-scrim"></div>
+  <a href="diensten.html#fleet" class="sv-back"><span class="sv-back-arrow" aria-hidden="true">&larr;</span><span data-t="sv.all.plain">Alle diensten</span></a>
   <div class="hero-inner">
-    <p class="hero-eyebrow reveal" id="r1">Vehicle Rental · Across Europe</p>
-    <h1 class="hero-name display reveal" id="r2">Drive something extraordinary.</h1>
-    <p class="hero-role reveal" id="r3">From <span class="role-word display" id="roleWord">Ferraris</span> to executive SUVs, our curated fleet delivered anywhere in Europe.</p>
+    <p class="hero-eyebrow reveal" id="r1" data-t="hero.eyebrow">Autoverhuur &middot; Door heel Europa</p>
+    <h1 class="hero-name display reveal" id="r2" data-t="hero.h1">Rijd iets bijzonders.</h1>
+    <p class="hero-role reveal" id="r3"><span data-t="hero.pre">Van</span> <span class="role-word display" id="roleWord">Ferrari's</span> <span data-t="hero.post">tot executive SUV's: onze selecte vloot, overal in Europa bij u afgeleverd.</span></p>
     <div class="hero-actions reveal" id="r4">
-      <a href="#fleet" class="btn btn-solid">View the Fleet</a>
-      <a href="https://wa.me/31644917512?text=Hallo%2C%20ik%20wil%20graag%20een%20auto%20reserveren%20via%20Solace%20Executive." target="_blank" rel="noopener" class="btn btn-outline">Request via WhatsApp ↗</a>
+      <a href="index.html#lidmaatschap" class="btn btn-solid" data-t="hero.cta">Aan de slag</a>
+      <a href="#fleet" class="btn btn-outline" data-t="hero.view">Bekijk de vloot</a>
     </div>
   </div>
   <div class="scroll-cue">
@@ -197,93 +295,146 @@
 
 <section class="block" id="fleet">
   <div class="block-header reveal">
-    <div class="eyebrow-row"><div class="eyebrow-line"></div><span class="eyebrow-text">The Fleet</span></div>
-    <h2 class="block-heading">Cars worth <span class="display">arriving</span> in.</h2>
-    <p class="block-sub">A selection from our curated collection: supercars, convertibles and executive SUVs, always immaculately kept.</p>
+    <div class="eyebrow-row"><div class="eyebrow-line"></div><span class="eyebrow-text" data-t="fleet.eyebrow">De vloot</span></div>
+    <h2 class="block-heading"><span data-t="fleet.h.a">Auto's waar u mee</span> <span class="display" data-t="fleet.h.b">aankomt.</span></h2>
+    <p class="block-sub" data-t="fleet.sub">Een selectie uit onze collectie: supercars, cabrio's en executive SUV's, altijd onberispelijk verzorgd.</p>
   </div>
   <div class="work-grid">
-    <div class="work-card reveal"><img src="assets/photos/fleet/ferrari-f8.jpg" alt="Ferrari F8 Spider"><div class="card-info"><div class="card-name">Ferrari <span class="display">F8 Spider</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">2 Seats</span><span class="spec-chip">720 HP</span></div></div></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/ferrari-portofino.jpg" alt="Ferrari Portofino"><div class="card-info"><div class="card-name">Ferrari <span class="display">Portofino</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">4 Seats</span><span class="spec-chip">600 HP</span></div></div></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/ferrari-roma.jpg" alt="Ferrari Roma Spider"><div class="card-info"><div class="card-name">Ferrari <span class="display">Roma Spider</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">2 Seats</span><span class="spec-chip">620 HP</span></div></div></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/lambo-huracan.jpg" alt="Lamborghini Huracan"><div class="card-info"><div class="card-name">Lamborghini <span class="display">Huracán</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">2 Seats</span><span class="spec-chip">580 HP</span></div></div></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/lambo-huracan-evo.jpg" alt="Lamborghini Huracan EVO Spyder"><div class="card-info"><div class="card-name">Lamborghini <span class="display">Huracán EVO Spyder</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">2 Seats</span><span class="spec-chip">640 HP</span></div></div></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/porsche-gt3.jpg" alt="Porsche 911 GT3"><div class="card-info"><div class="card-name">Porsche <span class="display">911 GT3</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">2 Seats</span><span class="spec-chip">510 HP</span></div></div></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/porsche-boxster.jpg" alt="Porsche 718 Boxster"><div class="card-info"><div class="card-name">Porsche <span class="display">718 Boxster</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">2 Seats</span><span class="spec-chip">300 HP</span></div></div></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/audi-rs3.jpg" alt="Audi RS3"><div class="card-info"><div class="card-name">Audi <span class="display">RS3</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">4 Seats</span><span class="spec-chip">400 HP</span></div></div></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/abarth-695.jpg" alt="Abarth 695 Competizione"><div class="card-info"><div class="card-name">Abarth <span class="display">695 Competizione</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Manual</span><span class="spec-chip">4 Seats</span><span class="spec-chip">180 HP</span></div></div></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/bmw-serie4.jpg" alt="BMW 4 Series Coupe"><div class="card-info"><div class="card-name">BMW <span class="display">4 Series Coupé</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">4 Seats</span><span class="spec-chip">374 HP</span></div></div></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/mercedes-a45s.jpg" alt="Mercedes-AMG A45 S"><div class="card-info"><div class="card-name">Mercedes-AMG <span class="display">A45 S</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">4 Seats</span><span class="spec-chip">421 HP</span></div></div></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/mercedes-sl43.jpg" alt="Mercedes-AMG SL 43"><div class="card-info"><div class="card-name">Mercedes-AMG <span class="display">SL 43</span></div><div class="card-specs"><span class="spec-chip">Hybrid</span><span class="spec-chip">Automatic</span><span class="spec-chip">2 Seats</span><span class="spec-chip">381 HP</span></div></div></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/range-rover-l460.jpg" alt="Range Rover"><div class="card-info"><div class="card-name">Range <span class="display">Rover</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">5 Seats</span><span class="spec-chip">530 HP</span></div></div></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/range-rover-sport.jpg" alt="Range Rover Sport"><div class="card-info"><div class="card-name">Range Rover <span class="display">Sport</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">5 Seats</span><span class="spec-chip">530 HP</span></div></div></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/mercedes-gle63.jpg" alt="Mercedes-AMG GLE 63 S"><div class="card-info"><div class="card-name">Mercedes-AMG <span class="display">GLE 63 S</span></div><div class="card-specs"><span class="spec-chip">Petrol</span><span class="spec-chip">Automatic</span><span class="spec-chip">5 Seats</span><span class="spec-chip">612 HP</span></div></div></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/land-rover-defender.jpg" alt="Land Rover Defender 110"><div class="card-info"><div class="card-name">Land Rover <span class="display">Defender 110</span></div><div class="card-specs"><span class="spec-chip">Hybrid</span><span class="spec-chip">Automatic</span><span class="spec-chip">5 Seats</span><span class="spec-chip">300 HP</span></div></div></div>
-    <div class="work-card reveal"><img src="assets/photos/fleet/mercedes-vclass.jpg" alt="Mercedes V-Class"><div class="card-info"><div class="card-name">Mercedes <span class="display">V-Class</span></div><div class="card-specs"><span class="spec-chip">Diesel</span><span class="spec-chip">Automatic</span><span class="spec-chip">8 Seats</span><span class="spec-chip">190 HP</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/ferrari-f8.jpg" alt="Ferrari F8 Spider"><div class="card-info"><div class="card-name">Ferrari <span class="display">F8 Spider</span></div><div class="card-specs"><span class="spec-chip" data-en="Petrol">Benzine</span><span class="spec-chip" data-en="Automatic">Automaat</span><span class="spec-chip" data-en="2 Seats">2 zitplaatsen</span><span class="spec-chip" data-en="720 HP">720 pk</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/ferrari-portofino.jpg" alt="Ferrari Portofino"><div class="card-info"><div class="card-name">Ferrari <span class="display">Portofino</span></div><div class="card-specs"><span class="spec-chip" data-en="Petrol">Benzine</span><span class="spec-chip" data-en="Automatic">Automaat</span><span class="spec-chip" data-en="4 Seats">4 zitplaatsen</span><span class="spec-chip" data-en="600 HP">600 pk</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/ferrari-roma.jpg" alt="Ferrari Roma Spider"><div class="card-info"><div class="card-name">Ferrari <span class="display">Roma Spider</span></div><div class="card-specs"><span class="spec-chip" data-en="Petrol">Benzine</span><span class="spec-chip" data-en="Automatic">Automaat</span><span class="spec-chip" data-en="2 Seats">2 zitplaatsen</span><span class="spec-chip" data-en="620 HP">620 pk</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/lambo-huracan.jpg" alt="Lamborghini Huracan"><div class="card-info"><div class="card-name">Lamborghini <span class="display">Huracán</span></div><div class="card-specs"><span class="spec-chip" data-en="Petrol">Benzine</span><span class="spec-chip" data-en="Automatic">Automaat</span><span class="spec-chip" data-en="2 Seats">2 zitplaatsen</span><span class="spec-chip" data-en="580 HP">580 pk</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/lambo-huracan-evo.jpg" alt="Lamborghini Huracan EVO Spyder"><div class="card-info"><div class="card-name">Lamborghini <span class="display">Huracán EVO Spyder</span></div><div class="card-specs"><span class="spec-chip" data-en="Petrol">Benzine</span><span class="spec-chip" data-en="Automatic">Automaat</span><span class="spec-chip" data-en="2 Seats">2 zitplaatsen</span><span class="spec-chip" data-en="640 HP">640 pk</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/porsche-gt3.jpg" alt="Porsche 911 GT3"><div class="card-info"><div class="card-name">Porsche <span class="display">911 GT3</span></div><div class="card-specs"><span class="spec-chip" data-en="Petrol">Benzine</span><span class="spec-chip" data-en="Automatic">Automaat</span><span class="spec-chip" data-en="2 Seats">2 zitplaatsen</span><span class="spec-chip" data-en="510 HP">510 pk</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/porsche-boxster.jpg" alt="Porsche 718 Boxster"><div class="card-info"><div class="card-name">Porsche <span class="display">718 Boxster</span></div><div class="card-specs"><span class="spec-chip" data-en="Petrol">Benzine</span><span class="spec-chip" data-en="Automatic">Automaat</span><span class="spec-chip" data-en="2 Seats">2 zitplaatsen</span><span class="spec-chip" data-en="300 HP">300 pk</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/audi-rs3.jpg" alt="Audi RS3"><div class="card-info"><div class="card-name">Audi <span class="display">RS3</span></div><div class="card-specs"><span class="spec-chip" data-en="Petrol">Benzine</span><span class="spec-chip" data-en="Automatic">Automaat</span><span class="spec-chip" data-en="4 Seats">4 zitplaatsen</span><span class="spec-chip" data-en="400 HP">400 pk</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/abarth-695.jpg" alt="Abarth 695 Competizione"><div class="card-info"><div class="card-name">Abarth <span class="display">695 Competizione</span></div><div class="card-specs"><span class="spec-chip" data-en="Petrol">Benzine</span><span class="spec-chip" data-en="Manual">Handgeschakeld</span><span class="spec-chip" data-en="4 Seats">4 zitplaatsen</span><span class="spec-chip" data-en="180 HP">180 pk</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/bmw-serie4.jpg" alt="BMW 4 Series Coupe"><div class="card-info"><div class="card-name">BMW <span class="display">4 Series Coupé</span></div><div class="card-specs"><span class="spec-chip" data-en="Petrol">Benzine</span><span class="spec-chip" data-en="Automatic">Automaat</span><span class="spec-chip" data-en="4 Seats">4 zitplaatsen</span><span class="spec-chip" data-en="374 HP">374 pk</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/mercedes-a45s.jpg" alt="Mercedes-AMG A45 S"><div class="card-info"><div class="card-name">Mercedes-AMG <span class="display">A45 S</span></div><div class="card-specs"><span class="spec-chip" data-en="Petrol">Benzine</span><span class="spec-chip" data-en="Automatic">Automaat</span><span class="spec-chip" data-en="4 Seats">4 zitplaatsen</span><span class="spec-chip" data-en="421 HP">421 pk</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/mercedes-sl43.jpg" alt="Mercedes-AMG SL 43"><div class="card-info"><div class="card-name">Mercedes-AMG <span class="display">SL 43</span></div><div class="card-specs"><span class="spec-chip" data-en="Hybrid">Hybride</span><span class="spec-chip" data-en="Automatic">Automaat</span><span class="spec-chip" data-en="2 Seats">2 zitplaatsen</span><span class="spec-chip" data-en="381 HP">381 pk</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/range-rover-l460.jpg" alt="Range Rover"><div class="card-info"><div class="card-name">Range <span class="display">Rover</span></div><div class="card-specs"><span class="spec-chip" data-en="Petrol">Benzine</span><span class="spec-chip" data-en="Automatic">Automaat</span><span class="spec-chip" data-en="5 Seats">5 zitplaatsen</span><span class="spec-chip" data-en="530 HP">530 pk</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/range-rover-sport.jpg" alt="Range Rover Sport"><div class="card-info"><div class="card-name">Range Rover <span class="display">Sport</span></div><div class="card-specs"><span class="spec-chip" data-en="Petrol">Benzine</span><span class="spec-chip" data-en="Automatic">Automaat</span><span class="spec-chip" data-en="5 Seats">5 zitplaatsen</span><span class="spec-chip" data-en="530 HP">530 pk</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/mercedes-gle63.jpg" alt="Mercedes-AMG GLE 63 S"><div class="card-info"><div class="card-name">Mercedes-AMG <span class="display">GLE 63 S</span></div><div class="card-specs"><span class="spec-chip" data-en="Petrol">Benzine</span><span class="spec-chip" data-en="Automatic">Automaat</span><span class="spec-chip" data-en="5 Seats">5 zitplaatsen</span><span class="spec-chip" data-en="612 HP">612 pk</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/land-rover-defender.jpg" alt="Land Rover Defender 110"><div class="card-info"><div class="card-name">Land Rover <span class="display">Defender 110</span></div><div class="card-specs"><span class="spec-chip" data-en="Hybrid">Hybride</span><span class="spec-chip" data-en="Automatic">Automaat</span><span class="spec-chip" data-en="5 Seats">5 zitplaatsen</span><span class="spec-chip" data-en="300 HP">300 pk</span></div></div></div>
+    <div class="work-card reveal"><img src="assets/photos/fleet/mercedes-vclass.jpg" alt="Mercedes V-Class"><div class="card-info"><div class="card-name">Mercedes <span class="display">V-Class</span></div><div class="card-specs"><span class="spec-chip">Diesel</span><span class="spec-chip" data-en="Automatic">Automaat</span><span class="spec-chip" data-en="8 Seats">8 zitplaatsen</span><span class="spec-chip" data-en="190 HP">190 pk</span></div></div></div>
   </div>
-  <p class="block-sub reveal" style="margin-top: 28px;">Not seeing what you're after? Our collection is always growing. Ask us for the full list.</p>
+  <p class="block-sub reveal sv-note" data-t="fleet.note">Niet gevonden wat u zoekt? Onze collectie groeit voortdurend. Vraag naar de volledige lijst.</p>
 </section>
+
+  <section class="sv-detail reveal" id="sv-detail">
+    <div class="sv-text">
+      <p class="sv-eyebrow">06 &middot; <span data-t="sv.n">FLEET</span></p>
+      <h2 class="sv-h2"><span data-t="sv.h">Kom aan in</span><br><em data-t="sv.h2">de auto van uw keuze.</em></h2>
+      <p class="sv-p" data-t="sv.p">Supercars en executive SUV's door heel Europa, inclusief volledige car detailing. U kiest de auto, wij zorgen dat hij perfect en op tijd voor staat.</p>
+      <p class="sv-listhead" data-t="sv.included">WAT IS INBEGREPEN</p>
+      <ul class="sv-list"><li data-t="sv.b0">Supercars en executive SUV’s</li><li data-t="sv.b1">Beschikbaar in heel Europa</li><li data-t="sv.b2">Volledige car detailing inbegrepen</li><li data-t="sv.b3">Bezorging en ophalen op uw locatie</li><li data-t="sv.b4">Ook te combineren met een chauffeur</li><li data-t="sv.b5">Eén aanspreekpunt voor de hele huur</li></ul>
+      <div class="sv-actions"><a href="index.html#lidmaatschap" class="btn btn-solid sv-b" data-t="sv.cta">Aan de slag</a><a href="diensten.html#fleet" class="sv-all" data-t="sv.all">&larr; Alle diensten</a></div>
+    </div>
+    <div class="sv-photos n2">
+      <figure class="ph ph-0"><img src="assets/photos/fleet/lambo-huracan.jpg" alt="Witte supercar op een kade bij schemering" data-ta="sv.a0" loading="lazy"><figcaption data-t="sv.c0">Voorgereden</figcaption></figure>
+      <figure class="ph ph-1"><img src="assets/photos/fleet/porsche-boxster.jpg" alt="Gele cabriolet in een verlichte garage" data-ta="sv.a1" loading="lazy"><figcaption data-t="sv.c1">Klaar voor de weg</figcaption></figure>
+    </div>
+  </section>
 
 <section class="block" id="how">
   <div class="block-header reveal">
-    <div class="eyebrow-row"><div class="eyebrow-line"></div><span class="eyebrow-text">How it Works</span></div>
-    <h2 class="block-heading">Simple, from <span class="display">request</span> to keys.</h2>
+    <div class="eyebrow-row"><div class="eyebrow-line"></div><span class="eyebrow-text" data-t="how.eyebrow">Zo werkt het</span></div>
+    <h2 class="block-heading"><span data-t="how.h.a">Eenvoudig, van</span> <span class="display" data-t="how.h.b">verzoek</span> <span data-t="how.h.c">tot sleutels.</span></h2>
   </div>
   <div class="steps">
     <div class="step reveal">
       <div class="step-num display">01</div>
-      <h3>Send your request</h3>
-      <p>Tell us the car, the dates, and where you'd like it delivered, anywhere in Europe.</p>
+      <h3 data-t="how.1t">Stuur uw verzoek</h3>
+      <p data-t="how.1d">Laat ons de auto, de data en de afleverlocatie weten, overal in Europa.</p>
     </div>
     <div class="step reveal">
       <div class="step-num display">02</div>
-      <h3>We arrange everything</h3>
-      <p>Our team coordinates with our fleet partner directly. You get one point of contact, start to finish.</p>
+      <h3 data-t="how.2t">Wij regelen alles</h3>
+      <p data-t="how.2d">Ons team stemt rechtstreeks af met onze vlootpartner. U heeft één aanspreekpunt, van begin tot eind.</p>
     </div>
     <div class="step reveal">
       <div class="step-num display">03</div>
-      <h3>Delivered to your door</h3>
-      <p>The car arrives exactly where and when you need it, ready to drive.</p>
+      <h3 data-t="how.3t">Bij u afgeleverd</h3>
+      <p data-t="how.3d">De auto staat precies waar en wanneer u hem nodig heeft, klaar om te rijden.</p>
     </div>
   </div>
 </section>
 
 <section class="block">
   <div class="stats reveal">
-    <div class="stat"><div class="stat-num display">17+</div><div class="stat-label">Vehicles</div></div>
-    <div class="stat"><div class="stat-num display">24/7</div><div class="stat-label">On Request</div></div>
-    <div class="stat"><div class="stat-num display">100%</div><div class="stat-label">Europe-wide Delivery</div></div>
+    <div class="stat"><div class="stat-num display">17+</div><div class="stat-label" data-t="st.1">Voertuigen</div></div>
+    <div class="stat"><div class="stat-num display">24/7</div><div class="stat-label" data-t="st.2">Op aanvraag</div></div>
+    <div class="stat"><div class="stat-num display">100%</div><div class="stat-label" data-t="st.3">Levering door heel Europa</div></div>
   </div>
 </section>
 
 <section class="footer-block" id="contact">
   <div class="reveal">
-    <div class="eyebrow-row" style="justify-content:center;"><div class="eyebrow-line"></div><span class="eyebrow-text">Request Access</span><div class="eyebrow-line"></div></div>
-    <h2 class="footer-heading">Ready to arrive in <span class="display">style</span>?</h2>
+    <div class="eyebrow-row" style="justify-content:center;"><div class="eyebrow-line"></div><span class="eyebrow-text" data-t="ft.eyebrow">Toegang aanvragen</span><div class="eyebrow-line"></div></div>
+    <h2 class="footer-heading"><span data-t="ft.h.a">Klaar om met</span> <span class="display" data-t="ft.h.b">stijl</span> <span data-t="ft.h.c">aan te komen?</span></h2>
     <div class="footer-cta">
-      <a href="https://wa.me/31644917512?text=Hallo%2C%20ik%20wil%20graag%20een%20auto%20reserveren%20via%20Solace%20Executive." target="_blank" rel="noopener" class="btn btn-solid">Chat via WhatsApp ↗</a>
+      <a href="index.html#lidmaatschap" class="btn btn-solid" data-t="hero.cta">Aan de slag</a>
+      <a href="https://wa.me/31644917512?text=Hallo%2C%20ik%20wil%20graag%20een%20auto%20reserveren%20via%20Solace%20Executive." target="_blank" rel="noopener" class="btn btn-outline" data-t="ft.wa">Chat via WhatsApp ↗</a>
     </div>
-    <p class="footer-email">Or mail us at <a href="mailto:hello@solaceexecutive.com">hello@solaceexecutive.com</a></p>
+    <p class="footer-email"><span data-t="ft.mail">Of mail ons op</span> <a href="mailto:hello@solaceexecutive.com">hello@solaceexecutive.com</a></p>
+    <nav class="sv-see" aria-label="Zie ook"><span class="sv-see-l" data-t="sv.see">ZIE OOK</span><a href="villas.html" data-t="sv.villas">Villa's</a><a href="diensten.html#lifestyle" data-t="sv.lifestyle">Lifestyle</a></nav>
   </div>
   <div class="footer-bottom">
     <span class="dot"></span>
-    <span>Available for new requests</span>
+    <span data-t="ft.avail">Beschikbaar voor nieuwe verzoeken</span>
   </div>
+  <div class="sv-footer"><a href="index.html">&copy; <span id="year"></span> Solace Executive</a><a href="diensten.html" data-t="sv.all.plain">Alle diensten</a><a href="privacy.html">Privacy</a></div>
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
+  var EN = {"sv.n": "FLEET", "sv.h": "Arrive in", "sv.h2": "the car of your choice.", "sv.p": "Supercars and executive SUVs across Europe, including full car detailing. You choose the car, we make sure it arrives perfect and on time.", "sv.included": "WHAT IS INCLUDED", "sv.cta": "Get started", "sv.all": "← All services", "sv.a0": "White supercar on a waterfront road at dusk", "sv.a1": "Yellow convertible in a lit garage", "sv.c0": "Delivered to your door", "sv.c1": "Ready for the road", "sv.b0": "Supercars and executive SUVs", "sv.b1": "Available across Europe", "sv.b2": "Full car detailing included", "sv.b3": "Delivery and pickup at your location", "sv.b4": "Can be combined with a chauffeur", "sv.b5": "One contact for the whole hire", "loader.top": "Vehicle Rental", "nav.how": "How it Works", "nav.cta": "Get started", "sv.all.plain": "All services", "hero.eyebrow": "Vehicle Rental · Across Europe", "hero.h1": "Drive something extraordinary.", "hero.pre": "From", "hero.post": "to executive SUVs, our curated fleet delivered anywhere in Europe.", "hero.cta": "Get started", "hero.view": "View the Fleet", "fleet.eyebrow": "The Fleet", "fleet.h.a": "Cars worth", "fleet.h.b": "arriving in.", "fleet.sub": "A selection from our curated collection: supercars, convertibles and executive SUVs, always immaculately kept.", "fleet.note": "Not seeing what you're after? Our collection is always growing. Ask us for the full list.", "how.eyebrow": "How it Works", "how.h.a": "Simple, from", "how.h.b": "request", "how.h.c": "to keys.", "how.1t": "Send your request", "how.1d": "Tell us the car, the dates, and where you'd like it delivered, anywhere in Europe.", "how.2t": "We arrange everything", "how.2d": "Our team coordinates with our fleet partner directly. You get one point of contact, start to finish.", "how.3t": "Delivered to your door", "how.3d": "The car arrives exactly where and when you need it, ready to drive.", "st.1": "Vehicles", "st.2": "On Request", "st.3": "Europe-wide Delivery", "ft.eyebrow": "Request Access", "ft.h.a": "Ready to arrive in", "ft.h.b": "style?", "ft.h.c": "", "ft.wa": "Chat via WhatsApp ↗", "ft.mail": "Or mail us at", "ft.avail": "Available for new requests", "sv.see": "SEE ALSO", "sv.villas": "Villas", "sv.lifestyle": "Lifestyle"};
+  var ROLES = { nl: ["Ferrari's", "Lamborghini's", "Porsches", "Range Rovers"], en: ["Ferraris", "Lamborghinis", "Porsches", "Range Rovers"] };
+  var WORDS = { nl: ['Arriveer', 'Maak indruk', 'Rijd'], en: ['Arrive', 'Impress', 'Drive'] };
+  var KEY = 'solace-lang';
+  var lang = 'nl';
+  var nodes = Array.prototype.slice.call(document.querySelectorAll('[data-t], [data-en]'));
+  var alts = Array.prototype.slice.call(document.querySelectorAll('[data-ta]'));
+  nodes.forEach(function (n) { n.setAttribute('data-nl', n.textContent); });
+  alts.forEach(function (n) { n.setAttribute('data-nl-alt', n.getAttribute('alt')); });
+  function pick() {
+    try { var s = localStorage.getItem(KEY); if (s === 'nl' || s === 'en') return s; } catch (e) {}
+    var l = (navigator.languages && navigator.languages[0]) || navigator.language || 'nl';
+    return /^nl/i.test(l) ? 'nl' : 'en';
+  }
+  function apply(l) {
+    lang = l;
+    document.documentElement.lang = l;
+    nodes.forEach(function (n) {
+      var k = n.getAttribute('data-t');
+      var en = k ? EN[k] : n.getAttribute('data-en');
+      n.textContent = (l === 'en' && en !== undefined) ? en : n.getAttribute('data-nl');
+    });
+    alts.forEach(function (n) { var k = n.getAttribute('data-ta'); n.setAttribute('alt', l === 'en' && EN[k] ? EN[k] : n.getAttribute('data-nl-alt')); });
+    document.title = l === 'en' ? 'Exclusive Fleet | Solace Executive' : 'Exclusieve vloot | Solace Executive';
+    document.getElementById('langT').textContent = l === 'en' ? 'NL' : 'EN';
+    var rw = document.getElementById('roleWord'); rw.textContent = ROLES[l][ri % ROLES[l].length];
+  }
+  var ri = 0;
+  document.getElementById('langT').addEventListener('click', function () {
+    var n = lang === 'nl' ? 'en' : 'nl';
+    try { localStorage.setItem(KEY, n); } catch (e) {}
+    apply(n);
+  });
+  apply(pick());
+  document.getElementById('year').textContent = new Date().getFullYear();
+
   // Loading counter
   (function () {
     const loader = document.getElementById('loader');
     const countEl = document.getElementById('loaderCount');
     const barFill = document.getElementById('loaderBarFill');
     const wordEl = document.getElementById('loaderWord');
-    const words = ['Arrive', 'Impress', 'Drive'];
     let wi = 0;
+    wordEl.textContent = WORDS[lang][0];
     const wordTimer = setInterval(() => {
-      wi = (wi + 1) % words.length;
-      wordEl.textContent = words[wi];
+      wi = (wi + 1) % 3;
+      wordEl.textContent = WORDS[lang][wi];
     }, 900);
 
     const duration = 2200;
@@ -305,7 +456,7 @@
   })();
 
   function runEntrance() {
-    if (!window.gsap) return;
+    if (!window.gsap) { document.querySelectorAll('.hero .reveal').forEach(el => { el.style.opacity = 1; }); return; }
     gsap.timeline({ ease: 'power3.out' })
       .to('#r2', { opacity: 1, y: 0, duration: 1 })
       .to(['#r1', '#r3', '#r4'], { opacity: 1, y: 0, duration: 0.8, stagger: 0.12 }, '-=0.6');
@@ -319,13 +470,11 @@
   }
 
   // Rotating role word
-  const roles = ["Ferraris", "Lamborghinis", "Porsches", "Range Rovers"];
-  let ri = 0;
   setInterval(() => {
-    ri = (ri + 1) % roles.length;
+    ri = (ri + 1) % ROLES[lang].length;
     const el = document.getElementById('roleWord');
     el.style.opacity = 0;
-    setTimeout(() => { el.textContent = roles[ri]; el.style.opacity = 1; }, 250);
+    setTimeout(() => { el.textContent = ROLES[lang][ri]; el.style.opacity = 1; }, 250);
   }, 2400);
   document.getElementById('roleWord').style.transition = 'opacity 0.25s ease';
 
@@ -335,19 +484,21 @@
     navPill.classList.toggle('scrolled', window.scrollY > 80);
   });
 
-  // Reveal on scroll
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (window.gsap && window.ScrollTrigger && !reducedMotion) {
-    gsap.registerPlugin(ScrollTrigger);
-    gsap.utils.toArray('.block .reveal, .footer-block .reveal').forEach((el) => {
-      gsap.fromTo(el, { opacity: 0, y: 24 }, {
-        opacity: 1, y: 0, duration: 0.7, ease: 'power2.out',
-        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' },
+  // Entrance on scroll (everything except the hero, which has its own intro)
+  (function () {
+    var els = Array.prototype.slice.call(document.querySelectorAll('.reveal')).filter(function (e) { return !e.closest('.hero'); });
+    if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('in'); }); return; }
+    var io = new IntersectionObserver(function (entries) {
+      var k = 0;
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.style.setProperty('--rv-d', (k++ * 0.08) + 's');
+        e.target.classList.add('in');
+        io.unobserve(e.target);
       });
-    });
-  } else {
-    document.querySelectorAll('.block .reveal, .footer-block .reveal').forEach(el => el.style.opacity = 1);
-  }
+    }, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' });
+    els.forEach(function (e) { io.observe(e); });
+  })();
 </script>
 
 </body>

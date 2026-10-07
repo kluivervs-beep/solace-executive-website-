@@ -9,8 +9,10 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Personal Shopping | Solace Executive">
 <meta property="og:description" content="Elk stuk, voor u gevonden.">
-<meta property="og:image" content="assets/photos/personal-shopping.jpg">
+<meta property="og:image" content="https://solaceexecutive.com/assets/photos/personal-shopping.jpg">
 <meta property="og:locale" content="nl_NL">
+<meta property="og:site_name" content="Solace Executive">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://solaceexecutive.com/personal-shopping.html">
 <meta property="og:url" content="https://solaceexecutive.com/personal-shopping.html">
 <link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
@@ -125,15 +127,88 @@
   }
   @media (prefers-reduced-motion: reduce) {
   }
+
+  /* ===== Service page pattern (shared with diensten.html) ===== */
+  :root { --sv-ink:#F5F1E6; --sv-muted:#A9B4BB; --sv-stroke:rgba(212,190,140,0.16); --sv-gold:#B4923D; --sv-gold-light:#D8BD7C; --sv-ease:cubic-bezier(.22,1,.36,1); }
+  .sv-back { margin-left:auto; margin-right:20px; display:inline-flex; align-items:center; gap:8px; min-height:44px; padding:0 4px; font:500 12px/1 'Montserrat',sans-serif; letter-spacing:.14em; text-transform:uppercase; color:rgba(245,241,230,.82); transition:color .25s ease; }
+  .sv-back:hover { color:var(--sv-gold-light); }
+  .sv-back-arrow { transition:transform .3s ease; } .sv-back:hover .sv-back-arrow { transform:translateX(-4px); }
+  .sv-hdr .brand { min-height:44px; }
+  .sv-detail, .sv-how { max-width:1200px; margin:0 auto; font-family:'Montserrat',sans-serif; color:var(--sv-ink); border-top:1px solid var(--sv-stroke); }
+  .sv-detail { padding:96px 24px; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(32px,6vw,88px); align-items:center; }
+  .sv-detail *, .sv-how * { box-sizing:border-box; }
+  .sv-eyebrow { font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--sv-gold-light); margin:0 0 18px; }
+  .sv-h2 { font-family:'Cormorant',serif; font-weight:500; font-size:clamp(34px,5vw,56px); line-height:1.08; margin:0 0 22px; max-width:none; color:var(--sv-ink); }
+  .sv-h2 em { color:var(--sv-gold-light); }
+  .sv-p { color:var(--sv-muted); font-size:15.5px; line-height:1.65; max-width:520px; margin:0 0 26px; }
+  .sv-listhead { font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--sv-gold); margin:0 0 14px; }
+  .sv-list { list-style:none; display:grid; gap:12px; margin:0 0 30px; padding:0; max-width:520px; }
+  .sv-list li { position:relative; padding-left:28px; font-size:14.5px; line-height:1.55; }
+  .sv-list li::before { content:''; position:absolute; left:2px; top:.5em; width:12px; height:6px; border-left:1.6px solid var(--sv-gold-light); border-bottom:1.6px solid var(--sv-gold-light); transform:rotate(-45deg); }
+  .sv-detail.in .sv-list li { animation:svIn .8s var(--sv-ease) backwards; animation-delay:calc(.2s + var(--i,0) * .07s); }
+  .sv-list li:nth-child(2) { --i:1; } .sv-list li:nth-child(3) { --i:2; } .sv-list li:nth-child(4) { --i:3; } .sv-list li:nth-child(5) { --i:4; } .sv-list li:nth-child(6) { --i:5; }
+  .sv-actions { display:flex; align-items:center; gap:22px; flex-wrap:wrap; }
+  .sv-actions--center { justify-content:center; }
+  .sv-all { font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--sv-muted); min-height:44px; display:inline-flex; align-items:center; transition:color .25s ease; }
+  .sv-all:hover { color:var(--sv-gold-light); }
+  .sv-photos { position:relative; }
+  .sv-photos .ph { border-radius:22px; overflow:hidden; border:1px solid var(--sv-stroke); background:#16232E; position:relative; margin:0; }
+  .sv-photos .ph img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 1.2s var(--sv-ease); }
+  .sv-photos .ph:hover img { transform:scale(1.05); }
+  .sv-photos .ph figcaption { position:absolute; left:0; right:0; bottom:0; padding:38px 18px 14px; font-size:12px; letter-spacing:.06em; color:var(--sv-ink); background:linear-gradient(to top, rgba(10,18,24,.8), transparent); }
+  .sv-photos.n1 .ph-0 { aspect-ratio:4/5; }
+  .sv-photos.n2 { min-height:560px; padding-bottom:26px; }
+  .sv-photos.n2 .ph-0 { width:74%; aspect-ratio:4/5; }
+  .sv-photos.n2 .ph-1 { position:absolute; right:0; bottom:0; width:50%; aspect-ratio:3/4; box-shadow:0 30px 70px -30px rgba(0,0,0,.8); }
+  .sv-photos.n2 .ph-0 figcaption { right:34%; }
+  .sv-how { padding:80px 24px; }
+  .sv-steps { display:grid; grid-template-columns:repeat(3,1fr); gap:32px; margin-top:28px; }
+  .sv-step { border-top:1px solid var(--sv-gold); padding-top:20px; transition:border-color .3s ease; }
+  .sv-step:hover { border-top-color:var(--sv-gold-light); }
+  .sv-step b { display:block; font-family:'Cormorant',serif; font-weight:500; font-size:26px; margin-bottom:8px; }
+  .sv-step span { color:var(--sv-muted); font-size:14.5px; line-height:1.6; }
+  .sv-see { display:flex; flex-wrap:wrap; gap:0 26px; justify-content:center; align-items:center; margin-top:26px; font-family:'Montserrat',sans-serif; font-size:13px; }
+  .sv-see-l { font-size:11px; letter-spacing:.24em; color:var(--sv-gold); }
+  .sv-see a { color:var(--sv-muted); min-height:44px; display:inline-flex; align-items:center; transition:color .25s ease, transform .3s ease; }
+  .sv-see a::after { content:'\2192'; margin-left:8px; color:var(--sv-gold-light); }
+  .sv-see a:hover { color:var(--sv-gold-light); transform:translateX(3px); }
+  .sv-footer { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:0 22px; padding:16px 24px; border-top:1px solid var(--sv-stroke); font-family:'Montserrat',sans-serif; }
+  .sv-footer a { font-size:13px; color:var(--sv-muted); display:inline-block; line-height:44px; min-height:44px; padding:0 4px; transition:color .25s ease; }
+  .sv-footer a:hover { color:var(--sv-gold-light); }
+  .yacht-card, .villa-card, .lp-leg-card, .ps-point { transition:transform .5s var(--sv-ease), border-color .3s ease, box-shadow .5s ease; }
+  .yacht-card:hover, .villa-card:hover, .lp-leg-card:hover { transform:translateY(-4px); border-color:rgba(216,189,124,.38); box-shadow:0 26px 60px -34px rgba(0,0,0,.85); }
+  .yacht-card-cta, .villa-card-cta { min-height:44px; }
+  .ps-add, .ps-piece-remove { min-height:44px; display:inline-flex; align-items:center; }
+  .sv-js .reveal { opacity:0; }
+  .sv-js .reveal.in { opacity:1; animation:svIn 1s var(--sv-ease) backwards; animation-delay:var(--rv-d,0s); }
+  @keyframes svIn { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
+  @media (prefers-reduced-motion: reduce) { .sv-js .reveal { opacity:1; } .sv-js .reveal.in, .sv-detail.in .sv-list li { animation:none; } .sv-photos .ph img { transition:none; } }
+  @media (max-width: 900px) {
+    .sv-detail { grid-template-columns:1fr; padding:64px 24px; }
+    .sv-photos.n2 { min-height:0; }
+    .sv-steps { grid-template-columns:1fr; }
+  }
+  @media (max-width: 640px) {
+    .sv-hdr { padding:12px 16px !important; flex-wrap:wrap; }
+    .sv-back { order:3; flex:0 0 100%; margin:0; padding:0; }
+    .sv-hdr .lang-btn { min-height:44px; min-width:44px; }
+    .sv-hdr .lang-switch { border-radius:999px; }
+    .sv-hdr .lp-sound-toggle { width:44px; height:44px; }
+    .sv-hdr .lp-badge { display:none; }
+    .sv-detail { padding:56px 20px; }
+    .sv-actions--center { flex-direction:column; align-items:stretch; gap:12px; max-width:340px; margin-left:auto; margin-right:auto; }
+    .sv-how { padding:56px 20px; }
+  }
 </style>
+<script>document.documentElement.classList.add('sv-js')</script>
 </head>
 <body>
 
 <section class="ps-hero">
-  <img class="ps-hero-photo" src="assets/photos/personal-shopping.jpg" alt="">
+  <img class="ps-hero-photo" src="assets/photos/personal-shopping.jpg" alt="Handen met een aantal groene luxe tassen op straat" data-i18n="sv.shopping.a0" data-i18n-attr="alt">
   <div class="ps-hero-scrim"></div>
   <div class="ps-hero-inner">
-    <header class="ps-header">
+    <header class="ps-header sv-hdr">
       <a href="index.html" class="brand" aria-label="Solace Executive homepage">
         <img src="assets/icons/monogram.svg" alt="" class="brand-mark">
         <span class="brand-word">
@@ -141,6 +216,7 @@
           <span class="brand-sub">EXECUTIVE</span>
         </span>
       </a>
+      <a href="diensten.html#shopping" class="sv-back"><span class="sv-back-arrow" aria-hidden="true">&larr;</span><span data-i18n="sv.all.plain">Alle diensten</span></a>
       <div class="lang-switch" role="group" aria-label="Taal / Language">
         <button type="button" class="lang-btn" data-lang="nl">NL</button>
         <button type="button" class="lang-btn" data-lang="en">EN</button>
@@ -212,6 +288,20 @@
   </div>
 </section>
 
+<section class="sv-detail reveal" id="sv-detail">
+  <div class="sv-text">
+    <p class="sv-eyebrow">02 &middot; <span data-i18n="service.shopping">Personal Shopping</span></p>
+    <h2 class="sv-h2"><span data-i18n="sv.shopping.h">Het stuk dat u zoekt,</span><br><em data-i18n="sv.shopping.h2">gevonden en bezorgd.</em></h2>
+    <p class="sv-p" data-i18n="sv.shopping.p">Van cadeaus tot volledige garderobes: wij kopen persoonlijk voor u in, bij de boetieks en merken van uw voorkeur, en leveren het thuis of op locatie af.</p>
+    <p class="sv-listhead" data-i18n="sv.included">WAT IS INBEGREPEN</p>
+    <ul class="sv-list"><li data-i18n="sv.shopping.b0">Cadeaus uitzoeken en inkopen</li><li data-i18n="sv.shopping.b1">Complete garderobes samenstellen</li><li data-i18n="sv.shopping.b2">Inkoop bij de boetieks en merken van uw voorkeur</li><li data-i18n="sv.shopping.b3">Zoeken naar moeilijk te vinden stukken</li><li data-i18n="sv.shopping.b4">Bezorging thuis of op locatie</li><li data-i18n="sv.shopping.b5">Netjes verpakt, op het juiste moment aangeleverd</li></ul>
+    <div class="sv-actions"><a href="index.html#lidmaatschap" class="btn btn-primary" data-i18n="cta.intake">Aan de Slag</a><a href="diensten.html#shopping" class="sv-all" data-i18n="sv.all">&larr; Alle diensten</a></div>
+  </div>
+  <div class="sv-photos n1">
+      <figure class="ph ph-0"><img src="assets/photos/personal-shopping.jpg" alt="Handen met een aantal groene luxe tassen op straat" data-i18n="sv.shopping.a0" data-i18n-attr="alt" loading="lazy"><figcaption data-i18n="sv.shopping.c0">Persoonlijk ingekocht</figcaption></figure>
+  </div>
+</section>
+
 <section class="ps-form-wrap" id="aanvraag">
   <div class="ps-form-head">
     <p class="eyebrow reveal" style="display:flex;justify-content:center;" data-i18n="ps.form.eyebrow">AANVRAAG</p>
@@ -240,21 +330,22 @@
     <h2 class="section-title reveal" data-i18n="ps.app.title">Volg elke stap in de app.</h2>
     <p class="ps-app-body reveal" data-i18n="ps.app.body">Als lid ziet u precies waar uw verzoek staat, van in behandeling tot bevestigd. Op uw iPhone verschijnt de voortgang zelfs live in de Dynamic Island.</p>
   </div>
-  <div class="ps-mini-phone reveal"><img src="assets/photos/app/requests.jpg" alt="" loading="lazy"></div>
+  <div class="ps-mini-phone reveal"><img src="assets/photos/app/requests.jpg" alt="Overzicht van verzoeken in de Solace Executive app" data-i18n="sv.ps.phone" data-i18n-attr="alt" loading="lazy"></div>
 </section>
 
 <section class="ps-closing">
   <h2 class="reveal" data-i18n="ps.closing.title">Liever eerst weten wat er nog meer kan?</h2>
   <p class="reveal" data-i18n="ps.closing.body">Solace Executive regelt ook privéjets, jachten en executive transport, allemaal via één aanspreekpunt.</p>
-  <a href="index.html" class="btn btn-outline reveal" data-i18n="ps.closing.cta">Bekijk alle diensten</a>
+  <div class="sv-actions sv-actions--center reveal"><a href="index.html#lidmaatschap" class="btn btn-primary" data-i18n="cta.intake">Aan de Slag</a><a href="diensten.html#shopping" class="btn btn-outline" data-i18n="ps.closing.cta">Bekijk alle diensten</a></div>
+  <nav class="sv-see reveal" aria-label="Zie ook" data-i18n="sv.see" data-i18n-attr="aria-label"><span class="sv-see-l" data-i18n="sv.see">ZIE OOK</span><a href="diensten.html#transport" data-i18n="service.transport">Executive Transport</a><a href="jets.html" data-i18n="service.jets">Private Jets</a></nav>
 </section>
 
-<footer class="ps-footer">
+<footer class="ps-footer sv-footer">
   <a href="index.html">&copy; <span id="year"></span> Solace Executive</a>
+  <a href="diensten.html" data-i18n="sv.all.plain">Alle diensten</a>
+  <a href="privacy.html" data-i18n="sv.privacy">Privacy</a>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="i18n.js"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
@@ -262,15 +353,6 @@
   const T = (k) => (window.SolaceI18n ? window.SolaceI18n.t(k) : k);
 
   /* ---------- Scroll reveal ---------- */
-  if (window.gsap && window.ScrollTrigger && !reducedMotion) {
-    gsap.registerPlugin(ScrollTrigger);
-    gsap.utils.toArray('.reveal').forEach((el, i) => {
-      gsap.from(el, {
-        opacity: 0, y: 20, duration: 0.55, ease: 'power1.out', delay: (i % 6) * 0.04,
-        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' },
-      });
-    });
-  }
 
   /* ---------- Request form ---------- */
   const piecesEl = document.getElementById('psPieces');
@@ -335,6 +417,23 @@
     if (name) lines.push(T('ps.wa.name') + ': ' + name);
     window.open('https://wa.me/31644917512?text=' + encodeURIComponent(lines.join('\n').trim()), '_blank', 'noopener');
   });
+</script>
+<script>
+  /* Entrance: elements with .reveal fade up once when they scroll into view */
+  (function () {
+    var els = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('in'); }); return; }
+    var io = new IntersectionObserver(function (entries) {
+      var k = 0;
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.style.setProperty('--rv-d', (k++ * 0.08) + 's');
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' });
+    els.forEach(function (e) { io.observe(e); });
+  })();
 </script>
 
 </body>
