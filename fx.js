@@ -95,13 +95,21 @@
   magnets.forEach(function (b) {
     b.style.transition = 'translate 0.45s cubic-bezier(0.22, 1, 0.36, 1), ' + (getComputedStyle(b).transition || '');
   });
-  window.addEventListener('pointermove', function (e) {
-    magnets.forEach(function (b) {
-      var r = b.getBoundingClientRect();
+  // One read-then-write pass per frame instead of one per pointer event.
+  var mx = 0, my = 0, magnetTick = false;
+  function paintMagnets() {
+    magnetTick = false;
+    var rects = magnets.map(function (b) { return b.getBoundingClientRect(); });
+    magnets.forEach(function (b, i) {
+      var r = rects[i];
       var cx = r.left + r.width / 2;
       var cy = r.top + r.height / 2;
-      var near = Math.abs(cx - e.clientX) < r.width / 2 + PADDING && Math.abs(cy - e.clientY) < r.height / 2 + PADDING;
-      b.style.translate = near ? (e.clientX - cx) / STRENGTH + 'px ' + (e.clientY - cy) / STRENGTH + 'px' : '0px 0px';
+      var near = Math.abs(cx - mx) < r.width / 2 + PADDING && Math.abs(cy - my) < r.height / 2 + PADDING;
+      b.style.translate = near ? (mx - cx) / STRENGTH + 'px ' + (my - cy) / STRENGTH + 'px' : '0px 0px';
     });
+  }
+  window.addEventListener('pointermove', function (e) {
+    mx = e.clientX; my = e.clientY;
+    if (!magnetTick) { magnetTick = true; requestAnimationFrame(paintMagnets); }
   }, { passive: true });
 })();

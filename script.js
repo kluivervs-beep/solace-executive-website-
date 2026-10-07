@@ -130,11 +130,18 @@
         );
 
       // Slow ambient rotation of the hero ring
-      gsap.to('.hero-ring', {
+      const ringSpin = gsap.to('.hero-ring', {
         rotate: 360,
         duration: 120,
         repeat: -1,
         ease: 'none',
+      });
+      // The endless spin only runs while the hero is on screen.
+      ScrollTrigger.create({
+        trigger: '.hero',
+        start: 'top bottom',
+        end: 'bottom top',
+        onToggle: (self) => (self.isActive ? ringSpin.resume() : ringSpin.pause()),
       });
 
       // Subtle hero parallax on scroll
@@ -478,6 +485,19 @@
       });
     });
   });
+
+  /* ---------------------------------------------------------------------
+     Endless CSS animations (ticker, shiny text, live dots) are paused while
+     they are off screen, so the browser does not repaint them for nothing.
+  --------------------------------------------------------------------- */
+  if ('IntersectionObserver' in window && !reducedMotion) {
+    const pauser = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        en.target.style.animationPlayState = en.isIntersecting ? '' : 'paused';
+      });
+    }, { rootMargin: '80px' });
+    document.querySelectorAll('.shiny-text, .ticker-track, .lf-live i, .hero-live i').forEach((el) => pauser.observe(el));
+  }
 })();
 
 
