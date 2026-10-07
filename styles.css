@@ -2423,3 +2423,10 @@ html.has-globe .hero .hero-glow { display: none; }
 
 html.globe-pending .hero-map .maplibregl-canvas { opacity: 0; }
 .hero-map .maplibregl-canvas { transition: opacity 1s ease; }
+
+/* Phones: the header pill must fit the screen. */
+@media (max-width: 640px) {
+  .header-inner { gap: 8px; padding: 8px 12px; }
+  .lang-switch { margin-left: auto; }
+  .lang-switch .lang-btn { padding-left: 10px; padding-right: 10px; }
+}
