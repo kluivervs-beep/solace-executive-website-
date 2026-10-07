@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kalender | Solace Executive</title>
+<meta name="description" content="De komende empty legs van Solace Executive op een rij, per maand en per vertrekplaats. Positioneringsvluchten tegen een aantrekkelijker tarief, direct aan te vragen.">
+<meta name="theme-color" content="#0F1B24">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Kalender | Solace Executive">
+<meta property="og:description" content="Wat er de komende tijd vertrekt: empty legs per maand, direct aan te vragen.">
+<meta property="og:image" content="https://solaceexecutive.com/assets/photos/jets.jpg">
+<meta property="og:locale" content="nl_NL">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://solaceexecutive.com/kalender.html">
+<meta property="og:url" content="https://solaceexecutive.com/kalender.html">
+<link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root { --bg:#0F1B24; --surface:#16232E; --text:#F5F1E6; --muted:#A9B4BB; --stroke:rgba(212,190,140,0.16); --gold:#B4923D; --gold-light:#D8BD7C; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; line-height: 1.6; }
+  a { color: inherit; text-decoration: none; }
+  .display { font-family: 'Cormorant', serif; font-weight: 500; }
+  .display em { color: var(--gold-light); }
+  .topbar { display:flex; align-items:center; justify-content:space-between; padding:20px 24px; max-width:1200px; margin:0 auto; }
+  .brand { display:flex; align-items:center; gap:10px; font-size:14px; letter-spacing:.15em; }
+  .brand img { width:26px; height:26px; }
+  .tools { display:flex; align-items:center; gap:18px; }
+  .back-link { font-size:13px; color:var(--muted); } .back-link:hover { color:var(--gold-light); }
+  .lang { display:inline-flex; border:1px solid var(--stroke); border-radius:999px; padding:3px; }
+  .lang button { background:none; border:0; color:var(--muted); font:600 11px 'Montserrat',sans-serif; letter-spacing:.1em; padding:6px 12px; border-radius:999px; cursor:pointer; }
+  .lang button.on { background:var(--gold-light); color:var(--bg); }
+
+  .eyebrow { font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold-light); margin-bottom:18px; }
+  .hero { max-width:1200px; margin:0 auto; padding:56px 24px 28px; }
+  .hero h1 { font-size:clamp(40px,7vw,84px); line-height:1.04; margin-bottom:22px; }
+  .hero .lead { font-size:16px; color:var(--muted); max-width:580px; }
+
+  .filters { max-width:1200px; margin:0 auto; padding:18px 24px 8px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+  .filters .flabel { font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); margin-right:6px; }
+  .chip { background:none; border:1px solid var(--stroke); color:var(--muted); font:500 12px 'Montserrat',sans-serif; letter-spacing:.06em; padding:9px 16px; border-radius:999px; cursor:pointer; transition: background .25s ease, color .25s ease, border-color .25s ease; }
+  .chip:hover { color:var(--gold-light); border-color:var(--gold); }
+  .chip.on { background:var(--gold-light); color:var(--bg); border-color:var(--gold-light); }
+  .chip:focus-visible, .go:focus-visible, .btn-solid:focus-visible, .svc-link:focus-visible { outline:2px solid var(--gold-light); outline-offset:3px; }
+
+  .cal { max-width:1200px; margin:0 auto; padding:16px 24px 40px; min-height:280px; }
+  .month { font-family:'Cormorant',serif; font-weight:500; font-size:clamp(30px,4vw,44px); color:var(--gold-light); padding:44px 0 14px; border-bottom:1px solid var(--stroke); text-transform:capitalize; }
+  .row { display:grid; grid-template-columns:84px minmax(0,1fr) auto; gap:clamp(16px,3vw,40px); align-items:center; padding:26px 4px; border-bottom:1px solid var(--stroke); transition: padding .35s ease, background .35s ease; }
+  .row:hover { padding-left:14px; background:linear-gradient(to right, rgba(216,189,124,.06), transparent 70%); }
+  .date { text-align:center; line-height:1; }
+  .date b { display:block; font-family:'Cormorant',serif; font-weight:500; font-size:50px; color:var(--text); }
+  .date span { display:block; margin-top:8px; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--gold); }
+  .route { font-family:'Cormorant',serif; font-weight:500; font-size:clamp(24px,3vw,34px); line-height:1.15; display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px; }
+  .route svg { color:var(--gold-light); flex:none; }
+  .meta { margin-top:8px; font-size:13.5px; color:var(--muted); display:flex; flex-wrap:wrap; gap:4px 18px; }
+  .meta span + span::before { content:''; display:inline-block; width:3px; height:3px; border-radius:50%; background:var(--gold); vertical-align:middle; margin-right:18px; }
+  .side { text-align:right; display:grid; gap:10px; justify-items:end; }
+  .price { font-size:13px; color:var(--muted); }
+  .price b { display:block; font-family:'Cormorant',serif; font-weight:500; font-size:30px; color:var(--text); line-height:1.1; }
+  .go { display:inline-block; border:1px solid var(--gold); color:var(--gold-light); font-size:12px; letter-spacing:.14em; text-transform:uppercase; padding:12px 22px; border-radius:999px; transition: background .25s ease, color .25s ease; white-space:nowrap; }
+  .go:hover { background:var(--gold-light); color:var(--bg); }
+  .status { color:var(--muted); font-size:15px; padding:56px 0; max-width:560px; }
+  .status a { color:var(--gold-light); border-bottom:1px solid var(--gold); }
+  .skeleton { height:96px; border-bottom:1px solid var(--stroke); background:linear-gradient(100deg, transparent 30%, rgba(216,189,124,.06) 50%, transparent 70%); background-size:200% 100%; animation: sh 1.6s linear infinite; }
+  @keyframes sh { from { background-position:200% 0; } to { background-position:-200% 0; } }
+  .note { max-width:1200px; margin:0 auto; padding:0 24px 56px; font-size:12.5px; color:var(--muted); }
+
+  .own { max-width:1200px; margin:0 auto; padding:80px 24px; border-top:1px solid var(--stroke); display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:clamp(28px,6vw,80px); align-items:center; }
+  .own h2 { font-size:clamp(32px,4.6vw,54px); line-height:1.08; margin-bottom:18px; }
+  .own p { color:var(--muted); font-size:15.5px; max-width:520px; }
+  .own-actions { display:flex; flex-wrap:wrap; gap:16px; justify-content:flex-start; }
+  .svc-link { display:inline-block; border:1px solid var(--gold); color:var(--gold-light); font-size:12px; letter-spacing:.14em; text-transform:uppercase; padding:14px 26px; border-radius:999px; transition: background .25s ease, color .25s ease; }
+  .svc-link:hover { background:var(--gold-light); color:var(--bg); }
+  .btn-solid { display:inline-block; background:var(--gold-light); color:var(--bg); font-weight:600; font-size:13px; letter-spacing:.06em; padding:15px 30px; border-radius:999px; }
+  .own-actions { justify-content:flex-end; }
+
+  .reveal { opacity:0; transform:translateY(26px); transition: opacity .9s ease, transform 1s cubic-bezier(.22,1,.36,1); }
+  .reveal.in { opacity:1; transform:none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } html { scroll-behavior:auto; } .skeleton { animation:none; } .row, .row:hover { transition:none; } }
+  @media (max-width: 760px) {
+    .row { grid-template-columns:64px minmax(0,1fr); gap:6px 16px; padding:22px 0; }
+    .row:hover { padding-left:0; }
+    .date b { font-size:40px; }
+    .side { grid-column:1 / -1; grid-template-columns:1fr auto; align-items:center; justify-items:stretch; text-align:left; padding-top:6px; }
+    .meta { gap:4px 14px; }
+    .meta span + span::before { display:none; }
+    .go { padding:12px 18px; }
+    .price b { font-size:26px; }
+    .own { grid-template-columns:1fr; padding:56px 24px; }
+    .own-actions { justify-content:flex-start; }
+  }
+</style>
+</head>
+<body id="top">
+  <div class="topbar">
+    <a href="index.html" class="brand"><img src="assets/icons/monogram.svg" alt="">SOLACE EXECUTIVE</a>
+    <div class="tools">
+      <a href="index.html" class="back-link"><span data-t="ui.back">&larr; Terug</span></a>
+      <div class="lang" role="group" aria-label="Taal"><button type="button" data-lang="nl">NL</button><button type="button" data-lang="en">EN</button></div>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow"><span data-t="ui.eyebrow">KALENDER</span></p>
+    <h1 class="display"><span data-t="ui.t1">Wat er de komende</span><br><em><span data-t="ui.t2">tijd vertrekt.</span></em></h1>
+    <p class="lead"><span data-t="ui.lead">Empty legs zijn positioneringsvluchten tegen een aantrekkelijker tarief. Hieronder staat wat er nu op de planning staat, per maand. Het overzicht wijzigt doorlopend.</span></p>
+  </header>
+
+  <div class="filters" id="filters" role="group" aria-label="Filter op vertrekplaats" hidden></div>
+
+  <main class="cal" id="cal" aria-live="polite">
+    <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+  </main>
+  <p class="note"><span data-t="ui.note">Prijzen zijn indicatief en gelden vanaf. Beschikbaarheid controleren wij voor u zodra u een vlucht aanvraagt.</span></p>
+
+  <section class="own reveal">
+    <div>
+      <p class="eyebrow"><span data-t="ui.owneye">UW EIGEN DATUM</span></p>
+      <h2 class="display"><span data-t="ui.own1">Staat uw route er niet bij?</span> <em><span data-t="ui.own2">Dan plannen wij die.</span></em></h2>
+      <p><span data-t="ui.ownp">Een empty leg is een kans, geen vaste dienstregeling. Heeft u een eigen datum of bestemming, dan regelen wij een private jet op maat, met alles eromheen.</span></p>
+    </div>
+    <div class="own-actions">
+      <a class="btn-solid" id="ownWa" href="#" target="_blank" rel="noopener"><span data-t="ui.ownwa">Stuur ons uw route</span></a>
+      <a class="svc-link" href="jets.html"><span data-t="ui.ownjets">Bekijk private jets</span> &rarr;</a>
+    </div>
+  </section>
+
+<script src="float.js" defer></script>
+<script type="module">
+import { supabase } from './supabase-client.js';
+
+var WA = '31644917512';
+var EN = {
+  'ui.back': '← Back', 'ui.eyebrow': 'CALENDAR',
+  'ui.t1': 'What is departing', 'ui.t2': 'in the coming weeks.',
+  'ui.lead': 'Empty legs are positioning flights at a more attractive rate. Below is what is currently scheduled, month by month. The overview changes continuously.',
+  'ui.note': 'Prices are indicative and start from. We check availability for you as soon as you request a flight.',
+  'ui.owneye': 'YOUR OWN DATE',
+  'ui.own1': 'Not seeing your route?', 'ui.own2': 'Then we will plan it.',
+  'ui.ownp': 'An empty leg is an opportunity, not a fixed timetable. If you have your own date or destination, we arrange a private jet made to measure, with everything around it.',
+  'ui.ownwa': 'Send us your route', 'ui.ownjets': 'See private jets',
+  'f.label': 'Departing from', 'f.all': 'All',
+  'r.from': 'from', 'r.seats': 'max. {n} seats', 'r.ask': 'Ask about this',
+  'r.empty': 'There are no empty legs scheduled at the moment. Tell us where and when you want to fly and we will look at the options.',
+  'r.emptylink': 'Send us your route',
+  'r.filtered': 'No departures from this place at the moment.',
+  'r.error': 'The overview could not be loaded right now. Ask us about the current options.',
+  'wa.leg': 'Hello, I am interested in the empty leg from {o} to {d} on {date}.',
+  'wa.own': 'Hello, I would like to arrange a private jet. My route and date: '
+};
+var NL = {
+  'ui.back': '← Terug', 'ui.eyebrow': 'KALENDER',
+  'f.label': 'Vertrek vanaf', 'f.all': 'Alles',
+  'r.from': 'vanaf', 'r.seats': 'max. {n} pers.', 'r.ask': 'Vraag aan',
+  'r.empty': 'Er staan op dit moment geen empty legs op de planning. Vertel ons waar en wanneer u wilt vliegen, dan kijken wij naar de mogelijkheden.',
+  'r.emptylink': 'Stuur ons uw route',
+  'r.filtered': 'Op dit moment geen vertrekken vanaf deze plaats.',
+  'r.error': 'Het overzicht kon nu niet worden geladen. Vraag ons naar de actuele mogelijkheden.',
+  'wa.leg': 'Hallo, ik heb interesse in de empty leg van {o} naar {d} op {date}.',
+  'wa.own': 'Hallo, ik wil graag een private jet regelen. Mijn route en datum: '
+};
+
+var KEY = 'solace-lang';
+var lang = 'nl';
+var legs = [];
+var state = 'loading'; // loading | ok | error
+var filter = '';
+
+function T(k) { return lang === 'en' ? (EN[k] != null ? EN[k] : NL[k]) : NL[k]; }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function loc() { return lang === 'en' ? 'en-GB' : 'nl-NL'; }
+function wa(text) { return 'https://wa.me/' + WA + '?text=' + encodeURIComponent(text); }
+
+function pick() {
+  try { var s = localStorage.getItem(KEY); if (s === 'nl' || s === 'en') return s; } catch (e) {}
+  var l = (navigator.languages && navigator.languages[0]) || navigator.language || 'nl';
+  return /^nl/i.test(l) ? 'nl' : 'en';
+}
+
+var ARROW = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+function monthKey(d) { return d.getFullYear() + '-' + d.getMonth(); }
+
+function rowHtml(leg) {
+  var d = new Date(leg.departure_at);
+  var day = d.toLocaleDateString(loc(), { day: 'numeric' });
+  var wd = d.toLocaleDateString(loc(), { weekday: 'short' }).replace('.', '');
+  var time = d.toLocaleTimeString(loc(), { hour: '2-digit', minute: '2-digit' });
+  var dateLabel = d.toLocaleDateString(loc(), { day: 'numeric', month: 'long' });
+  var seats = leg.max_passengers ? T('r.seats').replace('{n}', leg.max_passengers) : '';
+  var msg = T('wa.leg').replace('{o}', leg.origin).replace('{d}', leg.destination).replace('{date}', dateLabel);
+  var price = leg.price_from != null
+    ? '<div class="price">' + esc(T('r.from')) + '<b>' + new Intl.NumberFormat(loc(), { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(leg.price_from) + '</b></div>'
+    : '';
+  return '<article class="row">' +
+    '<div class="date"><b>' + esc(day) + '</b><span>' + esc(wd) + '</span></div>' +
+    '<div><div class="route"><span>' + esc(leg.origin) + '</span>' + ARROW + '<span>' + esc(leg.destination) + '</span></div>' +
+    '<div class="meta"><span>' + esc(time) + '</span><span>' + esc(leg.aircraft) + '</span>' + (seats ? '<span>' + esc(seats) + '</span>' : '') + '</div></div>' +
+    '<div class="side">' + price + '<a class="go" href="' + wa(msg) + '" target="_blank" rel="noopener">' + esc(T('r.ask')) + '</a></div>' +
+  '</article>';
+}
+
+function renderFilters() {
+  var box = document.getElementById('filters');
+  var origins = [];
+  legs.forEach(function (l) { if (origins.indexOf(l.origin) < 0) origins.push(l.origin); });
+  if (state !== 'ok' || origins.length < 2) { box.hidden = true; box.innerHTML = ''; filter = ''; return; }
+  if (filter && origins.indexOf(filter) < 0) filter = '';
+  box.hidden = false;
+  box.innerHTML = '<span class="flabel">' + esc(T('f.label')) + '</span>' +
+    '<button type="button" class="chip' + (filter === '' ? ' on' : '') + '" data-o="" aria-pressed="' + (filter === '') + '">' + esc(T('f.all')) + '</button>' +
+    origins.map(function (o) { return '<button type="button" class="chip' + (filter === o ? ' on' : '') + '" data-o="' + esc(o) + '" aria-pressed="' + (filter === o) + '">' + esc(o) + '</button>'; }).join('');
+}
+
+function render() {
+  var cal = document.getElementById('cal');
+  var ownWa = document.getElementById('ownWa');
+  if (ownWa) ownWa.href = wa(T('wa.own'));
+  renderFilters();
+  if (state === 'loading') return;
+  if (state === 'error' || legs.length === 0) {
+    cal.innerHTML = '<p class="status">' + esc(state === 'error' ? T('r.error') : T('r.empty')) + ' <a href="' + wa(T('wa.own')) + '" target="_blank" rel="noopener">' + esc(T('r.emptylink')) + '</a></p>';
+    return;
+  }
+  var list = legs.filter(function (l) { return !filter || l.origin === filter; });
+  if (!list.length) { cal.innerHTML = '<p class="status">' + esc(T('r.filtered')) + '</p>'; return; }
+  var html = '', cur = '';
+  list.forEach(function (l) {
+    var d = new Date(l.departure_at), k = monthKey(d);
+    if (k !== cur) { cur = k; html += '<h2 class="month">' + esc(d.toLocaleDateString(loc(), { month: 'long', year: 'numeric' })) + '</h2>'; }
+    html += rowHtml(l);
+  });
+  cal.innerHTML = html;
+}
+
+function applyLang(next) {
+  lang = next;
+  document.documentElement.lang = next;
+  document.documentElement.setAttribute('data-lang', next);
+  document.querySelectorAll('[data-t]').forEach(function (n) {
+    var k = n.getAttribute('data-t');
+    if (!n.hasAttribute('data-nl')) n.setAttribute('data-nl', n.textContent);
+    n.textContent = next === 'en' && EN[k] ? EN[k] : n.getAttribute('data-nl');
+  });
+  document.title = next === 'en' ? 'Calendar | Solace Executive' : 'Kalender | Solace Executive';
+  document.querySelectorAll('.lang button').forEach(function (b) { b.classList.toggle('on', b.dataset.lang === next); });
+  render();
+}
+
+document.querySelectorAll('.lang button').forEach(function (b) {
+  b.addEventListener('click', function () { try { localStorage.setItem(KEY, b.dataset.lang); } catch (e) {} applyLang(b.dataset.lang); });
+});
+document.getElementById('filters').addEventListener('click', function (e) {
+  var c = e.target.closest('.chip');
+  if (!c) return;
+  filter = c.getAttribute('data-o') || '';
+  render();
+});
+
+function setLegs(rows) { legs = rows || []; state = 'ok'; render(); }
+window.SolaceKalender = { setLegs: setLegs };
+
+applyLang(pick());
+
+// Same public read as the homepage and jets.html: only these columns, never
+// the sync bookkeeping fields.
+supabase
+  .from('empty_legs')
+  .select('origin, destination, departure_at, aircraft, max_passengers, price_from')
+  .eq('active', true)
+  .gte('departure_at', new Date().toISOString())
+  .order('departure_at', { ascending: true })
+  .limit(60)
+  .then(function (res) {
+    if (res.error) { state = 'error'; render(); return; }
+    setLegs(res.data);
+  }, function () { state = 'error'; render(); });
+
+var els = document.querySelectorAll('.reveal');
+if ('IntersectionObserver' in window) {
+  var io = new IntersectionObserver(function (en) { en.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: 0.12 });
+  els.forEach(function (el) { io.observe(el); });
+} else { els.forEach(function (el) { el.classList.add('in'); }); }
+</script>
+</body>
+</html>
