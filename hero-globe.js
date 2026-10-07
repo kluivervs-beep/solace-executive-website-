@@ -64,6 +64,12 @@
   }
 
   var ME = myPoint();
+  var rebuilds = 0, curMap = null, liveStarted = false;
+  // The globe turns around its own axis at a fixed latitude (clamped so the
+  // reference city never sits on the pole side), only the longitude moves.
+  var CLAT = ME ? Math.max(-10, Math.min(45, ME[0])) : 28;
+  var curLng = ME ? ME[1] : 12;
+  function lonNow() { return curLng; }
 
   var GOLD = '#E8682F';
   var BLUE = '#2F7BFF';
@@ -71,6 +77,8 @@
   function load(src, kind) {
     return new Promise(function (resolve, reject) {
       var el = document.createElement(kind === 'css' ? 'link' : 'script');
+      // Same CORS mode as the <link rel="preload"> in index.html, so the preloaded copy is reused.
+      el.crossOrigin = 'anonymous';
       if (kind === 'css') { el.rel = 'stylesheet'; el.href = src; } else { el.src = src; el.async = true; }
       el.onload = resolve;
       el.onerror = reject;
@@ -81,17 +89,34 @@
   function webglOk() {
     try {
       var c = document.createElement('canvas');
-      return !!(c.getContext('webgl2') || c.getContext('webgl'));
+      var gl = c.getContext('webgl2') || c.getContext('webgl');
+      if (!gl) return false;
+      // Give the probe context back right away: Safari allows only a handful.
+      var ext = gl.getExtension('WEBGL_lose_context');
+      if (ext) ext.loseContext();
+      return true;
     } catch (e) { return false; }
   }
 
+  // Back to the flat CSS ring (also used when the GPU context is lost).
+  function ringMode() {
+    document.documentElement.classList.remove('globe-pending');
+    document.documentElement.classList.remove('has-globe');
+    hero.classList.remove('has-globe');
+    holder.classList.remove('is-active');
+    hero.removeAttribute('aria-label');
+  }
+
   function start() {
-    if (!webglOk()) return;
+    if (!webglOk()) { ringMode(); return; }
     var base = 'https://unpkg.com/maplibre-gl@5.7.0/dist/';
-    Promise.all([load(base + 'maplibre-gl.css', 'css'), load(base + 'maplibre-gl.js', 'js')])
+    // maplibre-gl.js is a hard requirement, the stylesheet is not (a blocked
+    // CSS file must not keep the globe from showing).
+    var css = load(base + 'maplibre-gl.css', 'css').catch(function () { /* canvas still draws */ });
+    Promise.all([css, load(base + 'maplibre-gl.js', 'js')])
       .then(build)
       .catch(function (e) {
-        document.documentElement.classList.remove('globe-pending');
+        ringMode();
         console.warn('Solace: globe unavailable, using the flat ring.', e);
       });
   }
@@ -144,10 +169,12 @@
 
     var style = 'https://tiles.openfreemap.org/styles/bright';
 
-    function diameter(w) { return Math.min(w * 0.7, 800); }
+    // On phones the globe is as wide as the screen allows (never cut off at the sides).
+    function phone(w) { return w <= 640; }
+    function diameter(w) { return phone(w) ? w * 0.86 : Math.min(w * 0.7, 800); }
     function zoomFor(w) {
-      // A globe is about 129.5 * 2^zoom pixels across in this setup.
-      return Math.log(diameter(w) / 129.5) / Math.LN2;
+      // A globe is about 129.5 * 2^zoom pixels across in this setup (163 on a phone, measured).
+      return Math.log(diameter(w) / (phone(w) ? 163 : 129.5)) / Math.LN2;
     }
 
     var startLon = ME ? ME[1] : 12;
@@ -163,7 +190,7 @@
         interactive: false,
         attributionControl: false,
         renderWorldCopies: false,
-        pixelRatio: Math.min(window.devicePixelRatio || 1, 1.75),
+        pixelRatio: Math.min(window.devicePixelRatio || 1, window.innerWidth <= 768 ? 1.5 : 1.75),
         fadeDuration: 0,
       });
     } catch (e) { return; }
@@ -210,7 +237,7 @@
       map.addImage('plane', planeImage(), { pixelRatio: 2 });
       map.addSource('planes', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       map.addLayer({ id: 'planes', type: 'symbol', source: 'planes',
-        layout: { 'icon-image': 'plane', 'icon-size': 0.62, 'icon-rotate': ['get', 'b'], 'icon-rotation-alignment': 'map',
+        layout: { 'icon-image': 'plane', 'icon-size': 0.7, 'icon-rotate': ['get', 'b'], 'icon-rotation-alignment': 'map',
           'icon-pitch-alignment': 'map', 'icon-allow-overlap': true, 'icon-ignore-placement': true } });
 
       // Our cities.
@@ -223,8 +250,11 @@
         paint: { 'circle-radius': ['get', 'r'], 'circle-color': GOLD, 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 1.6, 'circle-pitch-alignment': 'map' } });
       map.addLayer({ id: 'cities-names', type: 'symbol', source: 'cities',
         filter: ['>=', ['get', 'r'], 6.5],
-        layout: { 'text-field': ['get', 'n'], 'text-font': ['Noto Sans Bold'], 'text-size': 11.5, 'text-offset': [0, 1.35], 'text-anchor': 'top', 'text-allow-overlap': true, 'text-ignore-placement': true },
-        paint: { 'text-color': '#22313d', 'text-halo-color': 'rgba(255,255,255,0.95)', 'text-halo-width': 1.6 } });
+        // Names that would run into each other (London, Paris, Amsterdam are
+        // close together) are thinned out: the biggest hub wins.
+        layout: { 'text-field': ['get', 'n'], 'text-font': ['Noto Sans Bold'], 'text-size': 12, 'text-offset': [0, 1.35], 'text-anchor': 'top',
+          'symbol-sort-key': ['-', 0, ['get', 'r']], 'text-allow-overlap': false, 'text-ignore-placement': false, 'text-padding': 3 },
+        paint: { 'text-color': '#1b2832', 'text-halo-color': 'rgba(255,255,255,0.97)', 'text-halo-width': 2 } });
 
       // Other people on the site right now, and you.
       map.addSource('others', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
@@ -238,28 +268,144 @@
       map.addLayer({ id: 'me-core', type: 'circle', source: 'me',
         paint: { 'circle-radius': 7, 'circle-color': BLUE, 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 2.2, 'circle-pitch-alignment': 'map' } });
 
-      function haloSize() {
-        holder.style.setProperty('--R', diameter(holder.clientWidth) / 2 + 'px');
+      // The zoom constants above are only a first guess: the real size of the
+      // globe on screen depends on the camera, so measure its silhouette with
+      // map.project() and correct the zoom until it is the radius we want.
+      // The same number drives the CSS glow (--R), so they always line up.
+      function limbRadius() {
+        var c = map.getCenter();
+        var cv = toVec(c.lat, c.lng);
+        var east = [-Math.sin(c.lng * RAD), Math.cos(c.lng * RAD), 0];
+        var cp = map.project([c.lng, c.lat]);
+        var best = 0;
+        for (var th = 30; th <= 95; th += 1) {
+          var s = Math.sin(th * RAD), k = Math.cos(th * RAD);
+          var a = map.project(toLonLat([k * cv[0] + s * east[0], k * cv[1] + s * east[1], k * cv[2] + s * east[2]]));
+          var d = Math.sqrt((a.x - cp.x) * (a.x - cp.x) + (a.y - cp.y) * (a.y - cp.y));
+          if (d > best) best = d;
+        }
+        return best;
       }
-      haloSize();
-      window.addEventListener('resize', function () {
-        haloSize();
-        map.setZoom(zoomFor(holder.clientWidth));
+      // The CSS owns the globe size (--gd on .hero, which also places the card
+      // and the glow box). A zero-height probe 'var(--gd)' wide gives it in px.
+      var probe = document.createElement('div');
+      probe.setAttribute('aria-hidden', 'true');
+      probe.style.cssText = 'position:absolute;left:0;top:0;height:0;width:var(--gd);visibility:hidden;pointer-events:none';
+      hero.appendChild(probe);
+      function wantedRadius() {
+        var gd = probe.offsetWidth || diameter(holder.clientWidth);
+        return Math.max(60, Math.min(gd / 2, holder.clientWidth / 2 - 4));
+      }
+      function fit() {
+        if (!holder.clientWidth || !holder.clientHeight) return;
+        var want = wantedRadius();
+        try {
+          map.jumpTo({ center: [lonNow(), CLAT] });
+          for (var i = 0; i < 5; i++) {
+            var got = limbRadius();
+            if (!got || Math.abs(got - want) < 0.75) break;
+            map.setZoom(Math.max(0.2, Math.min(5, map.getZoom() + Math.log(want / got) / Math.LN2)));
+          }
+        } catch (e) { /* keep the first-guess zoom */ }
+        holder.style.setProperty('--R', want + 'px');
+      }
+      var fitQueued = 0;
+      function refit() {
+        if (fitQueued) return;
+        fitQueued = requestAnimationFrame(function () {
+          fitQueued = 0;
+          try {
+            if (window.devicePixelRatio) map.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth <= 768 ? 1.5 : 1.75));
+          } catch (e) { /* older build without setPixelRatio */ }
+          map.resize();
+          fit();
+        });
+      }
+      fit();
+      // Everything that listens outside the map is undone when the map is
+      // removed (needed when it is rebuilt after a lost GPU context).
+      var ro = null;
+      if ('ResizeObserver' in window) { ro = new ResizeObserver(refit); ro.observe(holder); }
+      function onTurn() { setTimeout(refit, 250); setTimeout(refit, 700); }
+      window.addEventListener('resize', refit);
+      // iOS reports the new size a moment after an orientation change.
+      window.addEventListener('orientationchange', onTurn);
+      var mo = null;
+      map.on('remove', function () {
+        if (ro) ro.disconnect();
+        if (mo) mo.disconnect();
+        window.removeEventListener('resize', refit);
+        window.removeEventListener('orientationchange', onTurn);
+        if (probe.parentNode) probe.parentNode.removeChild(probe);
+        cancelAnimationFrame(fitQueued);
       });
+
+      // The canvas is decorative: never a tab stop, never a keyboard trap.
+      var cv = map.getCanvas();
+      cv.setAttribute('tabindex', '-1');
+      cv.setAttribute('aria-hidden', 'true');
+      cv.removeAttribute('role');
+      cv.removeAttribute('aria-label');
+
+      // If the GPU takes the WebGL context away (common on iOS Safari under
+      // memory pressure), show the flat ring until it is given back.
+      cv.addEventListener('webglcontextlost', function (ev) {
+        ev.preventDefault();
+        ringMode();
+        console.warn('Solace: WebGL context lost, showing the flat ring.');
+      });
+      // After a restore the old map has lost its tiles and textures, so build
+      // a fresh one (at most twice, so a flaky GPU cannot cause a loop).
+      cv.addEventListener('webglcontextrestored', function () {
+        if (rebuilds >= 2) return;
+        rebuilds += 1;
+        try { map.remove(); } catch (e) { /* already gone */ }
+        build();
+      });
+
+      // Short text alternative for screen readers (the map itself is hidden from them).
+      function describe() {
+        var nl = document.documentElement.lang === 'nl';
+        hero.setAttribute('aria-label', nl
+          ? 'Solace Executive. Wereldbol met onze conciergesteden, vliegroutes en bezoekers die nu online zijn.'
+          : 'Solace Executive. A globe showing our concierge cities, flight routes and visitors online right now.');
+      }
+      describe();
+      if ('MutationObserver' in window) { mo = new MutationObserver(describe); mo.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] }); }
 
       holder.classList.add('is-active');
       hero.classList.add('has-globe');
       document.documentElement.classList.add('has-globe');
       setTimeout(function () { document.documentElement.classList.remove('globe-pending'); }, 1100);
+      curMap = map;
       run(map);
-      live(map);
+      live();
     });
 
-    map.on('error', function (e) { if (e && e.error && !map.loaded()) console.warn('Solace globe:', e.error.message); });
+    // A style that cannot be fetched (offline, blocked, tile host down) means
+    // 'load' never fires: give up quickly and keep the flat ring.
+    var gaveUp = false;
+    function giveUp(why) {
+      if (gaveUp || loadedOnce) return;
+      gaveUp = true;
+      ringMode();
+      try { map.remove(); } catch (e) { /* already gone */ }
+      console.warn('Solace: globe unavailable, using the flat ring.', why);
+    }
+    var styleTimer = 0, loadedOnce = false;
+    map.on('load', function () { loadedOnce = true; clearTimeout(styleTimer); });
+    map.on('error', function (e) {
+      var msg = e && e.error && e.error.message;
+      if (loadedOnce || gaveUp) return;
+      // Only a failing style (no sourceId) is fatal; a single tile error is not.
+      if (!e.sourceId && !styleTimer) styleTimer = setTimeout(function () { giveUp(msg); }, 1500);
+    });
   }
 
   // --- who is here right now -------------------------------------------------
-  function live(map) {
+  function live() {
+    if (liveStarted) return;               // one count, one channel, ever
+    liveStarted = true;
     var pill = document.getElementById('heroLive');
     function say(n) {
       if (!pill || n < 1) return;
@@ -270,36 +416,60 @@
     }
     say(1);
 
-    import('./supabase-client.js').then(function (m) {
-      var key = Math.random().toString(36).slice(2);
-      var ch = m.supabase.channel('site-presence', { config: { presence: { key: key } } });
-      ch.on('presence', { event: 'sync' }, function () {
-        var state = ch.presenceState();
-        var feats = [];
-        var total = 0;
-        Object.keys(state).forEach(function (k) {
-          total += 1;
-          if (k === key) return;
-          var p = state[k][0];
-          if (p && typeof p.lat === 'number' && typeof p.lon === 'number') {
-            feats.push({ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: [p.lon, p.lat] } });
-          }
+    // The count is a nicety, so it never fights the first paint for bandwidth,
+    // and the screen reader should not be interrupted every time someone joins.
+    if (pill) pill.removeAttribute('aria-live');
+
+    var ch = null, sb = null, joining = false;
+    function join() {
+      if (ch || joining) return;           // never two subscriptions
+      joining = true;
+      import('./supabase-client.js').then(function (m) {
+        joining = false;
+        sb = m.supabase;
+        if (ch || pageGone) return;
+        var key = Math.random().toString(36).slice(2);
+        var mine = sb.channel('site-presence', { config: { presence: { key: key } } });
+        ch = mine;
+        mine.on('presence', { event: 'sync' }, function () {
+          var state = mine.presenceState();
+          var feats = [];
+          var total = 0;
+          Object.keys(state).forEach(function (k) {
+            total += 1;
+            if (k === key) return;
+            var p = state[k][0];
+            if (p && typeof p.lat === 'number' && typeof p.lon === 'number') {
+              feats.push({ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: [p.lon, p.lat] } });
+            }
+          });
+          var src = curMap && curMap.getSource && curMap.getSource('others');
+          if (src) src.setData({ type: 'FeatureCollection', features: feats });
+          say(Math.max(total, 1));
+        }).subscribe(function (status) {
+          if (status === 'SUBSCRIBED') mine.track(ME ? { lat: ME[0], lon: ME[1] } : {});
         });
-        var src = map.getSource('others');
-        if (src) src.setData({ type: 'FeatureCollection', features: feats });
-        say(Math.max(total, 1));
-      }).subscribe(function (status) {
-        if (status === 'SUBSCRIBED' && ME) ch.track({ lat: ME[0], lon: ME[1] });
-        else if (status === 'SUBSCRIBED') ch.track({});
-      });
-      window.addEventListener('pagehide', function () { try { ch.unsubscribe(); } catch (e) { /* closing anyway */ } });
-    }).catch(function () { /* the count simply stays at you */ });
+      }).catch(function () { joining = false; /* offline: the count simply stays at you */ });
+    }
+    var pageGone = false;
+    function leave() {
+      pageGone = true;
+      var old = ch; ch = null;
+      if (!old) return;
+      try { old.untrack(); } catch (e) { /* closing anyway */ }
+      try { sb && sb.removeChannel ? sb.removeChannel(old) : old.unsubscribe(); } catch (e) { /* closing anyway */ }
+    }
+    window.addEventListener('pagehide', leave);
+    // Back/forward cache: the page returns alive but the socket was closed.
+    window.addEventListener('pageshow', function (ev) { if (ev.persisted) { pageGone = false; join(); } });
+
+    if ('requestIdleCallback' in window) requestIdleCallback(join, { timeout: 4000 });
+    else setTimeout(join, 1500);
   }
 
   function run(map) {
     var visible = true;
     var last = performance.now();
-    var lng = ME ? ME[1] : 12;
     var t0 = last;
     var frameNo = 0;
 
@@ -316,27 +486,63 @@
 
     function planeFeatures() {
       return planes.map(function (p) {
-        var t0p = p.t, t1p = Math.min(1, p.t + 0.01);
+        // Look a little ahead along the leg for the heading (kept off the very ends, where both points would coincide).
+        var t0p = Math.min(p.t, 0.99), t1p = t0p + 0.01;
         var q0 = toLonLat(slerp(p.a, p.b, t0p));
         var q1 = toLonLat(slerp(p.a, p.b, t1p));
         var b = bearing(q0, q1);
         if (p.dir < 0) b += 180;
-        return { type: 'Feature', properties: { b: b }, geometry: { type: 'Point', coordinates: q0 } };
+        return { type: 'Feature', properties: { b: b }, geometry: { type: 'Point', coordinates: toLonLat(slerp(p.a, p.b, p.t)) } };
       });
     }
     map.getSource('planes').setData({ type: 'FeatureCollection', features: planeFeatures() });
 
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (en) { visible = en[0].isIntersecting; }, { threshold: 0 }).observe(hero);
+    // Names of cities too close to the edge of the globe are dropped: MapLibre
+    // would still print them there, floating without their dot.
+    var hubVec = {}, shownKey = '';
+    Object.keys(HUBS).forEach(function (n) { if (HUBS[n] >= 6.5 && BY_NAME[n]) hubVec[n] = toVec(BY_NAME[n][1], BY_NAME[n][2]); });
+    function nameFilter() {
+      var cv = toVec(CLAT, curLng), on = [];
+      Object.keys(hubVec).forEach(function (n) {
+        var v = hubVec[n];
+        if (v[0] * cv[0] + v[1] * cv[1] + v[2] * cv[2] > 0.5) on.push(n);
+      });
+      var key = on.join('|');
+      if (key === shownKey) return;
+      shownKey = key;
+      try { map.setFilter('cities-names', ['in', ['get', 'n'], ['literal', on]]); } catch (e) { /* labels simply stay as they are */ }
     }
+    nameFilter();
+
+    // The loop only runs while the hero is on screen and the tab is visible;
+    // otherwise no animation frame is requested at all.
+    var running = false;
+    function wake() {
+      if (dead || reduced || running || !visible || document.hidden) return;
+      running = true;
+      last = performance.now();
+      requestAnimationFrame(frame);
+    }
+    var io = null, dead = false;
+    if ('IntersectionObserver' in window) {
+      io = new IntersectionObserver(function (en) { visible = en[0].isIntersecting; wake(); }, { threshold: 0 });
+      io.observe(hero);
+    }
+    document.addEventListener('visibilitychange', wake);
+    map.on('remove', function () {
+      dead = true;
+      if (io) io.disconnect();
+      document.removeEventListener('visibilitychange', wake);
+    });
 
     function frame(now) {
+      if (dead || !visible || document.hidden || reduced || !hero.classList.contains('has-globe')) { running = false; return; }
       var dt = Math.min((now - last) / 1000, 0.05);
       last = now;
-      if (visible && !document.hidden && !reduced) {
-        lng += dt * 3.6;
-        if (lng > 180) lng -= 360;
-        map.jumpTo({ center: [lng, ME ? Math.max(-10, Math.min(45, ME[0])) : 28] });
+      {
+        curLng += dt * 3.6;
+        if (curLng > 180) curLng -= 360;
+        map.jumpTo({ center: [curLng, CLAT] });
 
         var p = ((now - t0) / 3200) % 1;
         map.setPaintProperty('cities-ring', 'circle-radius', ['*', ['get', 'r'], 1.1 + p * 1.9]);
@@ -350,11 +556,12 @@
           if (pl.t < 0) { pl.t = 0; pl.dir = 1; }
         });
         frameNo += 1;
+        if (frameNo % 12 === 0) nameFilter();
         if (frameNo % 3 === 0) map.getSource('planes').setData({ type: 'FeatureCollection', features: planeFeatures() });
       }
       requestAnimationFrame(frame);
     }
-    requestAnimationFrame(frame);
+    wake();
   }
 
   // The globe is the hero, so start as soon as the DOM is ready.
