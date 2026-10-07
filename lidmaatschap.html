@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lidmaatschap | Solace Executive</title>
+<meta name="description" content="Lidmaatschap bij Solace Executive: drie niveaus, wat u als lid krijgt, hoe u punten spaart en hoe u lid wordt. Op uitnodiging of persoonlijke aanbeveling.">
+<meta name="theme-color" content="#0F1B24">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Solace Executive">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:title" content="Lidmaatschap | Solace Executive">
+<meta property="og:description" content="Drie niveaus, een vaste contactpersoon en Solace Points. Lidmaatschap is op uitnodiging of persoonlijke aanbeveling.">
+<meta property="og:image" content="https://solaceexecutive.com/assets/og-image.png">
+<meta property="og:url" content="https://solaceexecutive.com/lidmaatschap.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Lidmaatschap | Solace Executive">
+<meta name="twitter:description" content="Drie niveaus, een vaste contactpersoon en Solace Points. Lidmaatschap is op uitnodiging of persoonlijke aanbeveling.">
+<meta name="twitter:image" content="https://solaceexecutive.com/assets/og-image.png">
+<link rel="canonical" href="https://solaceexecutive.com/lidmaatschap.html">
+<link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root { --bg:#0F1B24; --surface:#16232E; --surface2:#1C2B37; --text:#F5F1E6; --muted:#A9B4BB; --stroke:rgba(212,190,140,0.16); --gold:#B4923D; --gold-light:#D8BD7C; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; line-height: 1.6; }
+  a { color: inherit; text-decoration: none; }
+  .display { font-family: 'Cormorant', serif; font-weight: 500; }
+  .display em { color: var(--gold-light); }
+  .topbar { display:flex; align-items:center; justify-content:space-between; padding:20px 24px; max-width:1200px; margin:0 auto; }
+  .brand { display:flex; align-items:center; gap:10px; font-size:14px; letter-spacing:.15em; }
+  .brand img { width:26px; height:26px; }
+  .tools { display:flex; align-items:center; gap:18px; }
+  .back-link { font-size:13px; color:var(--muted); } .back-link:hover { color:var(--gold-light); }
+  .lang { display:inline-flex; border:1px solid var(--stroke); border-radius:999px; padding:3px; }
+  .lang button { background:none; border:0; color:var(--muted); font:600 11px 'Montserrat',sans-serif; letter-spacing:.1em; padding:6px 12px; border-radius:999px; cursor:pointer; }
+  .lang button.on { background:var(--gold-light); color:var(--bg); }
+
+  .eyebrow { font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold-light); margin-bottom:18px; }
+  .hero { max-width:1200px; margin:0 auto; padding:56px 24px 56px; }
+  .hero h1 { font-size:clamp(40px,7vw,84px); line-height:1.04; margin-bottom:22px; }
+  .hero .lead { font-size:16px; color:var(--muted); max-width:580px; }
+
+  .sec { max-width:1200px; margin:0 auto; padding:88px 24px; border-top:1px solid var(--stroke); scroll-margin-top:10px; }
+  .sec h2 { font-size:clamp(32px,4.6vw,52px); line-height:1.1; margin-bottom:14px; }
+  .sec .sub { color:var(--muted); font-size:15.5px; max-width:600px; margin-bottom:44px; }
+
+  .tiers { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; }
+  .tier { background:var(--surface); border:1px solid var(--stroke); border-radius:22px; padding:28px; display:flex; flex-direction:column; gap:22px; }
+  .tier-card { position:relative; aspect-ratio:1.6/1; border-radius:14px; padding:18px 20px; background:linear-gradient(150deg,#2B3E4D 0%,#16222C 48%,#090F14 100%); border:1px solid rgba(255,255,255,.1); box-shadow:0 24px 40px -22px rgba(0,0,0,.75); display:flex; flex-direction:column; justify-content:space-between; overflow:hidden; }
+  .tier-card .tc-top { display:flex; align-items:center; gap:8px; font-family:'Cormorant',serif; font-size:11px; letter-spacing:.12em; line-height:1.3; }
+  .tier-card .tc-top img { width:20px; height:20px; }
+  .tier-card .tc-top small { display:block; font-family:'Montserrat',sans-serif; font-size:7px; letter-spacing:.24em; color:var(--gold); }
+  .tier-card .tc-name { font-family:'Cormorant',serif; font-size:24px; color:var(--gold-light); }
+  .tier-card.elite { background-image:linear-gradient(rgba(255,255,255,.8),rgba(255,255,255,.8)), url('assets/icons/elite-facets.svg'); background-size:cover; background-position:center; border-color:rgba(11,20,27,.16); }
+  .tier-card.elite .tc-top { color:#16232E; }
+  .tier-card.elite .tc-name { color:#8A6A1E; }
+  .tier-from { font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--gold-light); }
+  .tier h3 { font-family:'Cormorant',serif; font-weight:500; font-size:30px; line-height:1.1; margin-top:-8px; }
+  .tier p { color:var(--muted); font-size:14.5px; }
+  .tier-note { margin-top:28px; color:var(--muted); font-size:13.5px; max-width:640px; }
+
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0 40px; }
+  .item { border-top:1px solid var(--gold); padding:20px 0 34px; }
+  .item b { display:block; font-family:'Cormorant',serif; font-weight:500; font-size:26px; margin-bottom:8px; }
+  .item span { color:var(--muted); font-size:14.5px; }
+
+  .earn { list-style:none; display:grid; gap:0; max-width:640px; }
+  .earn li { position:relative; padding:18px 4px 18px 34px; border-bottom:1px solid var(--stroke); font-size:15px; }
+  .earn li:first-child { border-top:1px solid var(--stroke); }
+  .earn li::before { content:''; position:absolute; left:6px; top:1.5em; width:12px; height:6px; border-left:1.6px solid var(--gold-light); border-bottom:1.6px solid var(--gold-light); transform:rotate(-45deg); }
+  .earn-note { margin-top:22px; color:var(--muted); font-size:14px; }
+
+  .cta { text-align:center; padding:80px 24px 90px; border-top:1px solid var(--stroke); }
+  .cta h3 { font-family:'Cormorant',serif; font-weight:500; font-size:38px; margin-bottom:10px; }
+  .cta p { color:var(--muted); font-size:14.5px; margin-bottom:26px; }
+  .cta-row { display:flex; gap:18px; justify-content:center; align-items:center; flex-wrap:wrap; }
+  .btn-solid { display:inline-block; background:var(--gold-light); color:var(--bg); font-weight:600; font-size:14px; padding:15px 34px; border-radius:999px; }
+  .btn-ghost { display:inline-block; border:1px solid var(--gold); color:var(--gold-light); font-size:12px; letter-spacing:.14em; text-transform:uppercase; padding:14px 26px; border-radius:999px; transition:background .25s ease,color .25s ease; }
+  .btn-ghost:hover { background:var(--gold-light); color:var(--bg); }
+
+  .foot { border-top:1px solid var(--stroke); padding:32px 24px 48px; }
+  .foot-in { max-width:1200px; margin:0 auto; display:flex; flex-wrap:wrap; gap:18px 32px; justify-content:space-between; align-items:center; font-size:13px; color:var(--muted); }
+  .foot-links { display:flex; flex-wrap:wrap; gap:10px 26px; }
+  .foot a:hover { color:var(--gold-light); }
+
+  a:focus-visible, button:focus-visible { outline:2px solid var(--gold-light); outline-offset:3px; border-radius:6px; }
+  .reveal { opacity:0; transform:translateY(26px); transition: opacity .9s ease, transform 1s cubic-bezier(.22,1,.36,1); }
+  .reveal.in { opacity:1; transform:none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } html { scroll-behavior:auto; } }
+  @media (max-width: 900px) {
+    .tiers, .grid { grid-template-columns:1fr; }
+    .sec { padding:64px 24px; }
+    .tier-card { max-width:340px; }
+  }
+</style>
+</head>
+<body id="top">
+  <div class="topbar">
+    <a href="index.html" class="brand"><img src="assets/icons/monogram.svg" alt="">SOLACE EXECUTIVE</a>
+    <div class="tools">
+      <a href="index.html" class="back-link"><span data-t="ui.back">← Terug</span></a>
+      <div class="lang" role="group" aria-label="Taal"><button type="button" data-lang="nl">NL</button><button type="button" data-lang="en">EN</button></div>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow"><span data-t="ui.eyebrow">LIDMAATSCHAP</span></p>
+    <h1 class="display"><span data-t="ui.t1">Drie niveaus.</span><br><em><span data-t="ui.t2">Eén concierge.</span></em></h1>
+    <p class="lead"><span data-t="ui.lead">Lidmaatschap is op uitnodiging of persoonlijke aanbeveling. Hier ziet u wat u als lid krijgt en hoe uw status groeit met elke aanvraag.</span></p>
+  </header>
+
+  <section class="sec reveal" id="niveaus">
+    <p class="eyebrow"><span data-t="lv.eyebrow">DE NIVEAUS</span></p>
+    <h2 class="display"><span data-t="lv.title">Uw status groeit mee.</span></h2>
+    <p class="sub"><span data-t="lv.sub">U spaart automatisch punten bij elke aanvraag. Het niveau van uw lidmaatschap volgt uit het totaal aan punten dat u heeft verzameld.</span></p>
+    <div class="tiers">
+      <article class="tier">
+        <div class="tier-card"><div class="tc-top"><img src="assets/icons/monogram.svg" alt=""><span>SOLACE<small>EXECUTIVE</small></span></div><div class="tc-name">Member</div></div>
+        <p class="tier-from"><span data-t="lv.m.from">Vanaf 0 punten</span></p>
+        <h3>Member</h3>
+        <p><span data-t="lv.m.desc">Uw lidmaatschap begint hier. Vanaf de eerste aanvraag spaart u punten en geniet u van alle ledenvoordelen hieronder.</span></p>
+      </article>
+      <article class="tier">
+        <div class="tier-card"><div class="tc-top"><img src="assets/icons/monogram.svg" alt=""><span>SOLACE<small>EXECUTIVE</small></span></div><div class="tc-name">Distinguished Member</div></div>
+        <p class="tier-from"><span data-t="lv.d.from">Vanaf 2.500 punten</span></p>
+        <h3>Distinguished Member</h3>
+        <p><span data-t="lv.d.desc">Het tweede niveau. In uw ledenportaal ziet u altijd hoeveel punten er nog nodig zijn tot het volgende niveau.</span></p>
+      </article>
+      <article class="tier">
+        <div class="tier-card elite"><div class="tc-top"><img src="assets/icons/monogram.svg" alt=""><span>SOLACE<small>EXECUTIVE</small></span></div><div class="tc-name">Elite Member</div></div>
+        <p class="tier-from"><span data-t="lv.e.from">Vanaf 7.500 punten</span></p>
+        <h3>Elite Member</h3>
+        <p><span data-t="lv.e.desc">Het hoogste niveau. Bereikt u Elite-status, dan krijgt uw kaart een eigen uitstraling.</span></p>
+      </article>
+    </div>
+    <p class="tier-note"><span data-t="lv.note">De kaarten zijn ter illustratie.</span></p>
+  </section>
+
+  <section class="sec reveal" id="voordelen">
+    <p class="eyebrow"><span data-t="bn.eyebrow">LEDENVOORDELEN</span></p>
+    <h2 class="display"><span data-t="bn.title">Wat u krijgt als lid.</span></h2>
+    <p class="sub"><span data-t="bn.sub">Zes dingen die u als lid merkt, van de eerste aanvraag tot de laatste.</span></p>
+    <div class="grid">
+      <div class="item"><b><span data-t="bn.1t">Snellere respons</span></b><span><span data-t="bn.1d">Leden krijgen voorrang: doorgaans reactie binnen enkele uren, niet dagen.</span></span></div>
+      <div class="item"><b><span data-t="bn.2t">Vaste contactpersoon</span></b><span><span data-t="bn.2d">Eén aanspreekpunt dat u en uw voorkeuren kent, voor elk verzoek.</span></span></div>
+      <div class="item"><b><span data-t="bn.3t">AI Concierge</span></b><span><span data-t="bn.3d">Chat direct met uw persoonlijke concierge, dag en nacht, voor snelle vragen en aanvragen.</span></span></div>
+      <div class="item"><b><span data-t="bn.4t">Vroege toegang</span></b><span><span data-t="bn.4d">Als eerste op de hoogte van nieuwe bestemmingen en vlootpartners.</span></span></div>
+      <div class="item"><b><span data-t="bn.5t">Flexibiliteit</span></b><span><span data-t="bn.5d">Kosteloos wijzigen of annuleren binnen de gestelde termijn.</span></span></div>
+      <div class="item"><b><span data-t="bn.6t">Solace Points</span></b><span><span data-t="bn.6d">Spaar automatisch punten bij elke aanvraag en wissel ze in voor exclusieve extra's.</span></span></div>
+    </div>
+  </section>
+
+  <section class="sec reveal" id="punten">
+    <p class="eyebrow"><span data-t="pt.eyebrow">SOLACE POINTS</span></p>
+    <h2 class="display"><span data-t="pt.title">Zo verdient u punten.</span></h2>
+    <p class="sub"><span data-t="pt.sub">Punten bepalen uw niveau en wisselt u in voor exclusieve extra's.</span></p>
+    <ul class="earn">
+      <li><span data-t="pt.1">Elke voltooide aanvraag</span></li>
+      <li><span data-t="pt.2">Compleet profiel (eenmalig)</span></li>
+      <li><span data-t="pt.3">Een vriend brengt u aan als lid</span></li>
+      <li><span data-t="pt.4">Lidmaatschapsjubileum, elk jaar meer</span></li>
+    </ul>
+  </section>
+
+  <section class="sec reveal" id="lid-worden">
+    <p class="eyebrow"><span data-t="jn.eyebrow">LID WORDEN</span></p>
+    <h2 class="display"><span data-t="jn.title">Zo wordt u lid.</span></h2>
+    <p class="sub"><span data-t="jn.sub">Wij beoordelen elke aanvraag persoonlijk.</span></p>
+    <div class="grid">
+      <div class="item"><b><span data-t="jn.1t">Uitnodiging of aanbeveling</span></b><span><span data-t="jn.1d">Lidmaatschap is op uitnodiging of persoonlijke aanbeveling.</span></span></div>
+      <div class="item"><b><span data-t="jn.2t">Vertel ons over uzelf</span></b><span><span data-t="jn.2d">Via het aanmeldformulier vertelt u ons wie u bent en wat u nodig heeft.</span></span></div>
+      <div class="item"><b><span data-t="jn.3t">Persoonlijke beoordeling</span></b><span><span data-t="jn.3d">Bij een match ontvangt u binnen enkele dagen bericht van ons per e-mail.</span></span></div>
+    </div>
+  </section>
+
+  <section class="cta reveal">
+    <h3><span data-t="ui.ctat">Nog geen lid?</span></h3>
+    <p><span data-t="ui.ctad">Lidmaatschap is op uitnodiging of persoonlijke aanbeveling.</span></p>
+    <div class="cta-row">
+      <a class="btn-solid" href="index.html#lidmaatschap"><span data-t="ui.ctab">Aan de slag</span></a>
+      <a class="btn-ghost" href="index.html#faq"><span data-t="ui.faq">Veelgestelde vragen</span></a>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="foot-in">
+      <nav class="foot-links" aria-label="Footer">
+        <a href="diensten.html"><span data-t="f.services">Diensten</span></a>
+        <a href="destinations.html"><span data-t="f.dest">Bestemmingen</span></a>
+        <a href="index.html#faq"><span data-t="ui.faq">Veelgestelde vragen</span></a>
+        <a href="privacy.html"><span data-t="f.privacy">Privacy</span></a>
+        <a href="mailto:hello@solaceexecutive.com">hello@solaceexecutive.com</a>
+      </nav>
+      <p>&copy; <span id="year"></span> <span data-t="f.copy">Solace Executive. Lidmaatschap op aanvraag.</span></p>
+    </div>
+  </footer>
+
+<script>
+(function () {
+  var EN = {
+    "ui.back": "← Back", "ui.eyebrow": "MEMBERSHIP", "ui.t1": "Three levels.", "ui.t2": "One concierge.",
+    "ui.lead": "Membership is by invitation or personal referral. Here you can see what you get as a member and how your status grows with every request.",
+    "lv.eyebrow": "THE LEVELS", "lv.title": "Your status grows with you.",
+    "lv.sub": "You earn points automatically with every request. Your membership level follows from the total points you have collected.",
+    "lv.m.from": "From 0 points", "lv.m.desc": "Your membership starts here. From your first request you earn points and enjoy all the member benefits below.",
+    "lv.d.from": "From 2,500 points", "lv.d.desc": "The second level. In your member portal you can always see how many points are left to the next level.",
+    "lv.e.from": "From 7,500 points", "lv.e.desc": "The highest level. Reach Elite status and your card gets a look of its own.",
+    "lv.note": "The cards are shown for illustration.",
+    "bn.eyebrow": "MEMBER BENEFITS", "bn.title": "What you get as a member.", "bn.sub": "Six things you notice as a member, from the first request to the last.",
+    "bn.1t": "Faster response", "bn.1d": "Members get priority: typically a reply within hours, not days.",
+    "bn.2t": "A dedicated contact", "bn.2d": "One point of contact who knows you and your preferences, for every request.",
+    "bn.3t": "AI Concierge", "bn.3d": "Chat directly with your personal concierge, day or night, for quick questions and requests.",
+    "bn.4t": "Early access", "bn.4d": "Be the first to know about new destinations and fleet partners.",
+    "bn.5t": "Flexibility", "bn.5d": "Change or cancel free of charge within the set window.",
+    "bn.6t": "Solace Points", "bn.6d": "Earn points automatically with every request and redeem them for exclusive extras.",
+    "pt.eyebrow": "SOLACE POINTS", "pt.title": "Ways to earn points.", "pt.sub": "Points determine your level and can be redeemed for exclusive extras.",
+    "pt.1": "Every completed request", "pt.2": "Complete profile (one-time)", "pt.3": "A friend joins through your referral", "pt.4": "Membership anniversary, more each year",
+    "jn.eyebrow": "BECOMING A MEMBER", "jn.title": "How to become a member.", "jn.sub": "We review every application personally.",
+    "jn.1t": "Invitation or referral", "jn.1d": "Membership is by invitation or personal referral.",
+    "jn.2t": "Tell us about yourself", "jn.2d": "Through the application form you tell us who you are and what you need.",
+    "jn.3t": "Personal review", "jn.3d": "If it is a match, you will hear from us by email within a few days.",
+    "ui.ctat": "Not a member yet?", "ui.ctad": "Membership is by invitation or personal referral.", "ui.ctab": "Get started", "ui.faq": "Frequently asked questions",
+    "f.services": "Services", "f.dest": "Destinations", "f.privacy": "Privacy", "f.copy": "Solace Executive. Membership by application."
+  };
+  var TITLE = { nl: 'Lidmaatschap | Solace Executive', en: 'Membership | Solace Executive' };
+  var DESC = {
+    nl: 'Lidmaatschap bij Solace Executive: drie niveaus, wat u als lid krijgt, hoe u punten spaart en hoe u lid wordt. Op uitnodiging of persoonlijke aanbeveling.',
+    en: 'Membership at Solace Executive: three levels, what you get as a member, how you earn points and how to join. By invitation or personal referral.'
+  };
+  var KEY = 'solace-lang';
+  var nodes = Array.prototype.slice.call(document.querySelectorAll('[data-t]'));
+  nodes.forEach(function (n) { n.setAttribute('data-nl', n.textContent); });
+  function pick() {
+    try { var s = localStorage.getItem(KEY); if (s === 'nl' || s === 'en') return s; } catch (e) {}
+    var l = (navigator.languages && navigator.languages[0]) || navigator.language || 'nl';
+    return /^nl/i.test(l) ? 'nl' : 'en';
+  }
+  function apply(lang) {
+    document.documentElement.lang = lang;
+    nodes.forEach(function (n) {
+      var k = n.getAttribute('data-t');
+      n.textContent = lang === 'en' && EN[k] ? EN[k] : n.getAttribute('data-nl');
+    });
+    document.title = TITLE[lang];
+    var md = document.querySelector('meta[name="description"]'); if (md) md.setAttribute('content', DESC[lang]);
+    document.querySelectorAll('.lang button').forEach(function (b) { b.classList.toggle('on', b.dataset.lang === lang); b.setAttribute('aria-pressed', String(b.dataset.lang === lang)); });
+  }
+  document.querySelectorAll('.lang button').forEach(function (b) {
+    b.addEventListener('click', function () { try { localStorage.setItem(KEY, b.dataset.lang); } catch (e) {} apply(b.dataset.lang); });
+  });
+  apply(pick());
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  var els = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (en) { en.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: 0.12 });
+    els.forEach(function (el) { io.observe(el); });
+  } else { els.forEach(function (el) { el.classList.add('in'); }); }
+})();
+</script>
+</body>
+</html>
