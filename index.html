@@ -17,17 +17,18 @@
 <meta name="twitter:image" content="assets/og-image.png">
 <link rel="canonical" href="https://solaceexecutive.com/">
 <meta property="og:url" content="https://solaceexecutive.com/">
-<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://esm.sh" crossorigin>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"Solace Executive","url":"https://solaceexecutive.com/","logo":"https://solaceexecutive.com/assets/icons/monogram.svg","email":"hello@solaceexecutive.com","description":"Besloten conciergedienst voor privévervoer, private jets, jachten, villa's en luxegoederen.","sameAs":["https://www.instagram.com/solace.executive"]}
 </script>
-<link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
 <script type="application/ld+json" id="faq-jsonld">
 {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Hoe word ik lid?", "acceptedAnswer": {"@type": "Answer", "text": "Lidmaatschap is op uitnodiging of persoonlijke aanbeveling. Via het aanmeldformulier vertelt u ons wie u bent en wat u nodig heeft. Wij beoordelen elke aanvraag persoonlijk en nemen bij een match per e-mail contact op."}}, {"@type": "Question", "name": "Hoe snel krijg ik een reactie?", "acceptedAnswer": {"@type": "Answer", "text": "Na uw aanvraag ontvangt u bij een match binnen enkele dagen bericht van ons per e-mail. Als lid krijgt u voorrang: doorgaans een reactie binnen enkele uren, niet dagen."}}, {"@type": "Question", "name": "Welke diensten regelt Solace Executive?", "acceptedAnswer": {"@type": "Answer", "text": "Executive transport, personal shopping, private jets en empty legs, jachten, villa's op Ibiza, een fleet van supercars en executive SUV's, lifestyle (zoals fotografie en videografie, een barbier en styling aan huis en VIP-toegang) en autotransport. En elk ander verzoek, hoe uitzonderlijk ook. Alle diensten in detail"}}, {"@type": "Question", "name": "Hoe dien ik een verzoek in?", "acceptedAnswer": {"@type": "Answer", "text": "Eén bericht is genoeg. Typ wat u nodig heeft, zoals u het aan een vriend zou vragen. Uw concierge neemt het over en stemt alles voor u af. U volgt elke stap, van in behandeling tot bevestigd, live in de app."}}, {"@type": "Question", "name": "Waar bent u actief?", "acceptedAnswer": {"@type": "Answer", "text": "Vanuit Nederland regelen wij vervoer, verblijf en lifestyle-verzoeken in Nederland, Spanje, Duitsland, de Verenigde Arabische Emiraten, Zwitserland, Frankrijk, het Verenigd Koninkrijk en Japan, en daarbuiten. Reist u ergens anders naartoe? Laat het uw concierge weten. Bekijk de bestemmingen"}}, {"@type": "Question", "name": "Is er een app?", "acceptedAnswer": {"@type": "Answer", "text": "Binnenkort verhuist het ledenportaal naar de Solace Executive app. Voor nu logt u in via de website. In de app ziet u de status van elke aanvraag live. Op uw iPhone verschijnt de voortgang zelfs in de Dynamic Island en op het vergrendelscherm."}}, {"@type": "Question", "name": "Wat krijg ik als lid?", "acceptedAnswer": {"@type": "Answer", "text": "Voorrang bij reacties, een vaste contactpersoon, een AI Concierge dag en nacht, vroege toegang tot nieuwe bestemmingen en vlootpartners, kosteloos wijzigen of annuleren binnen de gestelde termijn en Solace Points. Bekijk de lidmaatschapsniveaus"}}, {"@type": "Question", "name": "Hoe werken Solace Points en niveaus?", "acceptedAnswer": {"@type": "Answer", "text": "U spaart automatisch punten bij elke aanvraag en wisselt ze in voor exclusieve extra's. Er zijn drie niveaus: Member, Distinguished Member (vanaf 2.500 punten) en Elite Member (vanaf 7.500 punten). Bij Elite krijgt uw kaart een eigen uitstraling."}}, {"@type": "Question", "name": "Wat gebeurt er met mijn gegevens?", "acceptedAnswer": {"@type": "Answer", "text": "Wij verkopen uw gegevens nooit. U heeft recht op inzage, correctie en verwijdering, en u kunt uw account zelf verwijderen in de app of via een e-mail naar hello@solaceexecutive.com. Lees het privacybeleid."}}, {"@type": "Question", "name": "Hoe neem ik contact op?", "acceptedAnswer": {"@type": "Answer", "text": "Stuur ons een bericht via WhatsApp voor persoonlijk en snel contact, of mail naar hello@solaceexecutive.com. Leden bereiken ons concierge-team ook via WhatsApp, voor elk verzoek. Naar contact"}}]}
 </script>
+<link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
 <script>
 (function () {
   try {
@@ -44,10 +45,11 @@
 </script>
 <link rel="preconnect" href="https://unpkg.com" crossorigin>
 <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin>
-<link rel="preload" as="script" href="https://unpkg.com/maplibre-gl@5.7.0/dist/maplibre-gl.js" crossorigin>
-<link rel="preload" as="style" href="https://unpkg.com/maplibre-gl@5.7.0/dist/maplibre-gl.css" crossorigin>
+<link rel="preload" as="script" href="https://unpkg.com/maplibre-gl@5.7.0/dist/maplibre-gl.js" crossorigin fetchpriority="low">
+<link rel="preload" as="style" href="https://unpkg.com/maplibre-gl@5.7.0/dist/maplibre-gl.css" crossorigin fetchpriority="low">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="phone-demo.css">
+<link rel="stylesheet" href="motion.css"><script src="motion.js" defer></script>
 </head>
 <body>
 
@@ -84,9 +86,9 @@
           <a href="autotransport.html" role="menuitem" data-i18n="nav.autotransport">Autotransport</a>
           <a href="personal-shopping.html" role="menuitem" data-i18n="service.shopping">Personal Shopping</a>
           <a href="destinations.html" role="menuitem" data-i18n="nav.destinations">Bestemmingen</a>
+          <a href="lidmaatschap.html" role="menuitem" data-i18n="nav.levels">Lidmaatschapsniveaus</a>
         </div>
       </div>
-          <a href="lidmaatschap.html" role="menuitem" data-i18n="nav.levels">Lidmaatschapsniveaus</a>
       <a href="#wereldwijd" data-i18n="nav.network">Netwerk</a>
       <a href="#filosofie" data-i18n="nav.philosophy">Filosofie</a>
       <a href="#lidmaatschap" data-i18n="nav.intake">Lidmaatschap</a>
@@ -123,9 +125,9 @@
       <a href="autotransport.html" data-i18n="nav.autotransport">Autotransport</a>
       <a href="personal-shopping.html" data-i18n="service.shopping">Personal Shopping</a>
       <a href="destinations.html" data-i18n="nav.destinations">Bestemmingen</a>
+      <a href="lidmaatschap.html" data-i18n="nav.levels">Lidmaatschapsniveaus</a>
     </div>
     <a href="#wereldwijd" data-i18n="nav.network">Netwerk</a>
-      <a href="lidmaatschap.html" data-i18n="nav.levels">Lidmaatschapsniveaus</a>
     <a href="#filosofie" data-i18n="nav.philosophy">Filosofie</a>
     <a href="#lidmaatschap" data-i18n="nav.intake">Lidmaatschap</a>
     <a href="login.html" data-i18n="nav.login">Leden</a>
@@ -480,6 +482,7 @@
       <div class="empty-legs-grid reveal" id="emptyLegsGrid" aria-live="polite">
         <p class="empty-legs-status" data-i18n="emptylegs.loading">Empty legs laden…</p>
       </div>
+      <p class="services-more reveal"><a href="kalender.html" data-i18n="emptylegs.all">Bekijk de volledige kalender &rarr;</a></p>
     </div>
   </section>
 
@@ -817,9 +820,6 @@
     </div>
   </section>
 
-  <!-- PARTNERS -->
-  <section class="partners">
-    <div class="section-inner partners-inner">
   <!-- FAQ -->
   <section class="faq" id="faq">
     <div class="section-inner faq-inner">
@@ -870,13 +870,6 @@
     </div>
   </section>
 
-      <p class="partners-label" data-i18n="partners.label">PARTNER</p>
-      <a href="https://www.instagram.com/amsterdam_guestlist_service/" target="_blank" rel="noopener" class="partner-card">
-        <img src="assets/partners/ags-logo.jpg" alt="Amsterdam Guestlist Service" class="partner-logo" loading="lazy">
-        <span class="partner-name">Amsterdam Guestlist Service</span>
-      </a>
-    </div>
-  </section>
 
 </main>
 
@@ -893,15 +886,15 @@
     <nav class="footer-nav" aria-label="Footer navigatie">
       <a href="#diensten" data-i18n="nav.services">Diensten</a>
       <a href="destinations.html">Bestemmingen</a>
+      <a href="kalender.html" data-i18n="nav.calendar">Kalender</a>
       <a href="#filosofie" data-i18n="nav.philosophy">Filosofie</a>
       <a href="#lidmaatschap" data-i18n="nav.intake">Lidmaatschap</a>
+      <a href="lidmaatschap.html" data-i18n="nav.levels">Lidmaatschapsniveaus</a>
+      <a href="#faq" data-i18n="nav.faq">Veelgestelde vragen</a>
       <a href="#chat" data-i18n="nav.contact">Contact</a>
     </nav>
 
     <form class="news-form" id="newsForm" novalidate>
-      <a href="lidmaatschap.html" data-i18n="nav.levels">Lidmaatschapsniveaus</a>
-      <a href="#faq" data-i18n="nav.faq">Veelgestelde vragen</a>
-      <p class="news-line" data-i18n="news.line">Hallo, ik ben Kluiver. Eens in de zoveel tijd laat ik u weten wat er nieuw is: een tafel, een jet, een avond die het waard is.</p>
       <div class="news-row">
         <input type="email" id="newsEmail" name="email" autocomplete="email" required data-i18n="news.placeholder" data-i18n-attr="placeholder" placeholder="uw e-mailadres" aria-label="E-mail">
         <button type="submit" data-i18n="news.button">Houd mij op de hoogte</button>
@@ -955,9 +948,10 @@
   <button class="story-viewer-nav story-viewer-nav--next" id="storyViewerNext" type="button" aria-label="Volgende"></button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="i18n.js"></script>
-<script src="script.js"></script><script src="fx.js" defer></script><script src="live-feed.js" defer></script><script src="spiral.js" defer></script><script src="phone-demo.js" defer></script><script src="hero-globe.js" defer></script><script type="module" src="empty-legs.js"></script><script type="module" src="instagram.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<script src="i18n.js" defer></script>
+<script src="float.js" defer></script>
+<script src="script.js" defer></script><script src="fx.js" defer></script><script src="live-feed.js" defer></script><script src="spiral.js" defer></script><script src="phone-demo.js" defer></script><script src="mobile-polish.js" defer></script><script src="hero-globe.js" defer></script><script type="module" src="empty-legs.js"></script><script type="module" src="instagram.js"></script>
 </body>
 </html>

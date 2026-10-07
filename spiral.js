@@ -14,7 +14,7 @@
 
   var cfg = { speed: 0.35, radius: 300, cardW: 260, cardH: 330, spacing: 205, perspective: 1100, perTurn: 6, centerScale: 1.18, edgeFade: 0.3, edgeBlur: 5 };
   var progress = 0, target = 0, autoSpeed = 0;
-  var hovered = false, visible = false, dragging = false, moved = false, lastY = 0, lastScroll = window.scrollY;
+  var hovered = false, visible = false, dragging = false, moved = false, lastY = 0, lastX = 0, travelled = 0, lastScroll = window.scrollY;
   var bounds = root.getBoundingClientRect();
 
   root.style.perspective = cfg.perspective + 'px';
@@ -22,8 +22,9 @@
 
   if ('ResizeObserver' in window) new ResizeObserver(function () { bounds = root.getBoundingClientRect(); }).observe(root);
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }, { threshold: 0.02 }).observe(root);
+    new IntersectionObserver(function (e) { visible = e[0].isIntersecting; wake(); }, { threshold: 0.02 }).observe(root);
   } else { visible = true; }
+  document.addEventListener('visibilitychange', function () { wake(); });
 
   window.addEventListener('scroll', function () {
     var y = window.scrollY, d = y - lastScroll;
@@ -36,13 +37,20 @@
   root.addEventListener('mouseleave', function () { hovered = false; });
   root.addEventListener('pointerdown', function (e) {
     if (e.button !== 0) return;
-    dragging = true; moved = false; lastY = e.clientY; target = progress;
+    dragging = true; moved = false; lastY = e.clientY; lastX = e.clientX; travelled = 0; target = progress;
     root.setPointerCapture(e.pointerId);
     root.classList.add('is-drag');
   });
   root.addEventListener('pointermove', function (e) {
     if (!dragging) return;
-    var d = e.clientY - lastY; lastY = e.clientY;
+    var d = e.clientY - lastY, dx = e.clientX - lastX; lastY = e.clientY; lastX = e.clientX;
+    if (e.pointerType === 'touch') {
+      // Touch: the page keeps its vertical scroll (the gallery follows it); a sideways swipe turns the spiral.
+      travelled += Math.abs(dx);
+      if (travelled > 6) moved = true;
+      target -= dx / (cfg.spacing * 0.7);
+      return;
+    }
     if (Math.abs(d) > 0.5) moved = true;
     target -= d / cfg.spacing;
   });
@@ -58,8 +66,17 @@
     if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; }
   }, true);
 
+  // No animation frames are requested while the spiral is off screen or the tab is hidden.
   var prev = performance.now();
+  var running = false;
+  function wake() {
+    if (running || !visible || document.hidden) return;
+    running = true;
+    prev = performance.now();
+    requestAnimationFrame(frame);
+  }
   function frame(t) {
+    if (!visible || document.hidden) { running = false; return; }
     var dt = Math.min((t - prev) / 1000, 0.05);
     prev = t;
 
@@ -71,8 +88,9 @@
     if (visible) {
       var n = cards.length, half = n / 2;
       var w = Math.max(bounds.width, 1), h = Math.max(bounds.height, 1);
-      var fit = Math.min(1, w / (cfg.cardW * 2.6), h / (cfg.cardH * 2.3));
-      var rad = Math.min(cfg.radius, Math.max(72, w * 0.36)) * fit;
+      var narrow = w < 520;
+      var fit = narrow ? Math.min(0.7, h / (cfg.cardH * 2.1)) : Math.min(1, w / (cfg.cardW * 2.6), h / (cfg.cardH * 2.3));
+      var rad = narrow ? w * 0.22 : Math.min(cfg.radius, Math.max(72, w * 0.36)) * fit;
       var fadeStart = clamp(1 - cfg.edgeFade, 0, 0.98);
       var turn = Math.max(cfg.perTurn, 1);
 
@@ -98,5 +116,5 @@
     }
     requestAnimationFrame(frame);
   }
-  requestAnimationFrame(frame);
+  wake();
 })();

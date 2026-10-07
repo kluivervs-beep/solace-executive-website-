@@ -90,8 +90,17 @@
     .svc-photos.n2 { min-height:0; }
     .steps { grid-template-columns:1fr; }
   }
+  /* Mobile polish: 44px tap targets, focus ring */
+  @media (max-width: 900px) {
+    .back-link { display:inline-flex; align-items:center; min-height:44px; min-width:44px; }
+    .lang button { min-height:44px; min-width:44px; }
+    .back-all { display:inline-flex; align-items:center; min-height:44px; }
+    .svc-actions { gap:4px 20px; }
+  }
+  a:focus-visible, button:focus-visible { outline:2px solid var(--gold-light); outline-offset:3px; }
 
 </style>
+<link rel="stylesheet" href="motion.css"><script src="motion.js" defer></script>
 </head>
 <body id="top">
   <div class="topbar">
@@ -234,8 +243,8 @@
     <h3><span data-t="ui.ctat">Nog geen lid?</span></h3>
     <p><span data-t="ui.ctad">Lidmaatschap is op uitnodiging of persoonlijke aanbeveling.</span></p>
     <a class="btn-solid" href="index.html#lidmaatschap"><span data-t="ui.ctab">Aan de slag</span></a>
-  </section>
     <p style="margin:22px 0 0"><a class="back-all" href="lidmaatschap.html"><span data-t="ui.levels">Bekijk de lidmaatschapsniveaus</span></a></p>
+  </section>
 
 <script>
 (function () {
@@ -270,5 +279,6 @@
 })();
 
 </script>
+<script src="float.js" defer></script>
 </body>
 </html>
