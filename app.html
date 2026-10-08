@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>De Solace app | Solace Executive</title>
+<meta name="description" content="De Solace Executive app voor iPhone: uw concierge Solène, live opvolging van elke aanvraag, een feed die uw smaak leert, uw standing, de besloten Salon en meer. Toegang aanvragen kan via de website.">
+<meta name="theme-color" content="#0F1B24">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Solace Executive">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:title" content="De Solace app | Solace Executive">
+<meta property="og:description" content="Uw concierge, uw standing en elke aanvraag live, in uw binnenzak. Vraag toegang aan en ontdek wat de app kan.">
+<meta property="og:image" content="https://solaceexecutive.com/assets/og-image.png">
+<link rel="canonical" href="https://solaceexecutive.com/app.html">
+<meta property="og:url" content="https://solaceexecutive.com/app.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="De Solace app | Solace Executive">
+<meta name="twitter:description" content="Uw concierge, uw standing en elke aanvraag live, in uw binnenzak.">
+<meta name="twitter:image" content="https://solaceexecutive.com/assets/og-image.png">
+<link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root { --bg:#0F1B24; --surface:#16232E; --text:#F5F1E6; --muted:#A9B4BB; --stroke:rgba(212,190,140,0.16); --gold:#B4923D; --gold-light:#D8BD7C; --ease:cubic-bezier(.22,1,.36,1); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; line-height: 1.6; overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; }
+  .display { font-family: 'Cormorant', serif; font-weight: 500; text-wrap: balance; }
+  .display em { color: var(--gold-light); }
+  .topbar { display:flex; align-items:center; justify-content:space-between; padding:20px 24px; max-width:1200px; margin:0 auto; }
+  .brand { display:flex; align-items:center; gap:10px; font-size:14px; letter-spacing:.15em; }
+  .brand img { width:26px; height:26px; }
+  .tools { display:flex; align-items:center; gap:18px; }
+  .back-link { font-size:13px; color:var(--muted); } .back-link:hover { color:var(--gold-light); }
+  .lang { display:inline-flex; border:1px solid var(--stroke); border-radius:999px; padding:3px; }
+  .lang button { background:none; border:0; color:var(--muted); font:600 11px 'Montserrat',sans-serif; letter-spacing:.1em; padding:6px 12px; border-radius:999px; cursor:pointer; }
+  .lang button.on { background:var(--gold-light); color:var(--bg); }
+  .eyebrow { font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold-light); margin-bottom:18px; }
+
+  /* ---------- Hero ---------- */
+  .hero { position:relative; max-width:1200px; margin:0 auto; padding:48px 24px 72px; display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); gap:clamp(24px,5vw,72px); align-items:center; }
+  .hero h1 { font-size:clamp(42px,7vw,88px); line-height:1.02; margin-bottom:24px; }
+  .hero .lead { font-size:16px; color:var(--muted); max-width:540px; margin-bottom:34px; }
+  .cta-row { display:flex; flex-wrap:wrap; align-items:center; gap:14px 18px; }
+  .store { display:inline-flex; flex-direction:column; justify-content:center; min-height:56px; padding:8px 26px; border-radius:16px; border:1px dashed rgba(216,189,124,.45); background:rgba(22,35,46,.6); color:var(--text); cursor:not-allowed; user-select:none; text-align:left; line-height:1.15; }
+  .store small { font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold-light); }
+  .store b { font-family:'Cormorant',serif; font-weight:500; font-size:24px; opacity:.8; }
+  .btn-solid { display:inline-flex; align-items:center; justify-content:center; min-height:56px; background:var(--gold-light); color:var(--bg); font-weight:600; font-size:14px; padding:15px 34px; border-radius:999px; }
+  .btn-ghost { display:inline-flex; align-items:center; justify-content:center; min-height:48px; border:1px solid var(--gold); color:var(--gold-light); font-size:12px; letter-spacing:.14em; text-transform:uppercase; padding:13px 24px; border-radius:999px; transition:background .25s ease, color .25s ease; }
+  .btn-ghost:hover { background:var(--gold-light); color:var(--bg); }
+  .soon-note { font-size:12px; color:var(--muted); margin-top:16px; max-width:460px; }
+  .hero-vis { display:flex; justify-content:center; }
+
+  /* ---------- Phone frame (CSS only) ---------- */
+  .pf { position:relative; display:flex; flex-direction:column; align-items:center; gap:16px; }
+  .pf-in { position:relative; translate:0 var(--py,0px); will-change:translate; }
+  .hero, .feat { overflow-x:clip; }
+  .pf-in::before { content:''; position:absolute; inset:-8% -42%; background:radial-gradient(closest-side, rgba(180,146,61,.2), transparent 70%); pointer-events:none; }
+  .phone { position:relative; width:272px; height:560px; border-radius:44px; padding:9px; background:linear-gradient(145deg,#2a3641 0%,#0b1218 40%,#1c2a35 100%); box-shadow:0 0 0 1px rgba(216,189,124,.28), 0 40px 80px rgba(0,0,0,.55), inset 0 0 0 2px rgba(255,255,255,.04); }
+  .hero .phone { animation:bob 8s ease-in-out infinite; }
+  @keyframes bob { 50% { transform:translateY(-10px) rotate(.6deg); } }
+  .screen { --s-bg:#0F1B24; --s-el:#16232E; --s-el2:#1C2B37; --s-ink:#F5F1E6; --s-mut:#A9B4BB; --s-gold:#B4923D; --s-gl:#D8BD7C; --s-line:rgba(212,190,140,.16);
+    position:relative; width:100%; height:100%; border-radius:36px; overflow:hidden; background:var(--s-bg); color:var(--s-ink); font-family:'Montserrat',sans-serif; transition:background .6s ease, color .6s ease; }
+  .screen * { transition-property:background-color, color, border-color; transition-duration:.6s; }
+  img.shot { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top; z-index:4; display:block; }
+  .noshot img.shot { display:none; }
+  .pnote { display:none; font-size:11px; letter-spacing:.08em; color:var(--muted); opacity:.8; text-align:center; }
+  .noshot .pnote { display:block; }
+
+  .mock { position:absolute; inset:0; display:flex; flex-direction:column; overflow:hidden; }
+  .island { position:absolute; top:8px; left:50%; translate:-50% 0; width:84px; height:24px; border-radius:14px; background:#000; z-index:3; }
+  .sb { display:flex; justify-content:space-between; align-items:center; height:42px; padding:12px 22px 0; font-size:11px; font-weight:600; flex-shrink:0; }
+  .sb svg { width:26px; height:9px; fill:var(--s-ink); }
+  .mock h4 { font-family:'Cormorant',serif; font-style:italic; font-weight:500; font-size:27px; line-height:1.1; }
+  .mock .eb { font-size:8px; letter-spacing:.24em; text-transform:uppercase; color:var(--s-gl); }
+  .mock .sub { font-size:10px; color:var(--s-mut); }
+  .mhead { padding:6px 18px 8px; flex-shrink:0; }
+
+  .rise { opacity:0; transform:translateY(10px); transition:opacity .6s ease, transform .7s var(--ease); transition-delay:var(--d,0s); }
+  .in .rise { opacity:1; transform:none; }
+
+  /* orb */
+  .orb { position:relative; width:var(--o,150px); height:var(--o,150px); display:grid; place-items:center; flex-shrink:0; }
+  .orb::before { content:''; position:absolute; inset:5%; border-radius:46% 54% 52% 48% / 50% 44% 56% 50%; background:radial-gradient(circle at 36% 30%, rgba(216,189,124,.5), rgba(180,146,61,.16) 55%, transparent 74%); border:1px solid rgba(216,189,124,.6); box-shadow:0 0 36px rgba(180,146,61,.35), inset 0 0 26px rgba(216,189,124,.2); animation:morph 9s ease-in-out infinite; }
+  @keyframes morph { 50% { border-radius:55% 45% 43% 57% / 45% 57% 43% 55%; transform:rotate(14deg) scale(1.04); } }
+  .orb > i { position:absolute; inset:0; animation:spin 16s linear infinite; }
+  .orb > i:nth-child(2) { animation-duration:23s; animation-direction:reverse; inset:8%; }
+  .orb > i:nth-child(3) { animation-duration:31s; inset:16%; }
+  .orb > i::before, .orb > i::after { content:''; position:absolute; width:3px; height:3px; border-radius:50%; background:#EAD79F; box-shadow:0 0 6px 1px rgba(234,215,159,.7); }
+  .orb > i::before { top:6%; left:52%; }
+  .orb > i::after { bottom:12%; left:22%; width:2px; height:2px; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .orb .ov { position:relative; text-align:center; line-height:1.15; }
+  .orb .ov b { display:block; font-family:'Cormorant',serif; font-weight:500; font-size:calc(var(--o,150px) * .24); color:var(--s-ink); }
+  .orb .ov small { display:block; font-size:7px; letter-spacing:.2em; color:var(--s-gl); }
+  .orb .ov em { display:block; font-family:'Cormorant',serif; font-size:calc(var(--o,150px) * .085); color:var(--s-mut); margin-top:3px; }
+
+  .ruler { margin:0 auto; width:100%; }
+  .ruler .bar { height:3px; border-radius:2px; background:var(--s-line); overflow:hidden; }
+  .ruler .bar i { display:block; height:100%; width:0; background:var(--s-gl); border-radius:2px; transition:width 1.6s var(--ease) .4s; }
+  .in .ruler .bar i { width:var(--w,48%); }
+  .ruler div:last-child { display:flex; justify-content:space-between; font-size:7.5px; color:var(--s-mut); margin-top:5px; }
+
+  /* home mock */
+  .m-home .tp { display:flex; align-items:center; gap:7px; padding:2px 18px 6px; font-size:10px; letter-spacing:.2em; }
+  .m-home .tp img { width:18px; height:18px; }
+  .hm-ask { margin:4px 14px 0; height:40px; border-radius:20px; border:1px solid var(--s-line); background:var(--s-el); display:flex; align-items:center; gap:6px; padding:0 14px; font-size:9.5px; color:var(--s-mut); overflow:hidden; white-space:nowrap; }
+  .hm-ask b { width:1.5px; height:13px; background:var(--s-gl); flex-shrink:0; animation:caret 1s steps(1) infinite; }
+  @keyframes caret { 50% { opacity:0; } }
+  .hm-salon { margin:8px 14px 0; border-radius:16px; border:1px solid var(--s-line); background:var(--s-el); padding:9px 12px; display:flex; align-items:center; gap:10px; flex-shrink:0; }
+  .ico { width:30px; height:30px; border-radius:50%; background:rgba(180,146,61,.14); display:grid; place-items:center; color:var(--s-gl); flex-shrink:0; }
+  .ico svg { width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .hm-salon b { display:block; font-family:'Cormorant',serif; font-weight:500; font-size:17px; line-height:1.1; }
+  .hm-salon small { font-size:9px; color:var(--s-mut); }
+  .hm-stand { flex:1; margin:8px 0 0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:0 22px 18px; background:radial-gradient(ellipse at 50% 38%, rgba(154,120,40,.38), rgba(107,81,32,0) 70%); }
+  .hm-stand .eb { margin-bottom:2px; }
+
+  /* chat mock */
+  .ch-body { flex:1; display:flex; flex-direction:column; justify-content:flex-end; gap:8px; padding:6px 12px 6px; }
+  .bub { max-width:88%; font-size:11.5px; line-height:1.5; padding:8px 12px; border-radius:16px; }
+  .bub.u { align-self:flex-end; background:linear-gradient(135deg,#B4923D,#D8BD7C); color:#1B1405; border-bottom-right-radius:5px; font-weight:500; }
+  .bub.b { align-self:flex-start; background:var(--s-el2); border:1px solid var(--s-line); border-bottom-left-radius:5px; }
+  .opt { display:flex; align-items:center; gap:9px; background:var(--s-el); border:1px solid var(--s-line); border-radius:14px; padding:8px 10px; font-size:10.5px; font-weight:600; }
+  .opt .ico { width:24px; height:24px; }
+  .opt .ico svg { width:12px; height:12px; }
+  .opt span:last-child { margin-left:auto; font-size:8px; letter-spacing:.1em; color:var(--s-gl); font-weight:500; }
+  .typing { align-self:flex-start; display:inline-flex; gap:4px; padding:11px 13px; background:var(--s-el2); border:1px solid var(--s-line); border-radius:16px; border-bottom-left-radius:5px; }
+  .typing i { width:5px; height:5px; border-radius:50%; background:var(--s-mut); animation:dot 1s infinite ease-in-out; }
+  .typing i:nth-child(2) { animation-delay:.15s; } .typing i:nth-child(3) { animation-delay:.3s; }
+  @keyframes dot { 0%,60%,100% { transform:none; opacity:.45; } 30% { transform:translateY(-3px); opacity:1; } }
+  .inbar { display:flex; align-items:center; gap:7px; padding:6px 12px 16px; flex-shrink:0; }
+  .inbar .c { width:30px; height:30px; border-radius:50%; border:1px solid var(--s-line); display:grid; place-items:center; color:var(--s-gl); flex-shrink:0; }
+  .inbar .c svg { width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .inbar .f { flex:1; height:30px; border-radius:15px; background:var(--s-el); border:1px solid var(--s-line); font-size:10.5px; color:var(--s-mut); display:flex; align-items:center; padding:0 12px; white-space:nowrap; overflow:hidden; }
+  .inbar .s { width:30px; height:30px; border-radius:50%; background:var(--s-gold); display:grid; place-items:center; flex-shrink:0; }
+  .inbar .s svg { width:14px; height:14px; stroke:#1B1405; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* live activity mock */
+  .m-live { background:radial-gradient(ellipse at 50% 18%, #1b3345 0%, #0b141b 62%); }
+  .isl { position:absolute; top:8px; left:50%; translate:-50% 0; width:238px; height:78px; border-radius:30px; background:#000; z-index:3; padding:12px 16px; display:flex; flex-direction:column; justify-content:space-between; }
+  .isl .r1 { display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:10.5px; }
+  .isl .tt { font-size:11.5px; font-weight:600; }
+  .isl .bar, .lk-card .bar { height:3px; border-radius:2px; background:rgba(245,241,230,.14); overflow:hidden; margin-top:5px; }
+  .isl .bar i, .lk-card .bar i { display:block; height:100%; width:65%; background:var(--s-gl); border-radius:2px; }
+  .gi { width:18px; height:18px; color:var(--s-gl); flex-shrink:0; }
+  .gi svg { width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .cyc { position:relative; display:inline-block; min-width:70px; height:1.3em; }
+  .cyc span { position:absolute; left:0; top:0; white-space:nowrap; opacity:0; }
+  .cyc.r { text-align:right; } .cyc.r span { left:auto; right:0; }
+  .cyc span:nth-child(2) { opacity:1; }
+  .lk-time { margin-top:112px; text-align:center; font-family:'Cormorant',serif; font-size:72px; line-height:1; font-weight:500; }
+  .lk-date { text-align:center; font-size:11px; color:var(--s-mut); letter-spacing:.12em; margin-top:6px; }
+  .lk-card { position:absolute; left:14px; right:14px; bottom:30px; border-radius:22px; padding:13px 15px; background:rgba(28,43,55,.82); border:1px solid var(--s-line); backdrop-filter:blur(10px); }
+  .lk-card .r1 { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; }
+  .lk-card .st { display:flex; justify-content:space-between; font-size:11px; color:var(--s-gl); margin-top:3px; }
+  .lk-card .bar { height:4px; margin-top:8px; }
+  .lk-home { position:absolute; bottom:8px; left:50%; translate:-50% 0; width:96px; height:4px; border-radius:2px; background:rgba(245,241,230,.4); }
+  .in .cyc span { animation:cyc 9s linear infinite; }
+  .in .cyc span:nth-child(1) { animation-delay:0s; } .in .cyc span:nth-child(2) { animation-delay:-6s; } .in .cyc span:nth-child(3) { animation-delay:-3s; }
+  .in .bar.cy i { animation:fill 9s linear infinite; }
+  @keyframes cyc { 0% { opacity:0; } 4% { opacity:1; } 30% { opacity:1; } 34% { opacity:0; } 100% { opacity:0; } }
+  @keyframes fill { 0%,30% { width:20%; } 36%,63% { width:65%; } 69%,96% { width:100%; } 100% { width:20%; } }
+
+  /* for you mock */
+  .m-fy { background:#0a1015; }
+  .fy-pg { position:absolute; inset:0; }
+  .fy-pg.a { background:#0a1015 url('assets/photos/villas/villa-nilo/hero.jpg') center/cover no-repeat; }
+  .fy-pg.a::before { content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(8,13,18,.55) 0, transparent 22%, transparent 42%, rgba(8,13,18,.94) 100%); }
+  .fy-pg .tx { position:absolute; left:18px; right:56px; bottom:26px; }
+  .fy-tag { display:inline-block; font-size:8px; letter-spacing:.24em; color:var(--s-gl); border:1px solid rgba(216,189,124,.5); padding:3px 8px; border-radius:999px; margin-bottom:8px; }
+  .fy-pg h4 { font-size:30px; }
+  .fy-pg .sub { margin:2px 0 12px; font-size:10.5px; color:#d7dde0; }
+  .fy-btn { display:inline-flex; align-items:center; height:34px; padding:0 16px; border-radius:17px; background:var(--s-gl); color:#1B1405; font-size:10.5px; font-weight:600; }
+  .fy-side { position:absolute; right:12px; bottom:96px; display:flex; flex-direction:column; gap:12px; }
+  .fy-side span { width:34px; height:34px; border-radius:50%; background:rgba(10,16,21,.55); border:1px solid rgba(255,255,255,.2); display:grid; place-items:center; color:#fff; }
+  .fy-side svg { width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .fy-side .on svg { fill:#D8BD7C; stroke:#D8BD7C; }
+  .fy-pg.p { background:#0F1B24; display:flex; flex-direction:column; justify-content:center; padding:0 26px; opacity:0; }
+  .fy-pg.p .eb { margin-bottom:10px; }
+  .fy-pg.p h4 { font-size:34px; margin-bottom:22px; }
+  .fy-ans { display:flex; flex-direction:column; gap:9px; }
+  .fy-ans span { display:flex; align-items:center; justify-content:center; height:40px; border-radius:20px; font-size:11px; font-weight:600; border:1px solid var(--s-line); }
+  .fy-ans span:first-child { background:var(--s-gl); color:#1B1405; border-color:transparent; }
+  .fy-hint { position:absolute; left:50%; bottom:8px; translate:-50% 0; width:90px; height:4px; border-radius:2px; background:rgba(245,241,230,.4); z-index:2; }
+  .in .fy-pg.a { animation:pgA 12s ease-in-out infinite; }
+  .in .fy-pg.p { animation:pgP 12s ease-in-out infinite; }
+  @keyframes pgA { 0%,44% { transform:none; } 52%,94% { transform:translateY(-100%); } 100% { transform:none; } }
+  @keyframes pgP { 0%,44% { opacity:0; transform:translateY(100%); } 52%,94% { opacity:1; transform:none; } 100% { opacity:0; transform:translateY(100%); } }
+
+  /* standing mock */
+  .m-stand { align-items:stretch; background:radial-gradient(ellipse at 50% 40%, rgba(154,120,40,.34), rgba(107,81,32,0) 66%), var(--s-bg); }
+  .m-stand .mid { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; padding:0 24px; }
+  .m-stand .btns { display:flex; gap:10px; padding:0 18px 26px; }
+  .m-stand .btns span { flex:1; height:38px; border-radius:19px; border:1px solid rgba(216,189,124,.5); display:grid; place-items:center; font-size:8.5px; letter-spacing:.16em; color:var(--s-gl); }
+  .m-stand .rl { width:100%; }
+  .m-stand .rl > small { display:block; text-align:center; font-size:7.5px; letter-spacing:.2em; color:var(--s-mut); margin-bottom:8px; }
+
+  /* salon mock */
+  .sl-tabs { display:flex; gap:6px; padding:0 14px 8px; flex-shrink:0; }
+  .sl-tabs span { flex:1; height:30px; border-radius:15px; border:1px solid var(--s-line); display:grid; place-items:center; font-size:10px; color:var(--s-mut); }
+  .sl-tabs span:first-child { background:var(--s-el2); color:var(--s-ink); border-color:rgba(216,189,124,.4); }
+  .sl-list { padding:0 14px; display:flex; flex-direction:column; gap:8px; flex:1; }
+  .sl-row { display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:16px; background:var(--s-el); border:1px solid var(--s-line); }
+  .av { width:34px; height:34px; border-radius:50%; display:grid; place-items:center; font-size:10px; font-weight:600; letter-spacing:.05em; border:1px solid rgba(216,189,124,.4); background:rgba(180,146,61,.12); color:var(--s-gl); flex-shrink:0; }
+  .av.g svg { width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .sl-row b { display:block; font-size:11.5px; font-weight:600; line-height:1.25; }
+  .sl-row small { font-size:9px; color:var(--s-mut); }
+  .sl-row .bd { margin-left:auto; min-width:18px; height:18px; border-radius:9px; background:var(--s-gold); color:#1B1405; font-size:9px; font-weight:700; display:grid; place-items:center; padding:0 5px; }
+  .sl-row .tm { margin-left:auto; font-size:8.5px; color:var(--s-mut); }
+  .sl-plus { position:absolute; right:16px; bottom:22px; width:46px; height:46px; border-radius:50%; background:var(--s-gold); display:grid; place-items:center; box-shadow:0 8px 22px rgba(0,0,0,.4); }
+  .sl-plus svg { width:18px; height:18px; stroke:#1B1405; stroke-width:2.2; fill:none; stroke-linecap:round; }
+  .sl-ghost { margin:2px 14px 0; font-size:9px; color:var(--s-mut); display:flex; align-items:center; gap:7px; }
+  .sl-ghost .av { width:22px; height:22px; font-size:7.5px; }
+
+  /* signature mock */
+  .sg-knows { margin:2px 14px 0; padding:12px 14px; border-radius:16px; background:var(--s-el); border:1px solid var(--s-line); }
+  .sg-knows b { display:block; font-family:'Cormorant',serif; font-weight:500; font-size:17px; line-height:1.15; }
+  .sg-knows small { display:block; font-size:8.5px; color:var(--s-mut); margin:3px 0 9px; }
+  .sg-knows .bar { height:4px; background:var(--s-line); border-radius:2px; overflow:hidden; }
+  .sg-knows .bar i { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--s-gold),var(--s-gl)); transition:width 1.6s var(--ease) .5s; }
+  .in .sg-knows .bar i { width:72%; }
+  .sg-card { margin:10px 14px 0; padding:12px 14px; border-radius:16px; border:1px solid rgba(216,189,124,.34); background:linear-gradient(160deg,var(--s-el2),var(--s-el)); }
+  .sg-card .eb { margin-bottom:8px; display:block; }
+  .sg-r { display:flex; align-items:center; gap:10px; padding:7px 0; border-top:1px solid var(--s-line); font-size:10px; min-height:30px; }
+  .sg-r:first-of-type { border-top:0; }
+  .sg-r > span:first-child { width:56px; color:var(--s-mut); font-size:9px; flex-shrink:0; }
+  .dots { display:flex; gap:5px; } .dots i { width:14px; height:14px; border-radius:50%; border:1px solid rgba(255,255,255,.18); }
+  .hub { margin:8px 14px 0; padding:9px 12px; border-radius:16px; background:var(--s-el); border:1px solid var(--s-line); display:flex; align-items:center; gap:10px; }
+  .hub b { display:block; font-size:10.5px; font-weight:600; line-height:1.25; } .hub small { font-size:8.5px; color:var(--s-mut); }
+  .skel { display:flex; gap:5px; } .skel i { height:12px; border-radius:6px; background:var(--s-line); }
+
+  /* muse mock */
+  .chips { display:flex; gap:5px; padding:0 14px 8px; flex-wrap:nowrap; overflow:hidden; flex-shrink:0; }
+  .chips span { flex-shrink:0; height:22px; padding:0 9px; border-radius:11px; border:1px solid var(--s-line); font-size:8.5px; display:grid; place-items:center; color:var(--s-mut); }
+  .chips span.on { background:var(--s-gl); color:#1B1405; border-color:transparent; font-weight:600; }
+  .mu-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; padding:0 14px; flex-shrink:0; }
+  .mu-t { position:relative; border-radius:14px; overflow:hidden; background:var(--s-el) center/cover no-repeat; min-height:112px; border:1px solid var(--s-line); }
+  .mu-t.h { grid-row:span 2; min-height:0; }
+  .mu-t em { position:absolute; left:7px; bottom:6px; font-style:normal; font-size:7.5px; letter-spacing:.12em; text-transform:uppercase; background:rgba(8,13,18,.7); color:#F5F1E6; padding:2px 7px; border-radius:8px; }
+  .mu-t .star { position:absolute; right:6px; top:6px; width:18px; height:18px; color:#D8BD7C; }
+  .mu-t .star svg { width:100%; height:100%; fill:#D8BD7C; }
+  .mu-note { padding:10px 11px; font-family:'Cormorant',serif; font-style:italic; font-size:14px; line-height:1.2; display:flex; flex-direction:column; justify-content:space-between; }
+  .mu-add { margin:8px 14px 0; height:32px; border-radius:16px; background:var(--s-el); border:1px solid var(--s-line); font-size:8.5px; color:var(--s-mut); display:flex; align-items:center; padding:0 12px; white-space:nowrap; overflow:hidden; flex-shrink:0; }
+  .mu-coll { margin:auto 14px 20px; padding:10px 12px; border-radius:16px; background:var(--s-el); border:1px solid var(--s-line); display:flex; align-items:center; gap:10px; }
+  .mu-coll b { display:block; font-family:'Cormorant',serif; font-weight:500; font-size:15px; line-height:1.1; }
+  .mu-coll small { font-size:8.5px; color:var(--s-mut); }
+
+  /* theme mock */
+  .th-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:6px 14px 0; flex-shrink:0; }
+  .th { height:74px; border-radius:12px; border:1px solid rgba(255,255,255,.14); position:relative; overflow:hidden; cursor:pointer; padding:8px 6px; }
+  .th::before { content:''; display:block; height:14px; border-radius:5px; background:var(--tc); }
+  .th::after { content:''; display:block; height:3px; width:60%; border-radius:2px; background:var(--ti); opacity:.85; margin-top:6px; }
+  .th.on { outline:1.5px solid #D8BD7C; outline-offset:2px; }
+  .th small { position:absolute; left:0; right:0; bottom:7px; text-align:center; font-size:7px; letter-spacing:.04em; color:var(--ti); opacity:.8; }
+  .th-prev { margin:14px 14px 0; border-radius:16px; background:var(--s-el); border:1px solid var(--s-line); padding:12px 14px; flex-shrink:0; }
+  .th-prev b { font-family:'Cormorant',serif; font-weight:500; font-size:17px; display:block; }
+  .th-prev small { font-size:9px; color:var(--s-mut); }
+  .th-prev .bar { height:3px; margin-top:9px; border-radius:2px; background:var(--s-line); overflow:hidden; } .th-prev .bar i { display:block; width:58%; height:100%; background:var(--s-gl); }
+  .fid { margin:auto 14px 20px; padding:14px; border-radius:18px; border:1px solid var(--s-line); background:var(--s-el); text-align:center; }
+  .fid svg { width:34px; height:34px; fill:none; stroke:var(--s-gl); stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; margin-bottom:6px; }
+  .fid span { display:block; font-size:10.5px; font-weight:600; }
+  .fid .scan { position:relative; width:34px; height:34px; margin:0 auto 6px; }
+  .fid .scan svg { margin:0; }
+  .fid .scan::after { content:''; position:absolute; left:3px; right:3px; top:0; height:1.5px; background:var(--s-gl); box-shadow:0 0 8px var(--s-gl); animation:scan 2.6s ease-in-out infinite; }
+  @keyframes scan { 0%,100% { top:4px; opacity:0; } 15%,85% { opacity:1; } 50% { top:28px; } }
+
+  /* stays mock */
+  .sw { display:flex; margin:2px 14px 0; border-radius:16px; border:1px solid var(--s-line); background:var(--s-el); padding:3px; flex-shrink:0; position:relative; }
+  .sw span { flex:1; height:28px; display:grid; place-items:center; font-size:10px; border-radius:13px; position:relative; z-index:1; }
+  .sw::before { content:''; position:absolute; top:3px; bottom:3px; left:3px; width:calc(50% - 3px); border-radius:13px; background:var(--s-gl); }
+  .sw span:first-child { color:#1B1405; font-weight:600; }
+  .in .sw::before { animation:seg 12s ease-in-out infinite; }
+  .in .sw span:first-child { animation:segA 12s ease-in-out infinite; }
+  .in .sw span:last-child { animation:segB 12s ease-in-out infinite; }
+  @keyframes seg { 0%,42% { transform:none; } 50%,92% { transform:translateX(100%); } 100% { transform:none; } }
+  @keyframes segA { 0%,42% { color:#1B1405; font-weight:600; } 50%,92% { color:var(--s-mut); font-weight:400; } 100% { color:#1B1405; font-weight:600; } }
+  @keyframes segB { 0%,42% { color:var(--s-mut); } 50%,92% { color:#1B1405; font-weight:600; } 100% { color:var(--s-mut); font-weight:400; } }
+  .st-card { position:relative; margin:10px 14px 0; border-radius:20px; overflow:hidden; height:330px; border:1px solid var(--s-line); background:var(--s-el); flex-shrink:0; }
+  .st-card .ph1, .st-card .ph2 { position:absolute; inset:0; background:center/cover no-repeat; }
+  .st-card .ph1 { background-image:url('assets/photos/villas/villa-nilo/hero.jpg'); }
+  .st-card .ph2 { background-image:url('assets/photos/yachts/ruby-tuesday.jpg'); opacity:0; }
+  .in .st-card .ph2 { animation:ph2 12s ease-in-out infinite; }
+  @keyframes ph2 { 0%,42% { opacity:0; } 50%,92% { opacity:1; } 100% { opacity:0; } }
+  .st-card::after { content:''; position:absolute; inset:0; background:linear-gradient(180deg,transparent 40%, rgba(8,13,18,.92) 100%); }
+  .st-card .tx { position:absolute; left:14px; right:14px; bottom:13px; z-index:2; color:#F5F1E6; }
+  .st-card .tx.t2 { opacity:0; }
+  .in .st-card .tx.t1 { animation:tx1 12s ease-in-out infinite; }
+  .in .st-card .tx.t2 { animation:ph2 12s ease-in-out infinite; }
+  @keyframes tx1 { 0%,42% { opacity:1; } 50%,92% { opacity:0; } 100% { opacity:1; } }
+  .st-card .tx .eb { display:block; margin-bottom:3px; }
+  .st-card .tx b { font-family:'Cormorant',serif; font-style:italic; font-weight:500; font-size:22px; display:block; line-height:1.1; }
+  .st-card .tx small { font-size:9.5px; color:#d7dde0; }
+  .st-card .tx .row { display:flex; align-items:center; justify-content:space-between; margin-top:9px; }
+  .st-card .tx .go { height:28px; padding:0 14px; border-radius:14px; background:var(--s-gl); color:#1B1405; font-size:10px; font-weight:600; display:grid; place-items:center; }
+  .st-peek { margin:8px 14px 0; height:60px; border-radius:16px; background:var(--s-el) url('assets/photos/fleet/porsche-boxster.jpg') center/cover; opacity:.55; display:none; }
+
+  /* notifications mock */
+  .nf-intro { padding:0 18px 8px; font-size:9px; line-height:1.5; color:var(--s-mut); }
+  .nf-list { padding:0 14px; display:flex; flex-direction:column; gap:7px; }
+  .nf-r { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:14px; background:var(--s-el); border:1px solid var(--s-line); }
+  .nf-r > div { flex:1; min-width:0; }
+  .nf-r b { display:block; font-size:10.5px; font-weight:600; line-height:1.25; }
+  .nf-r small { display:block; font-size:8.5px; color:var(--s-mut); line-height:1.35; }
+  .tg { position:relative; width:34px; height:20px; border-radius:10px; background:var(--s-line); flex-shrink:0; transition:background .5s ease .5s; }
+  .tg::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#F5F1E6; transition:transform .5s var(--ease) .5s; }
+  .in .tg.on { background:var(--s-gold); } .in .tg.on::after { transform:translateX(14px); }
+  .tg.on.fixed { opacity:.55; background:var(--s-gold); } .tg.on.fixed::after { transform:translateX(14px); }
+  .nf-tag { font-size:7.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--s-gl); flex-shrink:0; }
+  .nf-sep { font-size:8px; letter-spacing:.2em; text-transform:uppercase; color:var(--s-mut); padding:6px 4px 0; }
+
+  /* ---------- Sections ---------- */
+  .band { max-width:1200px; margin:0 auto; padding:0 24px; }
+  .intro { max-width:1200px; margin:0 auto; padding:72px 24px 8px; border-top:1px solid var(--stroke); }
+  .intro h2 { font-size:clamp(34px,5vw,58px); line-height:1.08; max-width:16ch; }
+  .intro p { color:var(--muted); font-size:15.5px; max-width:560px; margin-top:20px; }
+  .feat { max-width:1200px; margin:0 auto; padding:88px 24px; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(32px,6vw,88px); align-items:center; border-top:1px solid var(--stroke); scroll-margin-top:10px; }
+  .feat.flip .ftext { order:2; }
+  .feat h2 { font-size:clamp(34px,5vw,58px); line-height:1.08; margin-bottom:22px; }
+  .feat .fp { color:var(--muted); font-size:15.5px; max-width:520px; margin-bottom:16px; }
+  .feat .fp2 { color:var(--muted); font-size:14px; max-width:520px; margin-bottom:22px; opacity:.9; }
+  .tags { list-style:none; display:flex; flex-wrap:wrap; gap:8px; max-width:520px; margin-top:6px; }
+  .tags li { font-size:11px; letter-spacing:.1em; text-transform:uppercase; padding:7px 14px; border-radius:999px; border:1px solid var(--stroke); color:var(--gold-light); }
+  .fvis { display:flex; justify-content:center; }
+  .sws { display:flex; flex-wrap:wrap; gap:4px 6px; margin-top:20px; max-width:520px; }
+  .sw-b { display:inline-flex; align-items:center; gap:9px; min-height:44px; padding:0 14px 0 8px; border-radius:999px; border:1px solid var(--stroke); background:none; color:var(--muted); font:500 12px 'Montserrat',sans-serif; cursor:pointer; transition:border-color .25s ease, color .25s ease; }
+  .sw-b i { width:26px; height:26px; border-radius:50%; background:var(--c); border:1px solid rgba(255,255,255,.25); }
+  .sw-b:hover { color:var(--text); }
+  .sw-b[aria-pressed="true"] { border-color:var(--gold-light); color:var(--text); }
+
+  .why { max-width:1200px; margin:0 auto; padding:84px 24px; border-top:1px solid var(--stroke); }
+  .why h2 { font-size:clamp(34px,5vw,58px); line-height:1.08; margin-bottom:36px; }
+  .why-g { display:grid; grid-template-columns:repeat(4,1fr); gap:28px; }
+  .why-i { border-top:1px solid var(--gold); padding-top:20px; }
+  .why-i .n { font-size:11px; letter-spacing:.2em; color:var(--gold); }
+  .why-i b { display:block; font-family:'Cormorant',serif; font-weight:500; font-size:26px; line-height:1.15; margin:8px 0; }
+  .why-i span.d { display:block; color:var(--muted); font-size:14px; }
+
+  .how { max-width:1200px; margin:0 auto; padding:80px 24px; border-top:1px solid var(--stroke); }
+  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:32px; margin-top:28px; }
+  .step { border-top:1px solid var(--gold); padding-top:20px; }
+  .step .n { font-size:11px; letter-spacing:.2em; color:var(--gold); }
+  .step b { display:block; font-family:'Cormorant',serif; font-weight:500; font-size:26px; margin:6px 0 8px; }
+  .step span.d { color:var(--muted); font-size:14.5px; }
+
+  .cta { text-align:center; padding:84px 24px 120px; border-top:1px solid var(--stroke); }
+  .cta h3 { font-size:clamp(36px,5.4vw,62px); line-height:1.08; margin-bottom:14px; }
+  .cta p { color:var(--muted); font-size:15px; margin:0 auto 30px; max-width:480px; }
+  .cta .cta-row { justify-content:center; }
+  .cta .lv { margin-top:26px; }
+  .back-all { display:inline-flex; align-items:center; min-height:44px; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); } .back-all:hover { color:var(--gold-light); }
+
+  .reveal { opacity:0; transform:translateY(26px); transition:opacity .9s ease, transform 1s var(--ease); }
+  .reveal.in { opacity:1; transform:none; }
+  .vh { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior:auto; }
+    .reveal, .rise { opacity:1; transform:none; transition:none; }
+    .pf-in { translate:none; }
+    .hero .phone, .orb::before, .orb > i, .hm-ask b, .typing i, .fid .scan::after { animation:none; }
+    .in .cyc span, .in .bar.cy i, .in .fy-pg.a, .in .fy-pg.p, .in .sw::before, .in .sw span, .in .st-card .ph2, .in .st-card .tx { animation:none; }
+    .st-card .tx.t2 { display:none; }
+    .ruler .bar i, .sg-knows .bar i, .tg, .tg::after { transition:none; }
+    .in .ruler .bar i { width:var(--w,48%); }
+    .fy-pg.a { transform:none; }
+    .fy-pg.p { display:none; }
+  }
+  @media (max-width: 900px) {
+    .hero { grid-template-columns:1fr; padding:32px 24px 56px; }
+    .feat { grid-template-columns:1fr; padding:64px 24px; }
+    .feat.flip .ftext { order:0; }
+    .why-g { grid-template-columns:repeat(2,1fr); }
+    .steps { grid-template-columns:1fr; }
+    .back-link { display:inline-flex; align-items:center; min-height:44px; min-width:44px; }
+    .lang button { min-height:44px; min-width:44px; }
+    .btn-ghost { min-height:48px; }
+    .intro { padding-top:56px; }
+    .pf-in::before { inset:-6% -12%; }
+    .brand { min-height:44px; }
+  }
+  @media (max-width: 520px) {
+    .why-g { grid-template-columns:1fr; }
+    .tools { gap:8px; }
+    .brand { font-size:12px; }
+    .btn-solid { padding:15px 28px; }
+  }
+  a:focus-visible, button:focus-visible { outline:2px solid var(--gold-light); outline-offset:3px; }
+</style>
+<noscript><style>.reveal, .rise { opacity:1 !important; transform:none !important; } .fy-pg.p { display:none; }</style></noscript>
+<link rel="stylesheet" href="motion.css"><script src="motion.js" defer></script>
+</head>
+<body id="top">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="sg" viewBox="0 0 28 10"><rect x="0" y="6" width="3" height="4" rx="1"/><rect x="5" y="4" width="3" height="6" rx="1"/><rect x="10" y="2" width="3" height="8" rx="1"/><rect x="15" y="0" width="3" height="10" rx="1"/><rect x="21" y="1" width="7" height="8" rx="2"/></symbol></svg>
+
+  <div class="topbar">
+    <a href="index.html" class="brand"><img src="assets/icons/monogram.svg" alt="">SOLACE EXECUTIVE</a>
+    <div class="tools">
+      <a href="index.html" class="back-link"><span data-t="ui.back">← Terug</span></a>
+      <div class="lang" role="group" aria-label="Taal"><button type="button" data-lang="nl">NL</button><button type="button" data-lang="en">EN</button></div>
+    </div>
+  </div>
+
+  <!-- 1. HERO -->
+  <header class="hero">
+    <div class="hero-text">
+      <p class="eyebrow"><span data-t="h.eyebrow">DE SOLACE APP</span></p>
+      <h1 class="display"><span data-t="h.t1">Uw concierge,</span><br><em><span data-t="h.t2">in uw binnenzak.</span></em></h1>
+      <p class="lead"><span data-t="h.lead">Op de website vraagt u toegang aan. In de app gaat het pas echt open: Solène op elk uur, elke aanvraag live gevolgd, uw eigen standing en een besloten Salon.</span></p>
+      <div class="cta-row">
+        <span class="store" role="note" aria-disabled="true"><small data-t="h.store1">Binnenkort in de</small><b data-t="h.store2">App Store</b></span>
+        <a class="btn-solid" href="index.html#lidmaatschap"><span data-t="h.cta">Vraag toegang aan</span></a>
+      </div>
+      <p class="soon-note"><span data-t="h.note">De app is voor iPhone en verschijnt binnenkort in de App Store. Wie nu toegang aanvraagt, hoeft straks alleen nog te downloaden.</span></p>
+    </div>
+    <div class="hero-vis">
+      <figure class="pf in" data-par="0.05" style="margin:0">
+        <div class="pf-in">
+          <div class="phone" aria-hidden="true">
+            <div class="screen">
+              <div class="mock m-home">
+                <i class="island"></i>
+                <div class="sb"><span>9:41</span><svg><use href="#sg"/></svg></div>
+                <div class="tp"><img src="assets/icons/monogram.svg" alt="">SOLACE</div>
+                <div class="hm-ask"><span data-t="m.ask">Vraag Solène een tafel voor vanavond</span><b></b></div>
+                <div class="hm-salon"><span class="ico"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/></svg></span><div><b>Salon</b><small data-t="m.salonSub">Een stille kamer voor leden</small></div></div>
+                <div class="hm-stand">
+                  <span class="eb" data-t="m.standing">Jouw standing</span>
+                  <div class="orb" style="--o:146px"><i></i><i></i><i></i><span class="ov"><b>1.250</b><small>SOLACE POINTS</small><em>Distinguished Member</em></span></div>
+                  <div class="ruler" style="--w:48%"><div class="bar"><i></i></div><div><span>Distinguished Member</span><span>48%</span><span>Elite Member</span></div></div>
+                </div>
+              </div>
+              <img class="shot" src="assets/app/hero.png" alt="" onerror="this.closest('.pf').classList.add('noshot')">
+            </div>
+          </div>
+        </div>
+        <p class="pnote" data-t="ui.illu">Ter illustratie</p>
+      </figure>
+    </div>
+  </header>
+
+  <!-- 2. FEATURES -->
+  <section class="intro reveal">
+    <p class="eyebrow"><span data-t="i.eyebrow">WAT U IN DE APP VINDT</span></p>
+    <h2 class="display"><span data-t="i.t1">Alles wat een lid</span> <em data-t="i.t2">kan verwachten.</em></h2>
+    <p><span data-t="i.p">Tien dingen die de app anders maken dan een website. Geen opsomming van functies, maar wat u er elke dag aan heeft.</span></p>
+  </section>
+
+  <!-- 01 Concierge -->
+  <section class="feat reveal" id="concierge">
+    <div class="ftext">
+      <p class="eyebrow">01 &middot; <span data-t="f1.n">CONCIERGE</span></p>
+      <h2 class="display"><span data-t="f1.h">Solène,</span><br><em data-t="f1.h2">op elk uur.</em></h2>
+      <p class="fp" data-t="f1.p">Schrijf wat u zoekt, zoals u het aan een vriend zou vragen. Solène, onze digitale concierge (een AI), antwoordt direct en schakelt een mens van het team in als er meer nodig is.</p>
+      <p class="fp2" data-t="f1.p2">Liever geen gesprek? Kies een dienst en vraag hem direct aan. Een medewerker bevestigt, meestal binnen het uur.</p>
+      <ul class="tags"><li data-t="f1.t0">Privéjet</li><li data-t="f1.t1">Chauffeur</li><li data-t="f1.t2">Tafel</li><li data-t="f1.t3">Villa</li><li data-t="f1.t4">Jacht</li><li data-t="f1.t5">Shop</li></ul>
+    </div>
+    <div class="fvis"><figure class="pf" data-par="0.06" style="margin:0">
+      <div class="pf-in"><div class="phone" aria-hidden="true"><div class="screen">
+        <div class="mock m-chat">
+          <i class="island"></i>
+          <div class="sb"><span>9:41</span><svg><use href="#sg"/></svg></div>
+          <div class="mhead"><h4>Solène</h4><div class="sub" data-t="m.chatSub">Vraag ons letterlijk alles</div></div>
+          <div class="ch-body">
+            <div class="bub u rise" style="--d:.2s" data-t="m.q">Lunch voor vier, ergens rustig. En een auto om één uur.</div>
+            <div class="bub b rise" style="--d:.9s" data-t="m.a">Genoteerd. Ik leg het direct aan het team voor.</div>
+            <div class="opt rise" style="--d:1.5s"><span class="ico"><svg viewBox="0 0 24 24"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 2-3 5-3 8h3v10"/></svg></span><span>Salon Noir</span><span>13:00</span></div>
+            <div class="opt rise" style="--d:1.8s"><span class="ico"><svg viewBox="0 0 24 24"><path d="M5 16l1.5-5h11L19 16M4 16h16v3H4zM7 19v2M17 19v2"/></svg></span><span data-t="m.car">Auto met chauffeur</span><span>13:00</span></div>
+            <div class="typing rise" style="--d:2.2s"><i></i><i></i><i></i></div>
+          </div>
+          <div class="inbar"><span class="c"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg></span><span class="f" data-t="m.ph">Typ uw bericht...</span><span class="s"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span></div>
+        </div>
+        <img class="shot" src="assets/app/concierge.png" alt="" loading="lazy" onerror="this.closest('.pf').classList.add('noshot')">
+      </div></div></div>
+      <p class="pnote" data-t="ui.illu">Ter illustratie</p>
+    </figure></div>
+  </section>
+
+  <!-- 02 Live -->
+  <section class="feat flip reveal" id="live">
+    <div class="ftext">
+      <p class="eyebrow">02 &middot; <span data-t="f2.n">LIVE STATUS</span></p>
+      <h2 class="display"><span data-t="f2.h">Elke stap,</span><br><em data-t="f2.h2">op uw vergrendelscherm.</em></h2>
+      <p class="fp" data-t="f2.p">Zodra een aanvraag loopt, volgt u haar in het Dynamic Island en op het vergrendelscherm: in behandeling, bevestigd, afgerond. Is alles rond, dan verdwijnt het scherm vanzelf.</p>
+      <p class="fp2" data-t="f2.p2">Op uw beginscherm toont een widget uw punten en de lopende aanvraag.</p>
+      <ul class="tags"><li data-t="f2.t0">Dynamic Island</li><li data-t="f2.t1">Vergrendelscherm</li><li data-t="f2.t2">Widget</li></ul>
+    </div>
+    <div class="fvis"><figure class="pf" data-par="0.05" style="margin:0">
+      <div class="pf-in"><div class="phone" aria-hidden="true"><div class="screen">
+        <div class="mock m-live">
+          <div class="isl">
+            <div class="r1"><span class="gi"><svg viewBox="0 0 24 24"><path d="M21 3L3 10.5l6.5 2.5L12 20z"/></svg></span><span class="cyc"><span data-t="m.s1">In behandeling</span><span data-t="m.s2">Bevestigd</span><span data-t="m.s3">Afgerond</span></span><b class="cyc r" style="min-width:36px"><span>20%</span><span>65%</span><span>100%</span></b></div>
+            <div><div class="tt" data-t="m.jet">Privéjet</div><div class="bar cy"><i></i></div></div>
+          </div>
+          <div class="lk-time">9:41</div>
+          <div class="lk-date" data-t="m.lock">VERGRENDELSCHERM</div>
+          <div class="lk-card">
+            <div class="r1"><span class="gi"><svg viewBox="0 0 24 24"><path d="M21 3L3 10.5l6.5 2.5L12 20z"/></svg></span><span data-t="m.jet">Privéjet</span></div>
+            <div class="st"><span class="cyc" style="min-width:90px"><span data-t="m.s1">In behandeling</span><span data-t="m.s2">Bevestigd</span><span data-t="m.s3">Afgerond</span></span><span class="cyc r" style="min-width:36px"><span>20%</span><span>65%</span><span>100%</span></span></div>
+            <div class="bar cy"><i></i></div>
+          </div>
+          <i class="lk-home"></i>
+        </div>
+        <img class="shot" src="assets/app/live.png" alt="" loading="lazy" onerror="this.closest('.pf').classList.add('noshot')">
+      </div></div></div>
+      <p class="pnote" data-t="ui.illu">Ter illustratie</p>
+    </figure></div>
+  </section>
+
+  <!-- 03 For You -->
+  <section class="feat reveal" id="foryou">
+    <div class="ftext">
+      <p class="eyebrow">03 &middot; <span data-t="f3.n">FOR YOU</span></p>
+      <h2 class="display"><span data-t="f3.h">Een feed die</span><br><em data-t="f3.h2">uw smaak leert.</em></h2>
+      <p class="fp" data-t="f3.p">Villa's, jachten, empty legs en uitgelichte kansen, voor u gerangschikt. Wat u leuk vindt, overslaat of aanvraagt telt mee.</p>
+      <p class="fp2" data-t="f3.p2">En af en toe vraagt de feed of u meer van iets wilt zien. Uw antwoord weegt zwaarder dan een like.</p>
+      <ul class="tags"><li data-t="f3.t0">Villa's</li><li data-t="f3.t1">Jachten</li><li data-t="f3.t2">Empty legs</li><li data-t="f3.t3">Highlights</li></ul>
+    </div>
+    <div class="fvis"><figure class="pf" data-par="0.07" style="margin:0">
+      <div class="pf-in"><div class="phone" aria-hidden="true"><div class="screen">
+        <div class="mock m-fy">
+          <i class="island"></i>
+          <div class="fy-pg a">
+            <div class="sb" style="position:relative;z-index:2"><span>9:41</span><svg><use href="#sg"/></svg></div>
+            <div class="fy-side"><span class="on"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span><span><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span></div>
+            <div class="tx"><span class="fy-tag">VILLA</span><h4 data-t="m.fyT">Privévilla</h4><div class="sub">Ibiza</div><span class="fy-btn" data-t="m.fyB">Vraag de concierge</span></div>
+          </div>
+          <div class="fy-pg p"><span class="eb" data-t="m.fyE">Even afstemmen</span><h4 data-t="m.fyQ">Meer villa's zoals deze?</h4><div class="fy-ans"><span data-t="m.fyY">Ja, graag</span><span data-t="m.fyN">Liever minder</span></div></div>
+          <i class="fy-hint"></i>
+        </div>
+        <img class="shot" src="assets/app/foryou.png" alt="" loading="lazy" onerror="this.closest('.pf').classList.add('noshot')">
+      </div></div></div>
+      <p class="pnote" data-t="ui.illu">Ter illustratie</p>
+    </figure></div>
+  </section>
+
+  <!-- 04 Standing -->
+  <section class="feat flip reveal" id="standing">
+    <div class="ftext">
+      <p class="eyebrow">04 &middot; <span data-t="f4.n">UW STANDING</span></p>
+      <h2 class="display"><span data-t="f4.h">Uw standing,</span><br><em data-t="f4.h2">altijd in beeld.</em></h2>
+      <p class="fp" data-t="f4.p">Een levende gouden orb toont uw Solace Points en hoe ver u bent op weg naar het volgende niveau. Met uw punten kiest u beloningen.</p>
+      <p class="fp2" data-t="f4.p2">Uw ledenkaart is er in vier stijlen en kantelt onder uw vinger.</p>
+      <ul class="tags"><li>Member</li><li>Distinguished Member</li><li>Elite Member</li></ul>
+    </div>
+    <div class="fvis"><figure class="pf" data-par="0.06" style="margin:0">
+      <div class="pf-in"><div class="phone" aria-hidden="true"><div class="screen">
+        <div class="mock m-stand">
+          <i class="island"></i>
+          <div class="sb"><span>9:41</span><svg><use href="#sg"/></svg></div>
+          <div class="mid">
+            <span class="eb" data-t="m.standing">Jouw standing</span>
+            <div class="orb" style="--o:190px"><i></i><i></i><i></i><span class="ov"><b>1.250</b><small>SOLACE POINTS</small><em>Distinguished Member</em></span></div>
+            <div class="rl"><small data-t="m.road">WEG NAAR HET VOLGENDE NIVEAU</small><div class="ruler" style="--w:48%"><div class="bar"><i></i></div><div><span>Distinguished Member</span><span>48%</span><span>Elite Member</span></div></div></div>
+          </div>
+          <div class="btns"><span data-t="m.card">MIJN KAART</span><span data-t="m.rew">BELONINGEN</span></div>
+        </div>
+        <img class="shot" src="assets/app/standing.png" alt="" loading="lazy" onerror="this.closest('.pf').classList.add('noshot')">
+      </div></div></div>
+      <p class="pnote" data-t="ui.illu">Ter illustratie</p>
+    </figure></div>
+  </section>
+
+  <!-- 05 Salon -->
+  <section class="feat reveal" id="salon">
+    <div class="ftext">
+      <p class="eyebrow">05 &middot; <span data-t="f5.n">SALON</span></p>
+      <h2 class="display"><span data-t="f5.h">Een stille kamer</span><br><em data-t="f5.h2">voor leden.</em></h2>
+      <p class="fp" data-t="f5.p">Deel een tip, plan samen een avond, vraag een introductie. Praat een-op-een, of maak een kamer voor een kleine groep.</p>
+      <p class="fp2" data-t="f5.p2">U ziet alleen leden die zelf de Salon zijn binnengestapt. Met Ghost Mode zien anderen alleen uw initialen.</p>
+      <ul class="tags"><li data-t="f5.t0">Alleen voor leden</li><li data-t="f5.t1">Besloten</li><li data-t="f5.t2">Zonder lawaai</li></ul>
+    </div>
+    <div class="fvis"><figure class="pf" data-par="0.05" style="margin:0">
+      <div class="pf-in"><div class="phone" aria-hidden="true"><div class="screen">
+        <div class="mock m-salon">
+          <i class="island"></i>
+          <div class="sb"><span>9:41</span><svg><use href="#sg"/></svg></div>
+          <div class="mhead"><span class="eb" data-t="m.sEb">Alleen voor leden</span><h4>Salon</h4><div class="sub" data-t="m.salonSub">Een stille kamer voor leden</div></div>
+          <div class="sl-tabs"><span data-t="m.sT1">Gesprekken</span><span data-t="m.sT2">Leden</span></div>
+          <div class="sl-list">
+            <div class="sl-row rise" style="--d:.2s"><span class="av g"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3"/><circle cx="17" cy="10" r="2.4"/><path d="M3.5 19c.6-3 2.8-4.5 5.5-4.5s4.900 1.500 5.500 4.500M15 15.200c2.600-.4 4.700.8 5.500 3.800"/></svg></span><div><b data-t="m.sR1">Kamer</b><small data-t="m.sR1s">Schrijf het eerste bericht.</small></div><span class="bd">2</span></div>
+            <div class="sl-row rise" style="--d:.5s"><span class="av">A.V.</span><div><b data-t="m.sR2">Privégesprek</b><small data-t="m.sR2s">Zeg hallo</small></div><span class="tm" data-t="m.sY">Gisteren</span></div>
+            <div class="sl-row rise" style="--d:.8s"><span class="av">J.D.</span><div><b data-t="m.sR2">Privégesprek</b><small data-t="m.sR2s">Zeg hallo</small></div><span class="tm">9:12</span></div>
+            <div class="sl-row rise" style="--d:1.1s"><span class="av g"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3"/><circle cx="17" cy="10" r="2.4"/><path d="M3.5 19c.6-3 2.8-4.5 5.5-4.5s4.900 1.500 5.500 4.500M15 15.200c2.600-.4 4.700.8 5.500 3.800"/></svg></span><div><b data-t="m.sR1">Kamer</b><small data-t="m.sR1s">Schrijf het eerste bericht.</small></div><span class="tm" data-t="m.sY">Gisteren</span></div>
+          </div>
+          <div class="sl-ghost rise" style="--d:1.4s"><span class="av">A.V.</span><span class="av">J.D.</span><span>Ghost Mode</span></div>
+          <div style="height:60px;flex-shrink:0"></div>
+          <span class="sl-plus"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+        </div>
+        <img class="shot" src="assets/app/salon.png" alt="" loading="lazy" onerror="this.closest('.pf').classList.add('noshot')">
+      </div></div></div>
+      <p class="pnote" data-t="ui.illu">Ter illustratie</p>
+    </figure></div>
+  </section>
+
+  <!-- 06 Signature -->
+  <section class="feat flip reveal" id="signature">
+    <div class="ftext">
+      <p class="eyebrow">06 &middot; <span data-t="f6.n">SIGNATURE</span></p>
+      <h2 class="display"><span data-t="f6.h">Zeg het</span><br><em data-t="f6.h2">één keer.</em></h2>
+      <p class="fp" data-t="f6.p">Uw maten, kleuren, favoriete maisons, adressen en wensen: de tafel bij het raam, plat water, geen schaaldieren. Elke aanvraag begint daarna al een stap verder.</p>
+      <p class="fp2" data-t="f6.p2">De app laat zien hoeveel uw concierge al van u kent.</p>
+      <ul class="tags"><li data-t="f6.t0">Maten</li><li data-t="f6.t1">Maisons</li><li data-t="f6.t2">Kleuren</li><li data-t="f6.t3">Adressen</li><li data-t="f6.t4">Wensen</li></ul>
+    </div>
+    <div class="fvis"><figure class="pf" data-par="0.06" style="margin:0">
+      <div class="pf-in"><div class="phone" aria-hidden="true"><div class="screen">
+        <div class="mock m-sig">
+          <i class="island"></i>
+          <div class="sb"><span>9:41</span><svg><use href="#sg"/></svg></div>
+          <div class="mhead"><span class="eb" data-t="m.gEb">Jouw smaak, genoteerd</span><h4>Signature</h4></div>
+          <div class="sg-knows"><b data-t="m.gK">Je concierge kent 72% van jou</b><small data-t="m.gKs">Hoe completer je Signature, hoe minder je ooit hoeft te herhalen.</small><div class="bar"><i></i></div></div>
+          <div class="sg-card">
+            <span class="eb" data-t="m.gC">Signature-kaart</span>
+            <div class="sg-r"><span data-t="m.gCol">Kleuren</span><span class="dots"><i style="background:#1d3a52"></i><i style="background:#f1ead9"></i><i style="background:#5a1f2b"></i><i style="background:#3b4a35"></i></span></div>
+            <div class="sg-r"><span data-t="m.gMai">Maisons</span><span class="skel"><i style="width:36px"></i><i style="width:28px"></i><i style="width:42px"></i></span></div>
+            <div class="sg-r"><span data-t="m.gSz">Maten</span><span class="skel"><i style="width:22px"></i><i style="width:30px"></i><i style="width:22px"></i></span></div>
+            <div class="sg-r"><span data-t="m.gW">Water</span><span data-t="m.gW2">Plat</span></div>
+            <div class="sg-r"><span data-t="m.gD">Dieet</span><span data-t="m.gD2">Geen schaaldieren</span></div>
+            <div class="sg-r"><span data-t="m.gT">Tafel</span><span data-t="m.gT2">Bij het raam</span></div>
+          </div>
+          <div class="hub rise" style="--d:.5s"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 20l4-1 11-11a2.100 2.100 0 0 0-3-3L5 16z"/></svg></span><div><b data-t="m.gU">Update mijn Signature</b><small data-t="m.gUs">Maten, kleuren, maisons en wensen</small></div></div>
+        </div>
+        <img class="shot" src="assets/app/signature.png" alt="" loading="lazy" onerror="this.closest('.pf').classList.add('noshot')">
+      </div></div></div>
+      <p class="pnote" data-t="ui.illu">Ter illustratie</p>
+    </figure></div>
+  </section>
+
+  <!-- 07 Muse + Collection -->
+  <section class="feat reveal" id="muse">
+    <div class="ftext">
+      <p class="eyebrow">07 &middot; <span data-t="f7.n">MUSE EN COLLECTIE</span></p>
+      <h2 class="display"><span data-t="f7.h">Wat u raakt,</span><br><em data-t="f7.h2">bewaard.</em></h2>
+      <p class="fp" data-t="f7.p">Bewaar beelden, links en notities in Muse: mode, interieur, reizen, horloges, auto's, dineren. Uw concierge put eruit bij alles wat voor u gezocht wordt.</p>
+      <p class="fp2" data-t="f7.p2">In uw Collectie staat het archief van wat wij voor u vonden, per jaar geordend.</p>
+      <ul class="tags"><li>Muse</li><li data-t="f7.t1">Collectie</li></ul>
+    </div>
+    <div class="fvis"><figure class="pf" data-par="0.07" style="margin:0">
+      <div class="pf-in"><div class="phone" aria-hidden="true"><div class="screen">
+        <div class="mock m-muse">
+          <i class="island"></i>
+          <div class="sb"><span>9:41</span><svg><use href="#sg"/></svg></div>
+          <div class="mhead" style="padding-bottom:6px"><span class="eb" data-t="m.mEb">Wat je raakt</span><h4>Muse</h4></div>
+          <div class="chips"><span class="on" data-t="m.mAll">Alles</span><span data-t="m.mFav">Favorieten</span><span data-t="m.mC1">Mode</span><span data-t="m.mC2">Interieur</span><span data-t="m.mC3">Reizen</span></div>
+          <div class="mu-grid">
+            <div class="mu-t h rise" style="--d:.15s;background-image:url('assets/photos/villas/villa-deseo/hero.jpg');min-height:232px"><span class="star"><svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.600 6.100.8-4.500 4.300 1.100 6.100L12 16.800 6.600 19.800l1.100-6.100L3.200 9.400l6.100-.8z"/></svg></span><em data-t="m.mC2">Interieur</em></div>
+            <div class="mu-t rise" style="--d:.4s;background-image:url('assets/photos/fleet/porsche-boxster.jpg')"><em data-t="m.mC4">Auto's</em></div>
+            <div class="mu-t mu-note rise" style="--d:.65s"><span data-t="m.mN">Een tafel aan het water, kaarslicht.</span><em style="position:static;align-self:flex-start;font-family:'Montserrat',sans-serif" data-t="m.mC5">Dineren</em></div>
+          </div>
+          <div class="mu-add" data-t="m.mAdd">Plak een beeldlink, een weblink of schrijf een notitie...</div>
+          <div class="mu-coll"><span class="ico"><svg viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="11" rx="2"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/></svg></span><div><b data-t="m.mColl">Mijn Collectie</b><small data-t="m.mCollS">Alles wat je via ons hebt verworven</small></div></div>
+        </div>
+        <img class="shot" src="assets/app/muse.png" alt="" loading="lazy" onerror="this.closest('.pf').classList.add('noshot')">
+      </div></div></div>
+      <p class="pnote" data-t="ui.illu">Ter illustratie</p>
+    </figure></div>
+  </section>
+
+  <!-- 08 Themes + Face ID -->
+  <section class="feat flip reveal" id="themas">
+    <div class="ftext">
+      <p class="eyebrow">08 &middot; <span data-t="f8.n">THEMA'S EN FACE ID</span></p>
+      <h2 class="display"><span data-t="f8.h">Uw app,</span><br><em data-t="f8.h2">uw kleur.</em></h2>
+      <p class="fp" data-t="f8.p">Kies uit zeven achtergronden voor de hele app. En ontgrendel hem met Face ID, zodat alleen u binnenkomt.</p>
+      <div class="sws" role="group" aria-label="Thema">
+        <button type="button" class="sw-b" data-theme="marine" style="--c:#0F1B24" aria-pressed="true"><i></i><span data-t="th.marine">Marine</span></button>
+        <button type="button" class="sw-b" data-theme="obsidian" style="--c:#0C0C0D" aria-pressed="false"><i></i><span data-t="th.obsidian">Obsidiaan</span></button>
+        <button type="button" class="sw-b" data-theme="forest" style="--c:#0B1511" aria-pressed="false"><i></i><span data-t="th.forest">Bos</span></button>
+        <button type="button" class="sw-b" data-theme="bordeaux" style="--c:#2A1B20" aria-pressed="false"><i></i><span data-t="th.bordeaux">Bordeaux</span></button>
+        <button type="button" class="sw-b" data-theme="graphite" style="--c:#232629" aria-pressed="false"><i></i><span data-t="th.graphite">Grafiet</span></button>
+        <button type="button" class="sw-b" data-theme="black" style="--c:#000000" aria-pressed="false"><i></i><span data-t="th.black">Zwart</span></button>
+        <button type="button" class="sw-b" data-theme="ivory" style="--c:#FAF7F0" aria-pressed="false"><i></i><span data-t="th.ivory">Ivoor</span></button>
+      </div>
+    </div>
+    <div class="fvis"><figure class="pf" data-par="0.05" style="margin:0">
+      <div class="pf-in"><div class="phone" aria-hidden="true"><div class="screen" id="themeScreen">
+        <div class="mock m-theme">
+          <i class="island"></i>
+          <div class="sb"><span>9:41</span><svg><use href="#sg"/></svg></div>
+          <div class="mhead"><h4 data-t="m.tTitle">Achtergrond</h4><div class="sub" data-t="m.tSub">Kies hoe de hele app eruitziet. Je kunt het altijd terugzetten.</div></div>
+          <div class="th-grid">
+            <span class="th on" data-theme="marine" style="--tc:#16232E;--ti:#F5F1E6;background:#0F1B24"><small data-t="th.marine">Marine</small></span>
+            <span class="th" data-theme="obsidian" style="--tc:#151514;--ti:#F5F1E6;background:#0C0C0D"><small data-t="th.obsidian">Obsidiaan</small></span>
+            <span class="th" data-theme="forest" style="--tc:#121F19;--ti:#F5F1E6;background:#0B1511"><small data-t="th.forest">Bos</small></span>
+            <span class="th" data-theme="bordeaux" style="--tc:#201418;--ti:#F5F1E6;background:#150D10"><small data-t="th.bordeaux">Bordeaux</small></span>
+            <span class="th" data-theme="graphite" style="--tc:#1A1C1F;--ti:#F5F1E6;background:#111214"><small data-t="th.graphite">Grafiet</small></span>
+            <span class="th" data-theme="black" style="--tc:#0B0B0C;--ti:#F5F1E6;background:#000"><small data-t="th.black">Zwart</small></span>
+            <span class="th" data-theme="ivory" style="--tc:#FFFFFF;--ti:#16232E;background:#FAF7F0"><small data-t="th.ivory">Ivoor</small></span>
+          </div>
+          <div class="th-prev"><b>Solace Points</b><small>Distinguished Member</small><div class="bar"><i></i></div></div>
+          <div class="fid"><div class="scan"><svg viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M9 10v1.500M15 10v1.500M12 10v3.500h-1M9 16c1.800 1.200 4.200 1.200 6 0"/></svg></div><span data-t="m.fid">Ontgrendel met Face ID</span></div>
+        </div>
+        <img class="shot" src="assets/app/themas.png" alt="" loading="lazy" onerror="this.closest('.pf').classList.add('noshot')">
+      </div></div></div>
+      <p class="pnote" data-t="ui.illu">Ter illustratie</p>
+    </figure></div>
+  </section>
+
+  <!-- 09 Stays -->
+  <section class="feat reveal" id="stays">
+    <div class="ftext">
+      <p class="eyebrow">09 &middot; <span data-t="f9.n">STAYS</span></p>
+      <h2 class="display"><span data-t="f9.h">Villa's en jachten,</span><br><em data-t="f9.h2">met echte foto's.</em></h2>
+      <p class="fp" data-t="f9.p">Een selectie die we persoonlijk kennen. Blader door de foto's, kies, geef uw data door en wij bevestigen met een vaste prijs voordat er iets vastligt.</p>
+      <p class="fp2" data-t="f9.p2">Twijfel? Bespreek het eerst met Solène.</p>
+      <ul class="tags"><li data-t="f9.t0">Villa's</li><li data-t="f9.t1">Jachten</li></ul>
+    </div>
+    <div class="fvis"><figure class="pf" data-par="0.06" style="margin:0">
+      <div class="pf-in"><div class="phone" aria-hidden="true"><div class="screen">
+        <div class="mock m-stays">
+          <i class="island"></i>
+          <div class="sb"><span>9:41</span><svg><use href="#sg"/></svg></div>
+          <div class="mhead"><span class="eb" data-t="m.yEb">Verblijf en water</span><h4 data-t="m.yT">Villa's en jachten</h4></div>
+          <div class="sw"><span data-t="m.yV">Villa's</span><span data-t="m.yJ">Jachten</span></div>
+          <div class="st-card"><div class="ph1"></div><div class="ph2"></div>
+            <div class="tx t1"><span class="eb" data-t="m.yVl">Villa</span><b data-t="m.yN1">Privévilla</b><small><span data-t="m.yIb">Ibiza</span> &middot; <span data-t="m.yP">Prijs op aanvraag</span></small><div class="row"><small data-t="m.yPool">Zwembad</small><span class="go" data-t="m.yBook">Aanvragen</span></div></div>
+            <div class="tx t2"><span class="eb" data-t="m.yJt">Jacht</span><b data-t="m.yN2">Jacht</b><small data-t="m.yP">Prijs op aanvraag</small><div class="row"><small data-t="m.yCr">Bemanning en route vooraf afgestemd</small><span class="go" data-t="m.yBook">Aanvragen</span></div></div></div>
+        </div>
+        <img class="shot" src="assets/app/stays.png" alt="" loading="lazy" onerror="this.closest('.pf').classList.add('noshot')">
+      </div></div></div>
+      <p class="pnote" data-t="ui.illu">Ter illustratie</p>
+    </figure></div>
+  </section>
+
+  <!-- 10 Notifications -->
+  <section class="feat flip reveal" id="meldingen">
+    <div class="ftext">
+      <p class="eyebrow">10 &middot; <span data-t="f10.n">MELDINGEN</span></p>
+      <h2 class="display"><span data-t="f10.h">Alleen wat u</span><br><em data-t="f10.h2">wilt weten.</em></h2>
+      <p class="fp" data-t="f10.p">Alles over uw eigen aanvragen bereikt u altijd: bevestigd, bijgewerkt en de herinnering kort ervoor.</p>
+      <p class="fp2" data-t="f10.p2">Aanbiedingen, nieuwe experiences en een verjaardagsgroet bepaalt u zelf. Of u dempt alles wat optioneel is.</p>
+      <ul class="tags"><li data-t="f10.t0">Uw aanvragen</li><li data-t="f10.t1">Uw concierge</li><li data-t="f10.t2">Aanbiedingen</li><li data-t="f10.t3">Experiences</li></ul>
+    </div>
+    <div class="fvis"><figure class="pf" data-par="0.05" style="margin:0">
+      <div class="pf-in"><div class="phone" aria-hidden="true"><div class="screen">
+        <div class="mock m-nf">
+          <i class="island"></i>
+          <div class="sb"><span>9:41</span><svg><use href="#sg"/></svg></div>
+          <div class="mhead"><h4 data-t="m.nT">Meldingen</h4><div class="sub" data-t="m.nS">Kies waarover we je bereiken</div></div>
+          <div class="nf-intro" data-t="m.nI">Alles wat over jouw eigen aanvragen gaat bereikt je altijd. De rest bepaal je zelf.</div>
+          <div class="nf-list">
+            <div class="nf-r"><div><b data-t="m.nR">Je aanvragen</b><small data-t="m.nRs">Bevestigd, bijgewerkt en de herinnering kort ervoor.</small></div><span class="nf-tag" data-t="m.nAl">Altijd</span></div>
+            <div class="nf-r"><div><b data-t="m.nC">Je concierge</b><small data-t="m.nCs">Een persoonlijk bericht van ons team.</small></div><span class="nf-tag" data-t="m.nAl">Altijd</span></div>
+            <div class="nf-r"><div><b data-t="m.nO">Aanbiedingen en tips</b><small data-t="m.nOs">Lege vluchten, passende tips en nieuws van ons.</small></div><span class="tg on"></span></div>
+            <div class="nf-r"><div><b data-t="m.nE">Nieuwe experiences</b><small data-t="m.nEs">Wanneer we iets nieuws toevoegen.</small></div><span class="tg on"></span></div>
+            <div class="nf-r"><div><b data-t="m.nB">Verjaardag</b><small data-t="m.nBs">Een felicitatie op je verjaardag.</small></div><span class="tg"></span></div>
+            <div class="nf-r"><div><b data-t="m.nM">Alles wat optioneel is dempen</b></div><span class="tg"></span></div>
+          </div>
+        </div>
+        <img class="shot" src="assets/app/meldingen.png" alt="" loading="lazy" onerror="this.closest('.pf').classList.add('noshot')">
+      </div></div></div>
+      <p class="pnote" data-t="ui.illu">Ter illustratie</p>
+    </figure></div>
+  </section>
+
+  <!-- 3. WAAROM -->
+  <section class="why reveal" id="waarom">
+    <p class="eyebrow"><span data-t="w.eyebrow">WAAROM DE APP</span></p>
+    <h2 class="display"><span data-t="w.h">Meer dan</span> <em data-t="w.h2">een website.</em></h2>
+    <div class="why-g">
+      <div class="why-i"><span class="n">01</span><b data-t="w.1t">Alles op één plek</b><span class="d" data-t="w.1d">Uw aanvragen, uw concierge, uw kaart en uw voorkeuren, bij elkaar in uw iPhone.</span></div>
+      <div class="why-i"><span class="n">02</span><b data-t="w.2t">Elke stap zichtbaar</b><span class="d" data-t="w.2d">Van in behandeling tot afgerond, live bij u. Navragen is niet nodig.</span></div>
+      <div class="why-i"><span class="n">03</span><b data-t="w.3t">Niets twee keer zeggen</b><span class="d" data-t="w.3d">Signature en Muse zorgen dat elke aanvraag begint bij wat wij al van u weten.</span></div>
+      <div class="why-i"><span class="n">04</span><b data-t="w.4t">Discreet, op uw voorwaarden</b><span class="d" data-t="w.4d">Face ID, Ghost Mode en meldingen die u zelf instelt. Rust, geen ruis.</span></div>
+    </div>
+  </section>
+
+  <!-- 4. ZO WERKT HET -->
+  <section class="how reveal" id="zo-werkt-het">
+    <p class="eyebrow"><span data-t="s.eyebrow">ZO WERKT HET</span></p>
+    <div class="steps">
+      <div class="step"><span class="n">01</span><b data-t="s.1t">Vraag toegang aan</b><span class="d" data-t="s.1d">Via de website of in de app zelf. Vertel kort wie u bent en waar u naar op zoek bent.</span></div>
+      <div class="step"><span class="n">02</span><b data-t="s.2t">Wij keuren goed</b><span class="d" data-t="s.2d">Wij bekijken uw aanvraag persoonlijk. Wordt die goedgekeurd, dan ontvangt u uw inloggegevens.</span></div>
+      <div class="step"><span class="n">03</span><b data-t="s.3t">Download en log in</b><span class="d" data-t="s.3d">Download de app, log in en zet Face ID aan. Daarna staat uw concierge een tik van u af.</span></div>
+    </div>
+  </section>
+
+  <!-- 5. CTA -->
+  <section class="cta reveal">
+    <h3 class="display"><span data-t="c.h">Het huis staat</span> <em data-t="c.h2">voor u open.</em></h3>
+    <p><span data-t="c.p">De app komt binnenkort in de App Store. Vraag nu toegang aan, dan hoeft u straks alleen nog te downloaden.</span></p>
+    <div class="cta-row">
+      <span class="store" role="note" aria-disabled="true"><small data-t="h.store1">Binnenkort in de</small><b data-t="h.store2">App Store</b></span>
+      <a class="btn-solid" href="index.html#lidmaatschap"><span data-t="h.cta">Vraag toegang aan</span></a>
+    </div>
+    <p class="lv"><a class="back-all" href="lidmaatschap.html"><span data-t="c.levels">Bekijk de lidmaatschapsniveaus</span></a></p>
+  </section>
+
+<script>
+(function () {
+  var EN = {
+    "ui.back": "← Back", "ui.illu": "For illustration",
+    "h.eyebrow": "THE SOLACE APP", "h.t1": "Your concierge,", "h.t2": "in your pocket.",
+    "h.lead": "On the website you request access. In the app it truly opens up: Solène at any hour, every request followed live, your own standing and a private Salon.",
+    "h.store1": "Coming soon to the", "h.store2": "App Store", "h.cta": "Request access",
+    "h.note": "The app is for iPhone and arrives in the App Store soon. If you request access now, all that is left later is to download it.",
+    "i.eyebrow": "WHAT YOU FIND IN THE APP", "i.t1": "Everything a member", "i.t2": "can expect.",
+    "i.p": "Ten things that set the app apart from a website. Not a list of features, but what you will use every day.",
+    "f1.n": "CONCIERGE", "f1.h": "Solène,", "f1.h2": "at any hour.",
+    "f1.p": "Write what you are looking for, the way you would ask a friend. Solène, our digital concierge (an AI), answers at once and brings in a person from the team when more is needed.",
+    "f1.p2": "Rather not chat? Pick a service and request it directly. A team member confirms, usually within the hour.",
+    "f1.t0": "Private jet", "f1.t1": "Chauffeur", "f1.t2": "Table", "f1.t3": "Villa", "f1.t4": "Yacht", "f1.t5": "Shop",
+    "f2.n": "LIVE STATUS", "f2.h": "Every step,", "f2.h2": "on your lock screen.",
+    "f2.p": "As soon as a request is under way, you follow it in the Dynamic Island and on the lock screen: in review, confirmed, done. Once everything is settled, it disappears by itself.",
+    "f2.p2": "On your home screen, a widget shows your points and the request in progress.",
+    "f2.t0": "Dynamic Island", "f2.t1": "Lock screen", "f2.t2": "Widget",
+    "f3.n": "FOR YOU", "f3.h": "A feed that", "f3.h2": "learns your taste.",
+    "f3.p": "Villas, yachts, empty legs and highlights, ranked for you. What you like, skip or request counts.",
+    "f3.p2": "Now and then the feed asks whether you want to see more of something. Your answer weighs more than a like.",
+    "f3.t0": "Villas", "f3.t1": "Yachts", "f3.t2": "Empty legs", "f3.t3": "Highlights",
+    "f4.n": "YOUR STANDING", "f4.h": "Your standing,", "f4.h2": "always in view.",
+    "f4.p": "A living gold orb shows your Solace Points and how far you are along the road to the next level. With your points you choose rewards.",
+    "f4.p2": "Your member card comes in four styles and tilts under your finger.",
+    "f5.n": "SALON", "f5.h": "A quiet room", "f5.h2": "for members.",
+    "f5.p": "Share a tip, plan an evening together, ask for an introduction. Talk one-to-one, or make a room for a small group.",
+    "f5.p2": "You only see members who stepped into the Salon themselves. With Ghost Mode, others see only your initials.",
+    "f5.t0": "Members only", "f5.t1": "Private", "f5.t2": "No noise",
+    "f6.n": "SIGNATURE", "f6.h": "Say it", "f6.h2": "once.",
+    "f6.p": "Your sizes, colours, favourite maisons, addresses and wishes: the table by the window, still water, no shellfish. Every request then starts a step ahead.",
+    "f6.p2": "The app shows how much your concierge already knows about you.",
+    "f6.t0": "Sizes", "f6.t1": "Maisons", "f6.t2": "Colours", "f6.t3": "Addresses", "f6.t4": "Wishes",
+    "f7.n": "MUSE AND COLLECTION", "f7.h": "What moves you,", "f7.h2": "kept.",
+    "f7.p": "Save images, links and notes in Muse: fashion, interiors, travel, watches, cars, dining. Your concierge draws on it for everything sourced for you.",
+    "f7.p2": "Your Collection holds the archive of what we found for you, ordered by year.", "f7.t1": "Collection",
+    "f8.n": "THEMES AND FACE ID", "f8.h": "Your app,", "f8.h2": "your colour.",
+    "f8.p": "Choose from seven backgrounds for the whole app. And unlock it with Face ID, so only you get in.",
+    "th.marine": "Marine", "th.obsidian": "Obsidian", "th.forest": "Forest", "th.bordeaux": "Bordeaux", "th.graphite": "Graphite", "th.black": "Black", "th.ivory": "Ivory",
+    "f9.n": "STAYS", "f9.h": "Villas and yachts,", "f9.h2": "with real photos.",
+    "f9.p": "A selection we know personally. Browse the photos, choose, give us your dates and we confirm with a fixed price before anything is committed.",
+    "f9.p2": "Unsure? Talk it through with Solène first.", "f9.t0": "Villas", "f9.t1": "Yachts",
+    "f10.n": "NOTIFICATIONS", "f10.h": "Only what you", "f10.h2": "want to know.",
+    "f10.p": "Everything about your own requests always reaches you: confirmed, updated and the reminder shortly before.",
+    "f10.p2": "Offers, new experiences and a birthday greeting are up to you. Or mute everything optional.",
+    "f10.t0": "Your requests", "f10.t1": "Your concierge", "f10.t2": "Offers", "f10.t3": "Experiences",
+    "w.eyebrow": "WHY THE APP", "w.h": "More than", "w.h2": "a website.",
+    "w.1t": "Everything in one place", "w.1d": "Your requests, your concierge, your card and your preferences, together on your iPhone.",
+    "w.2t": "Every step visible", "w.2d": "From in review to done, live with you. No need to ask.",
+    "w.3t": "Never say it twice", "w.3d": "Signature and Muse make every request start from what we already know about you.",
+    "w.4t": "Discreet, on your terms", "w.4d": "Face ID, Ghost Mode and notifications you set yourself. Calm, not noise.",
+    "s.eyebrow": "HOW IT WORKS",
+    "s.1t": "Request access", "s.1d": "Through the website or in the app itself. Tell us briefly who you are and what you are looking for.",
+    "s.2t": "We approve", "s.2d": "We look at your request personally. Once it is approved, you receive your login details.",
+    "s.3t": "Download and sign in", "s.3d": "Download the app, sign in and switch on Face ID. After that, your concierge is one tap away.",
+    "c.h": "The house is", "c.h2": "open to you.",
+    "c.p": "The app is coming to the App Store soon. Request access now, and later all that is left is to download it.",
+    "c.levels": "See membership levels",
+    "m.ask": "Ask Solène for a table tonight", "m.salonSub": "A quiet room for members", "m.standing": "Your standing",
+    "m.chatSub": "Ask us literally anything", "m.q": "Lunch for four, somewhere quiet. And a car at one.", "m.a": "Noted. I am passing it to the team right now.",
+    "m.car": "A driver", "m.ph": "Type your message...",
+    "m.s1": "In review", "m.s2": "Confirmed", "m.s3": "Done", "m.jet": "Private jet", "m.lock": "LOCK SCREEN",
+    "m.fyT": "Private villa", "m.fyB": "Ask the concierge", "m.fyE": "Tuning your feed", "m.fyQ": "More villas like this?", "m.fyY": "Yes, please", "m.fyN": "Rather less",
+    "m.road": "THE ROAD TO THE NEXT LEVEL", "m.card": "MY CARD", "m.rew": "REWARDS",
+    "m.sEb": "Members only", "m.sT1": "Conversations", "m.sT2": "Members", "m.sR1": "Room", "m.sR1s": "Write the first message.", "m.sR2": "Private conversation", "m.sR2s": "Say hello", "m.sY": "Yesterday",
+    "m.gEb": "Your taste, noted", "m.gK": "Your concierge knows 72% of you", "m.gKs": "The more complete your Signature, the less you ever have to repeat.",
+    "m.gC": "Signature card", "m.gCol": "Colours", "m.gMai": "Maisons", "m.gSz": "Sizes", "m.gW": "Water", "m.gW2": "Still", "m.gD": "Dietary", "m.gD2": "No shellfish", "m.gT": "Table", "m.gT2": "By the window", "m.gU": "Update my Signature", "m.gUs": "Sizes, colours, maisons and preferences", 
+    "m.mEb": "What moves you", "m.mAll": "All", "m.mFav": "Favourites", "m.mC1": "Fashion", "m.mC2": "Interiors", "m.mC3": "Travel", "m.mC4": "Cars", "m.mC5": "Dining",
+    "m.mN": "A table by the water, candlelight.", "m.mAdd": "Paste an image link, a web link or write a note...", "m.mColl": "My Collection", "m.mCollS": "Everything you have acquired through us",
+    "m.tTitle": "Background", "m.tSub": "Choose how the whole app looks. You can always change it back.", "m.fid": "Unlock with Face ID",
+    "m.yVl": "Villa", "m.yN1": "Private villa", "m.yJt": "Yacht", "m.yN2": "Yacht", "m.yCr": "Crew and route agreed in advance", "m.yEb": "Stay and sea", "m.yT": "Villas and yachts", "m.yV": "Villas", "m.yJ": "Yachts", "m.yIb": "Ibiza", "m.yN": "A special stay", "m.yP": "Price on request", "m.yPool": "Pool", "m.yBook": "Request",
+    "m.nT": "Notifications", "m.nS": "Choose what we tell you about", "m.nI": "Anything about your own requests always reaches you. The rest is up to you.",
+    "m.nR": "Your requests", "m.nRs": "Confirmed, updated, and the reminder shortly before.", "m.nAl": "Always",
+    "m.nC": "Your concierge", "m.nCs": "A personal word from our team.",
+    "m.nO": "Offers and tips", "m.nOs": "Empty legs, matching tips and news from us.",
+    "m.nE": "New experiences", "m.nEs": "When we add something new.",
+    "m.nB": "Birthday", "m.nBs": "A greeting on your birthday.", "m.nM": "Mute everything optional"
+  };
+  var TITLE = { nl: 'De Solace app | Solace Executive', en: 'The Solace app | Solace Executive' };
+  var DESC = { nl: document.querySelector('meta[name="description"]').content, en: 'The Solace Executive app for iPhone: your concierge Solène, every request followed live, a feed that learns your taste, your standing, the private Salon and more. Access can be requested on the website.' };
+  var KEY = 'solace-lang';
+  var nodes = Array.prototype.slice.call(document.querySelectorAll('[data-t]'));
+  nodes.forEach(function (n) { n.setAttribute('data-nl', n.textContent); });
+  function pick() {
+    try { var s = localStorage.getItem(KEY); if (s === 'nl' || s === 'en') return s; } catch (e) {}
+    var l = (navigator.languages && navigator.languages[0]) || navigator.language || 'nl';
+    return /^nl/i.test(l) ? 'nl' : 'en';
+  }
+  function apply(lang) {
+    document.documentElement.lang = lang;
+    nodes.forEach(function (n) {
+      var k = n.getAttribute('data-t');
+      n.textContent = lang === 'en' && EN[k] ? EN[k] : n.getAttribute('data-nl');
+    });
+    document.title = TITLE[lang];
+    var md = document.querySelector('meta[name="description"]'); if (md) md.content = DESC[lang];
+    document.querySelectorAll('.lang button').forEach(function (b) { b.classList.toggle('on', b.dataset.lang === lang); });
+  }
+  document.querySelectorAll('.lang button').forEach(function (b) {
+    b.addEventListener('click', function () { try { localStorage.setItem(KEY, b.dataset.lang); } catch (e) {} apply(b.dataset.lang); });
+  });
+  apply(pick());
+
+  /* Screenshot slots: if an image already failed before the handler ran, fall back to the drawn mock. */
+  document.querySelectorAll('img.shot').forEach(function (img) {
+    function miss() { var f = img.closest('.pf'); if (f) f.classList.add('noshot'); }
+    if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) miss();
+  });
+
+  /* Reveal on scroll (blocks and phone mocks) */
+  var els = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (en) { en.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: 0.12 });
+    els.forEach(function (el) { io.observe(el); });
+    /* The mock animations (chat, status cycle, toggles) start when the phone itself is on screen. */
+    var pio = new IntersectionObserver(function (en) { en.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); pio.unobserve(e.target); } }); }, { threshold: 0.25 });
+    document.querySelectorAll('.pf:not(.in)').forEach(function (el) { pio.observe(el); });
+  } else {
+    els.forEach(function (el) { el.classList.add('in'); });
+    document.querySelectorAll('.pf').forEach(function (el) { el.classList.add('in'); });
+  }
+
+  /* Tiny parallax on the phones */
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var pars = Array.prototype.slice.call(document.querySelectorAll('.pf[data-par]'));
+  var tick = false;
+  function par() {
+    tick = false;
+    if (reduce.matches) return;
+    var vh = window.innerHeight;
+    pars.forEach(function (p) {
+      var r = p.getBoundingClientRect();
+      if (r.bottom < -100 || r.top > vh + 100) return;
+      var off = (r.top + r.height / 2 - vh / 2) * parseFloat(p.getAttribute('data-par'));
+      p.firstElementChild.style.setProperty('--py', Math.max(-28, Math.min(28, off)).toFixed(1) + 'px');
+    });
+  }
+  window.addEventListener('scroll', function () { if (!tick) { tick = true; requestAnimationFrame(par); } }, { passive: true });
+  window.addEventListener('resize', par);
+  par();
+
+  /* Theme preview */
+  var THEMES = {
+    marine: ['#0F1B24', '#16232E', '#1C2B37', '#F5F1E6', '#A9B4BB', '#D8BD7C'],
+    obsidian: ['#0C0C0D', '#151514', '#1C1B19', '#F5F1E6', '#A9B4BB', '#D8BD7C'],
+    forest: ['#0B1511', '#121F19', '#182A22', '#F5F1E6', '#A9B4BB', '#D8BD7C'],
+    bordeaux: ['#150D10', '#201418', '#2A1B20', '#F5F1E6', '#A9B4BB', '#D8BD7C'],
+    graphite: ['#111214', '#1A1C1F', '#232629', '#F5F1E6', '#A9B4BB', '#D8BD7C'],
+    black: ['#000000', '#0B0B0C', '#151516', '#F5F1E6', '#A9B4BB', '#D8BD7C'],
+    ivory: ['#FAF7F0', '#FFFFFF', '#F3EEE2', '#16232E', '#5B6670', '#9C7B2E']
+  };
+  var scr = document.getElementById('themeScreen');
+  function setTheme(k) {
+    var t = THEMES[k]; if (!t || !scr) return;
+    ['--s-bg', '--s-el', '--s-el2', '--s-ink', '--s-mut', '--s-gl'].forEach(function (v, i) { scr.style.setProperty(v, t[i]); });
+    scr.style.setProperty('--s-line', k === 'ivory' ? 'rgba(22,35,46,.12)' : 'rgba(212,190,140,.16)');
+    document.querySelectorAll('.sw-b').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.theme === k ? 'true' : 'false'); });
+    document.querySelectorAll('.th').forEach(function (b) { b.classList.toggle('on', b.dataset.theme === k); });
+  }
+  document.querySelectorAll('.sw-b, .th').forEach(function (b) { b.addEventListener('click', function () { setTheme(b.dataset.theme); }); });
+})();
+</script>
+<script src="float.js" defer></script>
+</body>
+</html>
