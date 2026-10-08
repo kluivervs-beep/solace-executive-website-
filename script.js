@@ -37,8 +37,11 @@
   --------------------------------------------------------------------- */
   const intakeModal = document.getElementById('intakeModal');
 
+  let intakeTrigger = null;
+
   function openIntakeModal() {
     if (!intakeModal) return;
+    if (!intakeModal.classList.contains('is-open')) intakeTrigger = document.activeElement;
     intakeModal.classList.add('is-open');
     intakeModal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open');
@@ -56,6 +59,10 @@
     intakeModal.classList.remove('is-open');
     intakeModal.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('modal-open');
+    // After a finished application the next opening starts a fresh form.
+    resetIntakeAfterDone();
+    if (intakeTrigger && document.contains(intakeTrigger)) intakeTrigger.focus({ preventScroll: true });
+    intakeTrigger = null;
   }
 
   document.querySelectorAll('a[href="#lidmaatschap"]').forEach((link) => {
@@ -71,6 +78,26 @@
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && intakeModal?.classList.contains('is-open')) closeIntakeModal();
+
+    // Keep Tab inside the open intake dialog.
+    if (e.key === 'Tab' && intakeModal?.classList.contains('is-open')) {
+      const nodes = Array.from(intakeModal.querySelectorAll('a[href], button, input, textarea, select'))
+        .filter((el) => !el.disabled && !el.hidden && el.type !== 'hidden'
+          && !el.closest('[inert], [hidden]') && el.offsetParent !== null);
+      if (!nodes.length) return;
+      const first = nodes[0];
+      const last = nodes[nodes.length - 1];
+      if (!intakeModal.contains(document.activeElement)) {
+        e.preventDefault();
+        first.focus();
+      } else if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
   });
 
   if (window.location.hash === '#lidmaatschap') {
@@ -259,6 +286,7 @@
     const wrapper = field.closest('.field') || field.closest('.form-step');
     if (!wrapper) return;
     wrapper.classList.toggle('has-error', Boolean(message));
+    field.setAttribute('aria-invalid', message ? 'true' : 'false');
     const errorEl = wrapper.querySelector('.field-error');
     if (errorEl) errorEl.textContent = message || '';
   };
@@ -321,19 +349,75 @@
     },
   };
 
+  const stepLabelEl = document.getElementById('stepLabel');
+  const intakePanel = intakeModal?.querySelector('.intake-modal-panel');
+  const tr = (k) => (window.SolaceI18n ? window.SolaceI18n.t(k) : k);
+
   function updateStepProgress() {
     if (!stepProgressBar || !steps.length) return;
-    stepProgressBar.style.width = `${((stepIndex + 1) / steps.length) * 100}%`;
+    const done = form.classList.contains('is-done');
+    stepProgressBar.style.width = done ? '100%' : `${((stepIndex + 1) / steps.length) * 100}%`;
+  }
+
+  function updateStepLabel() {
+    if (!stepLabelEl || !steps.length) return;
+    stepLabelEl.textContent = stepIndex === steps.length - 1
+      ? tr('form.step.final')
+      : tr('form.step.label').replace('{n}', stepIndex + 1).replace('{total}', steps.length - 1);
+  }
+
+  // Summary on the last screen, so people can see what they are sending.
+  function fillReview() {
+    const set = (id, value) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value || '-';
+    };
+    const labelOf = (input) => input.closest('label')?.querySelector('.choice-text')?.textContent.trim() || input.value;
+    set('sumName', form.querySelector('#name').value.trim());
+    set('sumEmail', form.querySelector('#email').value.trim());
+    set('sumPhone', form.querySelector('#phone').value.trim());
+    set('sumServices', Array.from(form.querySelectorAll('input[name="services"]:checked')).map(labelOf).join(', '));
+    const freq = form.querySelector('input[name="frequency"]:checked');
+    set('sumFrequency', freq ? labelOf(freq) : '');
   }
 
   function showStep(index, { focus = true } = {}) {
-    steps.forEach((step, i) => step.classList.toggle('is-active', i === index));
+    steps.forEach((step, i) => {
+      const active = i === index;
+      step.classList.toggle('is-active', active);
+      step.classList.toggle('is-before', i < index);
+      step.toggleAttribute('inert', !active);
+    });
     if (stepBackBtn) stepBackBtn.hidden = index === 0;
     updateStepProgress();
+    updateStepLabel();
+    if (index === steps.length - 1) fillReview();
     if (!focus) return;
     const active = steps[index];
-    const focusable = active?.querySelector('input, select, textarea') || active?.querySelector('button[type="submit"]');
+    const focusable = active?.querySelector('input:checked, input:not([type="hidden"]), select, textarea')
+      || active?.querySelector('button[type="submit"]');
     focusable?.focus({ preventScroll: true });
+  }
+
+  // Terminal state after a successful send: thank-you + app teaser.
+  function showDone(firstName) {
+    form.classList.add('is-done');
+    intakePanel?.classList.add('is-done');
+    const nameEl = document.getElementById('doneName');
+    if (nameEl) nameEl.textContent = firstName ? `, ${firstName}.` : '.';
+    successMsg.hidden = false;
+    updateStepProgress();
+    successMsg.focus({ preventScroll: true });
+    if (intakeModal) intakeModal.scrollTop = 0;
+  }
+
+  function resetIntakeAfterDone() {
+    if (!form || !form.classList.contains('is-done')) return;
+    form.classList.remove('is-done');
+    intakePanel?.classList.remove('is-done');
+    successMsg.hidden = true;
+    stepIndex = 0;
+    showStep(0, { focus: false });
   }
 
   function goToNextStep() {
@@ -422,7 +506,13 @@
     }
 
     if (!valid) {
-      form.querySelector('.has-error input')?.focus();
+      const badStep = steps.findIndex((st) => st.classList.contains('has-error'));
+      if (badStep >= 0) {
+        stepIndex = badStep;
+        showStep(stepIndex);
+      } else {
+        form.querySelector('.has-error input')?.focus();
+      }
       return;
     }
 
@@ -438,12 +528,10 @@
     })
       .then((response) => {
         if (!response.ok) throw new Error(`Formspree responded with ${response.status}`);
+        const firstName = nameField.value.trim().split(/\s+/)[0];
         form.reset();
-        if (steps.length) {
-          stepIndex = 0;
-          showStep(stepIndex);
-        }
-        successMsg.hidden = false;
+        stepIndex = 0;
+        showDone(firstName);
       })
       .catch((err) => {
         console.warn('Solace: intake form submission failed.', err);
@@ -463,11 +551,18 @@
     el.addEventListener('change', () => showGroupError(''));
   });
 
-  // Hide the success/error banners again once the user starts a new application
-  form?.addEventListener('focusin', () => {
-    if (successMsg && !successMsg.hidden) successMsg.hidden = true;
-    if (formErrorMsg && !formErrorMsg.hidden) formErrorMsg.hidden = true;
+  // Hide the error banner again once the user starts editing
+  form?.addEventListener('focusin', (e) => {
+    if (formErrorMsg && !formErrorMsg.hidden && !e.target.closest('button[type="submit"]')) formErrorMsg.hidden = true;
   });
+
+  // Keep the step label and summary in the active language after a language switch
+  if (form && steps.length) {
+    new MutationObserver(() => {
+      updateStepLabel();
+      if (stepIndex === steps.length - 1) fillReview();
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  }
 
   /* ---------------------------------------------------------------------
      Membership benefits: interactive tabs
