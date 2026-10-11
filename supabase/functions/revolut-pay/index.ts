@@ -78,6 +78,20 @@ async function syncStatus(invoice: any): Promise<string> {
   return invoice.status;
 }
 
+// What the Solace payment page (betalen.html) needs to show the order and
+// start Apple Pay, card or Revolut Pay. The public token is meant to be
+// public: it can only be used to pay this one order.
+function payload(invoice: any, publicToken?: string) {
+  if (!publicToken) return {};
+  return {
+    public_id: publicToken,
+    mode: REVOLUT_ENV === 'production' ? 'prod' : 'sandbox',
+    amount_cents: Math.round(Number(invoice.amount) * 100),
+    currency: invoice.currency || 'EUR',
+    description: String(invoice.description || '').slice(0, 120),
+  };
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
@@ -111,7 +125,7 @@ Deno.serve(async (req) => {
     if (invoice.revolut_order_id && invoice.checkout_url) {
       const existing = await revolut(`/api/orders/${invoice.revolut_order_id}`);
       if (existing.ok && (existing.data?.state === 'pending' || existing.data?.state === 'processing')) {
-        return json({ status: 'pending', checkout_url: invoice.checkout_url });
+        return json({ status: 'pending', checkout_url: invoice.checkout_url, ...payload(invoice, existing.data?.token) });
       }
     }
 
@@ -139,7 +153,7 @@ Deno.serve(async (req) => {
       .update({ revolut_order_id: created.data.id, checkout_url: created.data.checkout_url })
       .eq('id', invoice.id);
 
-    return json({ status: 'pending', checkout_url: created.data.checkout_url });
+    return json({ status: 'pending', checkout_url: created.data.checkout_url, ...payload(invoice, created.data.token) });
   } catch (err) {
     console.error('revolut-pay error:', err);
     return json({ error: 'server_error' }, 500);

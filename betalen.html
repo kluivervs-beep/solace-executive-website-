@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0F1B24">
+<title>Afrekenen | Solace Executive</title>
+<link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;1,500&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root { --bg:#0F1B24; --surface:#16232E; --surface2:#1C2B37; --text:#F5F1E6; --muted:#A9B4BB; --stroke:rgba(212,190,140,0.18); --gold:#B4923D; --gold-light:#D8BD7C; --red:#E88; --green:#7FD99A; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { min-height: 100vh; min-height: 100dvh; background: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; line-height: 1.55; padding: max(20px, env(safe-area-inset-top)) 20px max(28px, env(safe-area-inset-bottom)); }
+  main { width: 100%; max-width: 440px; margin: 0 auto; }
+  .brand { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 12px; letter-spacing: .22em; color: var(--muted); text-transform: uppercase; padding: 10px 0 26px; }
+  .brand img { width: 28px; height: 28px; }
+  .total { text-align: center; padding: 6px 0 26px; }
+  .total .label { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+  .total .value { font-family: 'Cormorant', serif; font-style: italic; font-weight: 500; font-size: 56px; line-height: 1.1; margin-top: 8px; }
+  .total .note { color: var(--gold-light); font-size: 12.5px; margin-top: 8px; }
+  .total .desc { color: var(--muted); font-size: 13px; margin-top: 12px; }
+  .card { background: var(--surface); border: 1px solid var(--stroke); border-radius: 20px; padding: 20px; }
+  .block + .block { margin-top: 22px; }
+  .or { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; margin: 22px 0; }
+  .or::before, .or::after { content: ''; flex: 1; height: 1px; background: var(--stroke); }
+  .h { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  #applepay, #revolutpay { min-height: 0; }
+  #cardfield { background: var(--surface2); border: 1px solid var(--stroke); border-radius: 14px; padding: 14px 14px; min-height: 52px; }
+  #cardfield.rc-card-field--focused { border-color: var(--gold-light); }
+  #cardfield.rc-card-field--invalid { border-color: var(--red); }
+  button.pay { width: 100%; margin-top: 14px; border: 0; border-radius: 999px; padding: 16px 22px; background: var(--gold-light); color: var(--bg); font: 600 14px 'Montserrat', sans-serif; letter-spacing: .03em; cursor: pointer; }
+  button.pay[disabled] { opacity: .55; cursor: default; }
+  .msg { margin-top: 16px; font-size: 13px; color: var(--muted); text-align: center; min-height: 20px; }
+  .msg.err { color: var(--red); }
+  .secure { margin-top: 22px; text-align: center; font-size: 11.5px; color: var(--muted); }
+  .done { text-align: center; padding: 30px 6px 10px; }
+  .done .tick { width: 64px; height: 64px; border-radius: 50%; border: 1.5px solid var(--green); display: grid; place-items: center; margin: 0 auto 22px; color: var(--green); font-size: 30px; }
+  .done h1 { font-family: 'Cormorant', serif; font-weight: 500; font-size: 36px; margin-bottom: 10px; }
+  .done p { color: var(--muted); font-size: 14px; margin-bottom: 26px; }
+  .done a { display: inline-block; background: var(--gold-light); color: var(--bg); font-weight: 600; font-size: 14px; padding: 15px 30px; border-radius: 999px; text-decoration: none; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <div class="brand"><img src="assets/icons/monogram.svg" alt="">Solace Executive</div>
+
+  <div id="pay">
+    <div class="total">
+      <div class="label" id="t-total">Totaal</div>
+      <div class="value" id="amount">&nbsp;</div>
+      <div class="note" id="t-note">Alles inbegrepen. Er komen geen kosten bij.</div>
+      <div class="desc" id="desc"></div>
+    </div>
+
+    <div class="card">
+      <div class="block" id="wallet">
+        <div id="applepay"></div>
+        <div id="revolutpay"></div>
+      </div>
+      <div class="or hidden" id="or"><span id="t-or">of met kaart</span></div>
+      <div class="block">
+        <div class="h" id="t-card">Kaart</div>
+        <div id="cardfield"></div>
+        <button class="pay" id="paybtn" type="button" disabled>Betaal veilig</button>
+      </div>
+      <div class="msg" id="msg"></div>
+    </div>
+    <div class="secure" id="t-secure">Je betaalt veilig via Revolut. Wij zien je kaartgegevens nooit.</div>
+  </div>
+
+  <div id="done" class="done hidden">
+    <div class="tick">&#10003;</div>
+    <h1 id="d-title">Betaald</h1>
+    <p id="d-body">Dank je wel. Je betaling is binnen.</p>
+    <a id="d-back" href="solaceexecutive://">Terug naar de app</a>
+  </div>
+</main>
+
+<script>
+(function () {
+  // Everything the page needs arrives in the URL hash (never sent to a server):
+  // t = Revolut order public token, m = prod | sandbox, a = amount in cents,
+  // c = currency, d = short description, l = nl | en, i = invoice id.
+  var p = new URLSearchParams(location.hash.replace(/^#/, ''));
+  var token = p.get('t');
+  var mode = p.get('m') === 'sandbox' ? 'sandbox' : 'prod';
+  var cents = parseInt(p.get('a') || '0', 10);
+  var currency = (p.get('c') || 'EUR').toUpperCase();
+  var desc = p.get('d') || '';
+  var invoice = p.get('i') || '';
+  var lang = p.get('l') === 'en' ? 'en' : (p.get('l') === 'nl' ? 'nl' : ((navigator.language || 'nl').slice(0, 2) === 'nl' ? 'nl' : 'en'));
+
+  var T = {
+    nl: { total: 'Totaal', note: 'Alles inbegrepen. Er komen geen kosten bij.', or: 'of met kaart', card: 'Kaart', pay: 'Betaal veilig', secure: 'Je betaalt veilig via Revolut. Wij zien je kaartgegevens nooit.', paying: 'Bezig met betalen', fail: 'Dat lukte niet. Probeer het opnieuw of kies een andere kaart.', cancelled: 'Betaling geannuleerd.', missing: 'Deze betaallink is niet geldig. Open de betaling opnieuw in de app.', doneTitle: 'Betaald', doneBody: 'Dank je wel. Je betaling is binnen.', back: 'Terug naar de app', declined: 'Je kaart is geweigerd. Probeer een andere kaart.' },
+    en: { total: 'Total', note: 'Everything included. No costs will be added.', or: 'or pay by card', card: 'Card', pay: 'Pay securely', secure: 'You pay securely through Revolut. We never see your card details.', paying: 'Paying', fail: 'That did not work. Try again or use another card.', cancelled: 'Payment cancelled.', missing: 'This payment link is not valid. Open the payment again in the app.', doneTitle: 'Paid', doneBody: 'Thank you. Your payment has arrived.', back: 'Back to the app', declined: 'Your card was declined. Try another card.' }
+  }[lang];
+
+  function $(id) { return document.getElementById(id); }
+  document.documentElement.lang = lang;
+  $('t-total').textContent = T.total;
+  $('t-note').textContent = T.note;
+  $('t-or').textContent = T.or;
+  $('t-card').textContent = T.card;
+  $('paybtn').textContent = T.pay;
+  $('t-secure').textContent = T.secure;
+  $('d-title').textContent = T.doneTitle;
+  $('d-body').textContent = T.doneBody;
+  $('d-back').textContent = T.back;
+  $('desc').textContent = desc;
+  if (cents > 0) {
+    try { $('amount').textContent = new Intl.NumberFormat(lang === 'nl' ? 'nl-NL' : 'en-GB', { style: 'currency', currency: currency }).format(cents / 100); }
+    catch (e) { $('amount').textContent = (cents / 100).toFixed(2) + ' ' + currency; }
+  }
+
+  function say(text, isErr) { var m = $('msg'); m.textContent = text || ''; m.className = 'msg' + (isErr ? ' err' : ''); }
+
+  function finished() {
+    $('pay').classList.add('hidden');
+    $('done').classList.remove('hidden');
+    $('d-back').href = 'solaceexecutive://payment-return' + (invoice ? '?invoice=' + encodeURIComponent(invoice) : '');
+    // Hand the member straight back to the app; the app checks the status itself.
+    setTimeout(function () { location.href = $('d-back').href; }, 1400);
+  }
+
+  function failed(err) {
+    var type = err && err.type ? String(err.type) : '';
+    var declined = /declined|do-not-honour|insufficient|expired-card|incorrect-cvv|3ds-failed/.test(type);
+    say(declined ? T.declined : T.fail, true);
+    $('paybtn').disabled = false;
+    $('paybtn').textContent = T.pay;
+  }
+
+  if (!token || cents <= 0) { say(T.missing, true); return; }
+
+  var s = document.createElement('script');
+  s.src = (mode === 'sandbox' ? 'https://sandbox-merchant.revolut.com' : 'https://merchant.revolut.com') + '/embed.js';
+  s.onerror = function () { say(T.fail, true); };
+  s.onload = function () {
+    window.RevolutCheckout(token, mode).then(function (instance) {
+      var walletShown = false;
+      function showOr() { if (walletShown) $('or').classList.remove('hidden'); }
+
+      // Apple Pay (or Google Pay) first, when this device offers it.
+      var pr = instance.paymentRequest({
+        target: $('applepay'),
+        locale: lang,
+        buttonStyle: { size: 'large', radius: 'round', variant: 'light', action: 'pay', height: '52px' },
+        onSuccess: finished,
+        onError: failed,
+        onCancel: function () { say(T.cancelled, false); }
+      });
+      pr.canMakePayment().then(function (method) {
+        if (method) { return pr.render().then(function () { walletShown = true; showOr(); }); }
+      }).catch(function () { /* no wallet on this device: card stays */ });
+
+      // Revolut Pay for members who have the app.
+      try {
+        instance.revolutPay({
+          target: $('revolutpay'),
+          locale: lang,
+          buttonStyle: { size: 'large', radius: 'round', variant: 'dark', height: '52px' },
+          onSuccess: finished,
+          onError: failed,
+          onCancel: function () { say(T.cancelled, false); }
+        });
+        walletShown = true; showOr();
+      } catch (e) { /* optional */ }
+
+      // Card field, styled to the page.
+      var field = instance.createCardField({
+        target: $('cardfield'),
+        theme: 'dark',
+        locale: lang,
+        hidePostcodeField: false,
+        styles: {
+          default: { color: '#F5F1E6', fontSize: '16px' },
+          invalid: { color: '#E88' }
+        },
+        classes: { focused: 'rc-card-field--focused', invalid: 'rc-card-field--invalid' },
+        onStatusChange: function (st) { $('paybtn').disabled = !st.completed; },
+        onSuccess: finished,
+        onError: failed,
+        onCancel: function () { say(T.cancelled, false); }
+      });
+      $('paybtn').addEventListener('click', function () {
+        say('');
+        $('paybtn').disabled = true;
+        $('paybtn').textContent = T.paying;
+        field.submit({});
+      });
+    }).catch(function (e) { failed(e); });
+  };
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>
