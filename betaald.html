@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0F1B24">
+<title>Betaling | Solace Executive</title>
+<link rel="icon" type="image/svg+xml" href="assets/icons/monogram.svg">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@500&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: #0F1B24; color: #F5F1E6; font-family: 'Montserrat', sans-serif; line-height: 1.6; text-align: center; }
+  main { max-width: 420px; }
+  img { width: 40px; height: 40px; margin-bottom: 28px; }
+  h1 { font-family: 'Cormorant', serif; font-weight: 500; font-size: 34px; margin-bottom: 14px; }
+  p { color: #A9B4BB; font-size: 15px; margin-bottom: 28px; }
+  a { display: inline-block; background: #D8BD7C; color: #0F1B24; font-weight: 600; font-size: 14px; letter-spacing: .03em; padding: 14px 28px; border-radius: 999px; text-decoration: none; }
+</style>
+</head>
+<body>
+<main>
+  <img src="assets/icons/monogram.svg" alt="Solace Executive">
+  <h1 id="t">Terug naar de app</h1>
+  <p id="p">Ga terug naar de Solace-app. Daar ziet u meteen of uw betaling is gelukt.</p>
+  <a id="b" href="solaceexecutive://">Open de app</a>
+</main>
+<script>
+  if (!/^nl/i.test(navigator.language || 'nl')) {
+    document.documentElement.lang = 'en';
+    document.getElementById('t').textContent = 'Back to the app';
+    document.getElementById('p').textContent = 'Return to the Solace app. You will see right away whether your payment went through.';
+    document.getElementById('b').textContent = 'Open the app';
+  }
+</script>
+</body>
+</html>

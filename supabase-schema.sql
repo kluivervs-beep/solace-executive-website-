@@ -2519,3 +2519,14 @@ create policy "admins read news signups" on public.news_signups for select to au
 -- this on login and whenever the member switches language.
 alter table public.profiles
   add column if not exists preferred_lang text check (preferred_lang in ('nl', 'en'));
+
+-- Paying an invoice in the app through Revolut's hosted checkout. The line
+-- items are shown to the member before they pay (the total is always the
+-- sum of what they see); the order id and checkout link are written only by
+-- the revolut-pay edge function.
+alter table public.invoices
+  add column if not exists lines jsonb not null default '[]'::jsonb,
+  add column if not exists revolut_order_id text,
+  add column if not exists checkout_url text,
+  add column if not exists paid_at timestamptz;
+create index if not exists invoices_revolut_order_idx on public.invoices (revolut_order_id) where revolut_order_id is not null;
