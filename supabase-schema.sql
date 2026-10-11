@@ -2513,3 +2513,9 @@ drop policy if exists "anyone can sign up for news" on public.news_signups;
 create policy "anyone can sign up for news" on public.news_signups for insert to anon, authenticated with check (true);
 drop policy if exists "admins read news signups" on public.news_signups;
 create policy "admins read news signups" on public.news_signups for select to authenticated using (public.is_admin());
+
+-- The language a member uses in the app, so server-side messages (daily
+-- nudges, announcements) can match it instead of guessing. The app writes
+-- this on login and whenever the member switches language.
+alter table public.profiles
+  add column if not exists preferred_lang text check (preferred_lang in ('nl', 'en'));

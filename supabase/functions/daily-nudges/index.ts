@@ -19,12 +19,13 @@
 // sync-empty-legs/sync-instagram/birthday-check).
 //
 // Requires these secrets (Edge Functions -> Secrets):
-//   SUPABASE_SERVICE_ROLE_KEY — Project Settings -> API -> service_role
-//   ANTHROPIC_API_KEY         — console.anthropic.com
-//   SYNC_SECRET               — same value used by the other sync jobs
+//   SUPABASE_SERVICE_ROLE_KEY: Project Settings -> API -> service_role
+//   ANTHROPIC_API_KEY:         console.anthropic.com
+//   SYNC_SECRET:               same value used by the other sync jobs
 // SUPABASE_URL is already injected automatically by Supabase.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.110.2?bundle';
+import { amsterdamDate, cleanCopy, upcomingOccasions } from './occasions.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -33,7 +34,12 @@ const SYNC_SECRET = Deno.env.get('SYNC_SECRET')!;
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 const MODEL = 'claude-haiku-4-5-20251001';
-const COOLDOWN_DAYS = 4;
+// A member never gets two nudges within MIN_GAP_DAYS, and never more than
+// MAX_PER_WEEK in any rolling 7 days. Calendar moments (Friday, Valentine's
+// Day, ...) make a message worth sending, so this is a bit more frequent
+// than the old flat 4-day cooldown, but still capped well below a drip.
+const MIN_GAP_DAYS = 2;
+const MAX_PER_WEEK = 2;
 
 const DECIDE_TOOL = {
   name: 'decide_nudge',
@@ -43,14 +49,17 @@ const DECIDE_TOOL = {
     properties: {
       should_nudge: { type: 'boolean', description: 'True only if there is a genuinely relevant, specific reason to reach out today.' },
       nudge_type: { type: 'string', description: 'Short category, e.g. "empty_leg", "birthday_soon", "yacht_match", "villa_match", "opportunity".' },
-      title: { type: 'string', description: 'Push notification title, max ~40 characters, in the member\'s preferred language (Dutch unless their notes/requests are in English).' },
-      body: { type: 'string', description: 'Push notification body, one short warm sentence, specific to this member, not generic marketing copy.' },
+      title: { type: 'string', description: 'Push notification title, max ~40 characters, in the language given for this member. No em dashes, no emoji.' },
+      body: { type: 'string', description: 'Push notification body, one short warm sentence in the language given for this member. Specific to this member or to the calendar moment, never generic marketing copy. No em dashes, no emoji.' },
     },
     required: ['should_nudge'],
   },
 };
 
-async function decideNudge(context: string): Promise<{ nudge_type: string; title: string; body: string } | null> {
+async function decideNudge(context: string, lang: 'nl' | 'en' | null): Promise<{ nudge_type: string; title: string; body: string } | null> {
+  const langRule = lang
+    ? `Write the title and body in ${lang === 'nl' ? 'Dutch' : 'English'}. This is the language the member uses in the app, never mix languages.`
+    : 'Write in Dutch unless the member\'s notes or requests are in English, in which case write in English. Never mix languages.';
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -66,7 +75,22 @@ async function decideNudge(context: string): Promise<{ nudge_type: string; title
       messages: [
         {
           role: 'user',
-          content: `You are the proactive half of Solace Executive's concierge. You only speak up when it's genuinely worth it -- most days you should decide NOT to nudge. Never invent availability or a reason; only use what's given below. A vague "check out our catalog" is not acceptable, it must be specific and tied to something in the member's own notes or history.\n\n${context}`,
+          content: `You are the proactive half of Solace Executive's concierge. You only speak up when it is genuinely worth it. Never invent availability, prices, venues or a reason; only use what is given below.
+
+${langRule}
+
+What makes a message worth sending:
+1. Something specific from this member's own notes, requests, stay or birthday, or a matching item in the catalog below.
+2. Or a calendar moment listed under "Upcoming moments" (a Friday before the weekend, Valentine's Day, Mother's Day, and so on). For a calendar moment a short, warm offer to arrange something is enough, for example offering to book a table or find a weekend away. Phrase it as an offer or a question. Do NOT name any restaurant, club or hotel that is not in the data below, and do not promise a price or availability.
+If neither applies, or the member was recently sent something similar (see "Recently sent"), decide NOT to nudge. A vague "check out our catalog" is never acceptable.
+
+Emphasis: most members are best served by hotels, restaurants, evenings out and weekends away. Mention private jets, empty legs and yachts only when the member's own notes or requests point to them, or when an item below matches what they asked for. Never push a jet on someone whose history is about dinners and weekends.
+
+Pricing is always straight: only quote a price if it appears in the data, and never hint at extra costs or fine print.
+
+Copy rules: no em dashes, no emoji, no exclamation marks, one short sentence, warm and calm, never salesy.
+
+${context}`,
         },
       ],
     }),
@@ -80,7 +104,7 @@ async function decideNudge(context: string): Promise<{ nudge_type: string; title
   if (!toolUse?.input?.should_nudge) return null;
   const { nudge_type, title, body } = toolUse.input as { nudge_type?: string; title?: string; body?: string };
   if (!title || !body) return null;
-  return { nudge_type: nudge_type || 'general', title, body };
+  return { nudge_type: nudge_type || 'general', title: cleanCopy(title), body: cleanCopy(body) };
 }
 
 // Optional categories a member can switch off in Settings. Requests and
@@ -94,6 +118,27 @@ Deno.serve(async (req) => {
   if (req.headers.get('x-sync-secret') !== SYNC_SECRET) {
     return new Response(JSON.stringify({ ok: false, error: 'unauthorized' }), { status: 401 });
   }
+
+  // Test mode, only reachable with the shared secret like everything else:
+  //   ?dry=1               decide and return the messages, send and log nothing
+  //   ?dry=1&ignore_gap=1  same, but skip the frequency caps so a test never
+  //                        comes back empty just because of a recent nudge
+  //   ?member=<profile id> only this member
+  const url = new URL(req.url);
+  const dry = url.searchParams.get('dry') === '1';
+  const ignoreGap = dry && url.searchParams.get('ignore_gap') === '1';
+  const onlyMember = url.searchParams.get('member');
+  const forcedDate = dry ? url.searchParams.get('date') : null; // YYYY-MM-DD, to preview e.g. Valentine's week
+  const now = forcedDate ? new Date(`${forcedDate}T09:00:00Z`) : new Date();
+  const occasions = upcomingOccasions(now);
+  const today = amsterdamDate(now);
+  const occasionsText = occasions.length
+    ? occasions
+        .map((o) => `- ${o.en} (${o.nl}): ${o.daysAway === 0 ? 'today' : o.daysAway === 1 ? 'tomorrow' : `in ${o.daysAway} days`}. Idea: ${o.idea}`)
+        .join('\n')
+    : '(none right now)';
+  const weekdayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const todayText = `${weekdayNames[today.weekday]} ${today.d}-${today.m}-${today.y}`;
 
   try {
     const { data: yachts } = await supabase
@@ -132,30 +177,37 @@ Deno.serve(async (req) => {
     // can see exactly what members get in real time rather than guessing.
     const { data: members, error: membersError } = await supabase
       .from('profiles')
-      .select('id, full_name, push_token, concierge_notes, birthday, notification_prefs')
+      .select('*')
       .not('push_token', 'is', null);
     if (membersError) throw membersError;
 
     let nudged = 0;
     let skipped = 0;
+    const previews: Array<{ member: string; lang: string | null; nudge_type: string; title: string; body: string }> = [];
 
     for (const member of members || []) {
+      if (onlyMember && member.id !== onlyMember) continue;
       if (!pushWanted(member.notification_prefs, 'offers')) {
         skipped++;
         continue;
       }
-      const cooldownSince = new Date(Date.now() - COOLDOWN_DAYS * 24 * 60 * 60 * 1000).toISOString();
-      const { data: recentNudge } = await supabase
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const { data: lastWeek } = await supabase
         .from('member_nudges')
-        .select('id')
+        .select('nudge_type, message, created_at')
         .eq('member_id', member.id)
-        .gte('created_at', cooldownSince)
-        .limit(1)
-        .maybeSingle();
-      if (recentNudge) {
-        skipped++;
-        continue;
+        .gte('created_at', weekAgo)
+        .order('created_at', { ascending: false });
+      const sent = lastWeek || [];
+      if (!ignoreGap) {
+        const gapSince = now.getTime() - MIN_GAP_DAYS * 24 * 60 * 60 * 1000;
+        const tooSoon = sent.length > 0 && new Date(sent[0].created_at).getTime() > gapSince;
+        if (tooSoon || sent.length >= MAX_PER_WEEK) {
+          skipped++;
+          continue;
+        }
       }
+      const recentlySent = sent.map((n) => `- ${n.nudge_type}: ${n.message}`).join('\n') || '(nothing in the last 7 days)';
 
       const { data: recentRequests } = await supabase
         .from('requests')
@@ -175,7 +227,17 @@ Deno.serve(async (req) => {
         if (daysUntil > 0 && daysUntil <= 10) birthdayNote = `\n\nHun verjaardag is over ${daysUntil} dagen.`;
       }
 
-      const context = `Lid: ${member.full_name || 'onbekend'}
+      const memberLang: 'nl' | 'en' | null = member.preferred_lang === 'nl' || member.preferred_lang === 'en' ? member.preferred_lang : null;
+
+      const context = `Today: ${todayText}
+
+Upcoming moments:
+${occasionsText}
+
+Recently sent to this member:
+${recentlySent}
+
+Lid: ${member.full_name || 'onbekend'}
 Opgeslagen voorkeuren:
 ${member.concierge_notes || '(geen)'}
 
@@ -191,9 +253,15 @@ ${emptyLegsList || '(geen)'}
 Huidige highlights:
 ${opportunitiesList || '(geen)'}`;
 
-      const decision = await decideNudge(context);
+      const decision = await decideNudge(context, memberLang);
       if (!decision) {
         skipped++;
+        continue;
+      }
+
+      if (dry) {
+        previews.push({ member: member.full_name || member.id, lang: memberLang, ...decision });
+        nudged++;
         continue;
       }
 
@@ -221,7 +289,7 @@ ${opportunitiesList || '(geen)'}`;
       nudged++;
     }
 
-    return new Response(JSON.stringify({ ok: true, nudged, skipped }), {
+    return new Response(JSON.stringify({ ok: true, dry, nudged, skipped, occasions: occasions.map((o) => o.key), previews }), {
       headers: { 'content-type': 'application/json' },
     });
   } catch (err) {
