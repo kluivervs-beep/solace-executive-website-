@@ -417,7 +417,7 @@
 
 
 <section class="jf" id="jf" aria-label="Private jets">
-  <video class="jf-bg" src="assets/video/clouds-day.mp4" poster="assets/video/clouds-day.jpg" muted loop playsinline preload="metadata" aria-hidden="true"></video>
+  <video class="jf-bg" src="assets/video/clouds-day.mp4" poster="assets/video/clouds-day.jpg" muted loop playsinline autoplay preload="auto" aria-hidden="true"></video>
   <div class="jf-top" aria-hidden="true"></div>
   <div class="jf-night" id="jfNight" aria-hidden="true"></div>
 
@@ -427,68 +427,12 @@
   <div class="jf-small" id="jfSmall"><b data-i18n="jetslp.feature1.title">Op korte termijn</b><span data-i18n="jetslp.feature1.body">Een aanvraag vandaag, meestal al morgen aan boord. Geen vaste routes of dienstregeling.</span></div>
 
   <div class="jf-plane" id="jfPlane">
-    <img class="jf-topphoto jf-topmap" id="jfTopMap" src="assets/photos/jet-top-map.webp" alt="" aria-hidden="true">
-    <img class="jf-topphoto" id="jfTopPhoto" src="assets/photos/jet-top-black.webp" alt="" aria-hidden="true"><svg id="jfJet" viewBox="0 0 1000 1500" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-<defs>
-  <linearGradient id="jfFus" x1="0" x2="1" y1="0" y2="0">
-    <stop offset="0" stop-color="#3a3f48"/><stop offset=".10" stop-color="#101216"/><stop offset=".5" stop-color="#1a1d22"/><stop offset=".9" stop-color="#0c0d10"/><stop offset="1" stop-color="#383d46"/>
-  </linearGradient>
-  <linearGradient id="jfWingR" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0" stop-color="#3b414b"/><stop offset=".35" stop-color="#1b1e24"/><stop offset="1" stop-color="#0b0c0f"/>
-  </linearGradient>
-  <linearGradient id="jfWingL" x1="1" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="#3b414b"/><stop offset=".35" stop-color="#1b1e24"/><stop offset="1" stop-color="#0b0c0f"/>
-  </linearGradient>
-  <linearGradient id="jfGlass" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="#5b7c99"/><stop offset=".5" stop-color="#1c2a38"/><stop offset="1" stop-color="#0a0f15"/>
-  </linearGradient>
-  <linearGradient id="jfEng" x1="0" x2="1" y1="0" y2="0">
-    <stop offset="0" stop-color="#2a2e35"/><stop offset=".45" stop-color="#0d0e11"/><stop offset="1" stop-color="#31363e"/>
-  </linearGradient>
-  <filter id="jfShadow" x="-20%" y="-10%" width="140%" height="130%"><feDropShadow dx="0" dy="46" stdDeviation="34" flood-color="#0a1a2c" flood-opacity=".34"/></filter>
-  <clipPath id="jfFusClip"><path d="M500 30 C538 30 558 120 561 235 C566 390 566 1010 561 1185 C557 1290 531 1395 500 1452 C469 1395 443 1290 439 1185 C434 1010 434 390 439 235 C442 120 462 30 500 30 Z"/></clipPath>
-</defs>
-<g id="jfBlack" style="display:none">
-  <path d="M438 1238 L288 1328 L294 1358 L438 1328 Z" fill="url(#jfWingL)" stroke="#3d434d" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M562 1238 L712 1328 L706 1358 L562 1328 Z" fill="url(#jfWingR)" stroke="#3d434d" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M442 640 L56 982 L50 1002 L72 1046 L440 868 Z" fill="url(#jfWingL)" stroke="#444a55" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M558 640 L944 982 L950 1002 L928 1046 L560 868 Z" fill="url(#jfWingR)" stroke="#444a55" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M56 982 L30 918 L25 934 L50 1002 Z" fill="#1a1d22" stroke="#4a505b" stroke-width="2"/>
-  <path d="M944 982 L970 918 L975 934 L950 1002 Z" fill="#1a1d22" stroke="#4a505b" stroke-width="2"/>
-  <!-- wing detail: leading-edge shine and flap lines -->
-  <g fill="none" stroke="#ffffff" stroke-linecap="round">
-    <path d="M566 646 L940 980" stroke-opacity=".30" stroke-width="2.4"/>
-    <path d="M434 646 L60 980" stroke-opacity=".30" stroke-width="2.4"/>
-    <path d="M566 835 L918 1030" stroke-opacity=".10" stroke-width="1.6"/>
-    <path d="M434 835 L82 1030" stroke-opacity=".10" stroke-width="1.6"/>
-    <path d="M566 760 L930 1016" stroke-opacity=".07" stroke-width="1.4"/>
-    <path d="M434 760 L70 1016" stroke-opacity=".07" stroke-width="1.4"/>
-  </g>
-  <path d="M440 1060 L412 1050 L412 1140 L440 1150 Z" fill="#15171b"/><path d="M560 1060 L588 1050 L588 1140 L560 1150 Z" fill="#15171b"/>
-  <path d="M366 1030 C366 1010 414 1010 414 1030 L414 1170 C414 1200 366 1200 366 1170 Z" fill="url(#jfEng)" stroke="#444a55" stroke-width="2"/>
-  <path d="M586 1030 C586 1010 634 1010 634 1030 L634 1170 C634 1200 586 1200 586 1170 Z" fill="url(#jfEng)" stroke="#444a55" stroke-width="2"/>
-  <ellipse cx="390" cy="1030" rx="24" ry="9" fill="#3a3f48"/><ellipse cx="610" cy="1030" rx="24" ry="9" fill="#3a3f48"/>
-  <path d="M500 30 C538 30 558 120 561 235 C566 390 566 1010 561 1185 C557 1290 531 1395 500 1452 C469 1395 443 1290 439 1185 C434 1010 434 390 439 235 C442 120 462 30 500 30 Z" fill="url(#jfFus)" stroke="#4a505b" stroke-width="2"/>
-  <g clip-path="url(#jfFusClip)" fill="none">
-    <path d="M500 40 L500 1440" stroke="#fff" stroke-opacity=".10" stroke-width="14"/>
-    <path d="M470 60 L470 1300" stroke="#fff" stroke-opacity=".05" stroke-width="3"/>
-    <path d="M530 60 L530 1300" stroke="#fff" stroke-opacity=".05" stroke-width="3"/>
-  </g>
-  <path d="M466 150 C480 138 520 138 534 150 L546 196 C520 204 480 204 454 196 Z" fill="url(#jfGlass)" stroke="#59616d" stroke-width="2"/>
-  <path d="M462 214 L538 214" stroke="#fff" stroke-opacity=".12" stroke-width="2"/>
-</g>
-<g id="jfMap" fill="none" stroke="#D8BD7C" stroke-linecap="round" stroke-linejoin="round">
-  <g id="jfMapInner" stroke-width="2" transform="translate(507.5 116.9) scale(1.1 0.927) translate(-500 -30)"><path class="jfWall" d="M440 240 L560 240" pathLength="1"/><path class="jfWall" d="M440 340 L560 340" pathLength="1"/><path class="jfWall" d="M440 420 L560 420" pathLength="1"/><path class="jfWall" d="M440 625 L560 625" pathLength="1"/><path class="jfWall" d="M440 960 L560 960" pathLength="1"/><path class="jfWall" d="M440 1085 L560 1085" pathLength="1"/><path class="jfWall" d="M440 1175 L560 1175" pathLength="1"/>
-    <g id="jfSeats" fill="#D8BD7C" fill-opacity=".12"><rect class="jfSeat" x="462" y="440" width="30" height="36" rx="9"/><rect class="jfSeat" x="508" y="440" width="30" height="36" rx="9"/><rect class="jfSeat" x="462" y="500" width="30" height="36" rx="9"/><rect class="jfSeat" x="508" y="500" width="30" height="36" rx="9"/><rect class="jfSeat" x="462" y="560" width="30" height="36" rx="9"/><rect class="jfSeat" x="508" y="560" width="30" height="36" rx="9"/><rect class="jfSeat" x="462" y="650" width="30" height="36" rx="9"/><rect class="jfSeat" x="508" y="650" width="30" height="36" rx="9"/><rect class="jfSeat" x="462" y="710" width="30" height="36" rx="9"/><rect class="jfSeat" x="508" y="710" width="30" height="36" rx="9"/><rect class="jfSeat" x="462" y="770" width="30" height="36" rx="9"/><rect class="jfSeat" x="508" y="770" width="30" height="36" rx="9"/><rect class="jfSeat" x="462" y="830" width="30" height="36" rx="9"/><rect class="jfSeat" x="508" y="830" width="30" height="36" rx="9"/><rect class="jfSeat" x="462" y="890" width="30" height="36" rx="9"/><rect class="jfSeat" x="508" y="890" width="30" height="36" rx="9"/><rect class="jfSeat" x="468" y="116" width="26" height="30" rx="8"/><rect class="jfSeat" x="506" y="116" width="26" height="30" rx="8"/><rect class="jfSeat" x="462" y="1000" width="34" height="118" rx="10"/><rect class="jfSeat" x="494" y="445" width="12" height="28" rx="4"/><rect class="jfSeat" x="494" y="505" width="12" height="28" rx="4"/><rect class="jfSeat" x="494" y="565" width="12" height="28" rx="4"/><rect class="jfSeat" x="494" y="655" width="12" height="28" rx="4"/><rect class="jfSeat" x="494" y="715" width="12" height="28" rx="4"/><rect class="jfSeat" x="494" y="775" width="12" height="28" rx="4"/><rect class="jfSeat" x="494" y="835" width="12" height="28" rx="4"/><rect class="jfSeat" x="494" y="895" width="12" height="28" rx="4"/><rect class="jfSeat" x="462" y="268" width="36" height="60" rx="6"/><rect class="jfSeat" x="504" y="268" width="34" height="26" rx="6"/><rect class="jfSeat" x="500" y="1098" width="40" height="66" rx="8"/><circle class="jfSeat" cx="520" cy="1118" r="9"/></g>
-  </g>
-  <g id="jfLabels" transform="translate(507.5 116.9) scale(0.927) translate(-500 -30)" stroke="none" fill="#D8BD7C" font-family="Montserrat, sans-serif" font-weight="600" font-size="22" letter-spacing="5">
-    <g class="jfLbl"><path d="M566 290 L700 290" stroke="#D8BD7C" stroke-width="1.5" stroke-opacity=".7"/><text x="716" y="298" data-i18n="jetfly.z1">GALLEY</text></g>
-    <g class="jfLbl"><path d="M572 520 L700 520" stroke="#D8BD7C" stroke-width="1.5" stroke-opacity=".7"/><text x="716" y="528" data-i18n="jetfly.z2">ZITGEDEELTE</text></g>
-    <g class="jfLbl"><path d="M572 830 L700 830" stroke="#D8BD7C" stroke-width="1.5" stroke-opacity=".7"/><text x="716" y="838" data-i18n="jetfly.z3">CLUBZITTING</text></g>
-    <g class="jfLbl"><path d="M430 1060 L330 1060" stroke="#D8BD7C" stroke-width="1.5" stroke-opacity=".7"/><text x="314" y="1068" text-anchor="end" data-i18n="jetfly.z4">LOUNGE</text></g>
-    <g class="jfLbl"><path d="M572 1130 L700 1130" stroke="#D8BD7C" stroke-width="1.5" stroke-opacity=".7"/><text x="716" y="1138" data-i18n="jetfly.z5">TOILET</text></g>
-  </g>
-</g></svg></div>
+    <img class="jf-topphoto" id="jfTopPhoto" src="assets/photos/jet-top-black.webp" alt="" aria-hidden="true">
+    <img class="jf-planimg" id="jfPlanImg" src="assets/photos/jet-plan.webp" alt="" aria-hidden="true" width="1056" height="1416">
+    <svg id="jfJet" viewBox="0 0 1000 1500" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+<defs><linearGradient id="jpFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9b3a8"/><stop offset="1" stop-color="#ddd7ca"/></linearGradient></defs>
+<g id="jpLabels"><g class="jpLbl"><line x1="606" y1="614" x2="756" y2="614"/><text x="772" y="621" data-i18n="jetfly.z1">GALLEY</text></g><g class="jpLbl"><line x1="606" y1="723" x2="756" y2="723"/><text x="772" y="730" data-i18n="jetfly.z2">ZITGEDEELTE</text></g><g class="jpLbl"><line x1="606" y1="943" x2="756" y2="943"/><text x="772" y="950" data-i18n="jetfly.z3">CLUBZITTING</text></g><g class="jpLbl"><line x1="606" y1="1189" x2="756" y2="1189"/><text x="772" y="1196" data-i18n="jetfly.z4">LOUNGE</text></g><g class="jpLbl"><line x1="606" y1="1335" x2="756" y2="1335"/><text x="772" y="1342" data-i18n="jetfly.z5">TOILET</text></g></g>
+</svg></div>
 
   <div class="jf-copy" id="jfCopy">
     <p class="jf-eyebrow"><i></i><span>PRIVATE JETS</span></p>
@@ -506,31 +450,34 @@
     <p data-i18n="jetcab.sub">Elke vlucht stellen wij vooraf met u samen: de cabine, wat er aan boord is, de tijden en alles rond het vliegveld. De mogelijkheden verschillen per toestel.</p>
   </div>
 
-  <div class="jc-grid">
-    <figure class="jc-ph jc-ph--tall">
-      <img src="assets/photos/jets/cabin-black.webp" alt="Cabine met zwart leer en warme gouden verlichting" data-i18n="jetcab.a1" data-i18n-attr="alt" width="735" height="1109" loading="lazy">
-      <figcaption><b data-i18n="jetcab.c1t">De cabine</b><span data-i18n="jetcab.c1d">Leer, hout en warm licht. Zitplaatsen en indeling kiest u mee uit.</span></figcaption>
-    </figure>
-    <figure class="jc-ph jc-ph--sq">
+  <div class="jc-way" id="jcWay">
+    <div class="jc-acc" id="jcAcc">
+      <p class="jc-small" data-i18n="jetcab.way">EEN BETERE MANIER OM TE VLIEGEN</p>
+      <div class="jc-item is-open" data-i="0">
+        <button type="button" class="jc-btn" aria-expanded="true"><span data-i18n="jetcab.l2t">Cabine en comfort</span><i aria-hidden="true"></i></button>
+        <div class="jc-panel"><div><p><span data-i18n="jetcab.c1d">Leer, hout en warm licht. Zitplaatsen en indeling kiest u mee uit.</span> <span data-i18n="jetcab.l1d">Van een lichte lunch tot een diner, afgestemd op uw smaak en dieetwensen.</span></p></div></div>
+      </div>
+      <div class="jc-item" data-i="1">
+        <button type="button" class="jc-btn" aria-expanded="false"><span data-i18n="jetcab.c2t">Rust onderweg</span><i aria-hidden="true"></i></button>
+        <div class="jc-panel"><div><p data-i18n="jetcab.c2d">Op grotere toestellen een slaapgedeelte, voor lange vluchten.</p></div></div>
+      </div>
+      <div class="jc-item" data-i="2">
+        <button type="button" class="jc-btn" aria-expanded="false"><span data-i18n="jetcab.l4t">Op de grond</span><i aria-hidden="true"></i></button>
+        <div class="jc-panel"><div><p><span data-i18n="jetcab.c3d">Geen drukke vertrekhal. Wij regelen de lounge en uw aankomst.</span> <span data-i18n="jetcab.l4d">Vervoer van en naar het vliegveld, bagage en ontvangst. Eén contactpersoon van aanvraag tot landing.</span></p></div></div>
+      </div>
+      <div class="jc-item" data-i="3">
+        <button type="button" class="jc-btn" aria-expanded="false"><span data-i18n="jetcab.l3t">Tijden</span><i aria-hidden="true"></i></button>
+        <div class="jc-panel"><div><p><span data-i18n="jetcab.l3d">Geen dienstregeling. U vertrekt wanneer het u uitkomt, ook op korte termijn.</span> <span data-i18n="jetcab.c4d">Het toestel staat voor u klaar, op het moment dat het u uitkomt.</span></p></div></div>
+      </div>
+      <p class="jc-clock"><span data-i18n="jetcab.time">LOKALE TIJD AMSTERDAM</span><b id="jcClock">--:--</b></p>
+    </div>
+    <div class="jc-stage" id="jcStage">
+      <img class="is-on" src="assets/photos/jets/cabin-black.webp" alt="Cabine met zwart leer en warme gouden verlichting" data-i18n="jetcab.a1" data-i18n-attr="alt" width="735" height="1109">
       <img src="assets/photos/jets/bedroom.webp" alt="Slaapgedeelte in een privéjet" data-i18n="jetcab.a2" data-i18n-attr="alt" width="736" height="736" loading="lazy">
-      <figcaption><b data-i18n="jetcab.c2t">Rust onderweg</b><span data-i18n="jetcab.c2d">Op grotere toestellen een slaapgedeelte, voor lange vluchten.</span></figcaption>
-    </figure>
-    <figure class="jc-ph jc-ph--sq">
       <img src="assets/photos/jets/lounge.webp" alt="Lounge in een privéterminal met uitzicht op het platform" data-i18n="jetcab.a3" data-i18n-attr="alt" width="1000" height="1000" loading="lazy">
-      <figcaption><b data-i18n="jetcab.c3t">Privéterminal</b><span data-i18n="jetcab.c3d">Geen drukke vertrekhal. Wij regelen de lounge en uw aankomst.</span></figcaption>
-    </figure>
-    <figure class="jc-ph jc-ph--tall">
       <img src="assets/photos/jets/apron-dusk.webp" alt="Privéjet klaar voor vertrek op het platform bij schemering" data-i18n="jetcab.a4" data-i18n-attr="alt" width="736" height="1104" loading="lazy">
-      <figcaption><b data-i18n="jetcab.c4t">Klaar voor vertrek</b><span data-i18n="jetcab.c4d">Het toestel staat voor u klaar, op het moment dat het u uitkomt.</span></figcaption>
-    </figure>
+    </div>
   </div>
-
-  <ul class="jc-list">
-    <li><b data-i18n="jetcab.l1t">Catering</b><span data-i18n="jetcab.l1d">Van een lichte lunch tot een diner, afgestemd op uw smaak en dieetwensen.</span></li>
-    <li><b data-i18n="jetcab.l2t">Cabine en comfort</b><span data-i18n="jetcab.l2d">Indeling, temperatuur, muziek en werkplek. Wat u aan boord nodig heeft, regelen wij vooraf.</span></li>
-    <li><b data-i18n="jetcab.l3t">Tijden</b><span data-i18n="jetcab.l3d">Geen dienstregeling. U vertrekt wanneer het u uitkomt, ook op korte termijn.</span></li>
-    <li><b data-i18n="jetcab.l4t">Op de grond</b><span data-i18n="jetcab.l4d">Vervoer van en naar het vliegveld, bagage en ontvangst. Eén contactpersoon van aanvraag tot landing.</span></li>
-  </ul>
 </section>
 
 <section class="lp-features" id="lp-features">
@@ -721,5 +668,6 @@
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/lenis@1.2.3/dist/lenis.min.js" defer></script><script src="jet-fly.js" defer></script>
+<script src="keep-playing.js" defer></script>
 </body>
 </html>
