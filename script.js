@@ -104,27 +104,8 @@
     openIntakeModal();
   }
 
-  /* ---------------------------------------------------------------------
-     Transition overlay: branded curtain wipe on first load only. Waits
-     for fonts so text doesn't reflow after reveal, with a minimum
-     display time (feels intentional) and a safety timeout (never blocks
-     the reveal indefinitely on a slow connection).
-  --------------------------------------------------------------------- */
-  if (window.gsap && !reducedMotion) {
-    const minDisplay = new Promise((resolve) => setTimeout(resolve, 350));
-    const fontsReady = document.fonts?.ready || Promise.resolve();
-    const safetyTimeout = new Promise((resolve) => setTimeout(resolve, 1200));
-
-    Promise.race([fontsReady, safetyTimeout]).then(() => minDisplay).then(() => {
-      gsap.to('.transition-overlay', {
-        yPercent: -100,
-        duration: 0.7,
-        ease: 'power2.inOut',
-      });
-    });
-  } else {
-    document.querySelector('.transition-overlay')?.style.setProperty('display', 'none');
-  }
+  /* The intro overlay is handled by the inline script in index.html and the
+     .transition-overlay rules in styles.css (CSS only, no GSAP). */
 
   /* ---------------------------------------------------------------------
      GSAP setup

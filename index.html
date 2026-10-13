@@ -47,6 +47,14 @@
 <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin>
 <link rel="preload" as="script" href="https://unpkg.com/maplibre-gl@5.7.0/dist/maplibre-gl.js" crossorigin fetchpriority="low">
 <link rel="preload" as="style" href="https://unpkg.com/maplibre-gl@5.7.0/dist/maplibre-gl.css" crossorigin fetchpriority="low">
+<script>
+(function () {
+  try {
+    var forced = /[?&]intro=1/.test(location.search);
+    if (!forced && sessionStorage.getItem('solace-intro')) document.documentElement.classList.add('intro-skip');
+  } catch (e) {}
+})();
+</script>
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="phone-demo.css">
 <link rel="stylesheet" href="motion.css"><script src="motion.js" defer></script>
@@ -56,8 +64,39 @@
 <div class="grain-overlay" aria-hidden="true"></div>
 
 <div class="transition-overlay" aria-hidden="true">
-  <img src="assets/icons/monogram.svg" alt="" class="transition-mark">
+  <div class="intro-stage">
+    <svg class="intro-mark" viewBox="0 0 200 200" fill="none" stroke="#B4923D" stroke-linecap="round">
+      <circle class="intro-ring" cx="100" cy="100" r="72" stroke-width="2.5" pathLength="1"/>
+      <path class="intro-s" pathLength="1" stroke-width="9" d="M 66 66 C 66 52, 78 44, 96 44 C 116 44, 132 54, 132 68 C 132 82, 118 90, 104 96 C 90 102, 68 110, 68 128 C 68 144, 84 154, 102 154 C 120 154, 132 146, 132 132"/>
+      <circle class="intro-dot" cx="100" cy="99" r="5.5" fill="#B4923D" stroke="none"/>
+    </svg>
+    <p class="intro-word"><b>SOLACE</b><span>EXECUTIVE</span></p>
+  </div>
 </div>
+<script>
+/* Intro: the monogram draws itself, then the page opens as a circle from its
+   centre. Only once per visit (?intro=1 forces it). Never blocks: the CSS hides
+   the overlay by itself after 4.5 s even if this script does not run. */
+(function () {
+  var d = document.documentElement;
+  var t0 = performance.now();
+  var opened = false;
+  function open() {
+    if (opened) return;
+    opened = true;
+    var wait = Math.max(0, 950 - (performance.now() - t0));
+    setTimeout(function () {
+      d.classList.add('intro-open');
+      try { sessionStorage.setItem('solace-intro', '1'); } catch (e) {}
+      setTimeout(function () { d.classList.add('intro-gone'); }, 700);
+    }, wait);
+  }
+  if (d.classList.contains('intro-skip')) { d.classList.add('intro-gone'); return; }
+  var fonts = (document.fonts && document.fonts.ready) || Promise.resolve();
+  Promise.race([fonts, new Promise(function (r) { setTimeout(r, 1200); })]).then(open);
+  setTimeout(open, 2500);
+})();
+</script>
 
 <a class="skip-link" href="#main" data-i18n="a11y.skip">Ga naar hoofdinhoud</a>
 

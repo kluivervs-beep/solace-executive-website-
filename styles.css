@@ -129,28 +129,93 @@ input, textarea, select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* Intro: the monogram draws itself, then the page opens as a circle from its
+   centre (see the script after .transition-overlay in index.html). */
+@property --intro-r {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: -3px; /* starts below zero so the 2px soft edge leaves no pinhole in the middle */
+}
 .transition-overlay {
   position: fixed;
   inset: 0;
   background: var(--color-bg);
   z-index: 999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: translateY(0);
+  display: grid;
+  place-items: center;
   pointer-events: none;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent var(--intro-r), #000 calc(var(--intro-r) + 2px));
+  mask-image: radial-gradient(circle at 50% 50%, transparent var(--intro-r), #000 calc(var(--intro-r) + 2px));
+  /* Safety net: even if the script never runs, the overlay goes away. */
+  animation: intro-failsafe 1ms linear 4.5s forwards;
 }
-.transition-mark {
-  width: 42px;
-  height: 42px;
-  animation: transition-pulse 1.3s ease-in-out infinite;
+html.intro-open .transition-overlay {
+  animation: intro-hole 600ms cubic-bezier(0.65, 0, 0.35, 1) forwards, intro-failsafe 1ms linear 4.5s forwards;
 }
-@keyframes transition-pulse {
-  0%, 100% { opacity: 0.25; transform: scale(0.92); }
-  50% { opacity: 0.95; transform: scale(1); }
+html.intro-gone .transition-overlay,
+html.intro-skip .transition-overlay { display: none; }
+@keyframes intro-hole { to { --intro-r: 75vmax; } }
+@keyframes intro-failsafe { to { visibility: hidden; } }
+
+.intro-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  transition: transform 600ms cubic-bezier(0.65, 0, 0.35, 1), opacity 300ms ease-out;
+}
+html.intro-open .intro-stage { transform: scale(1.18); opacity: 0; }
+
+.intro-mark { width: 88px; height: 88px; overflow: visible; }
+.intro-ring, .intro-s {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  animation: intro-draw 650ms cubic-bezier(0.45, 0, 0.2, 1) forwards;
+}
+.intro-ring { animation-delay: 80ms; }
+.intro-s { animation-delay: 300ms; animation-duration: 600ms; }
+.intro-dot {
+  opacity: 0;
+  animation: intro-dot-in 300ms ease-out 800ms forwards;
+}
+@keyframes intro-draw {
+  0% { stroke-dashoffset: 1; opacity: 0; }
+  5% { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 1; }
+}
+@keyframes intro-dot-in { to { opacity: 1; } }
+
+.intro-word {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  animation: intro-word-in 500ms ease-out 450ms forwards;
+}
+.intro-word b {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 24px;
+  letter-spacing: 0.34em;
+  margin-right: -0.34em;
+  color: var(--color-ink);
+}
+.intro-word span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5em;
+  margin-right: -0.5em;
+  color: var(--color-gold);
+}
+@keyframes intro-word-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .transition-mark { animation: none; opacity: 0.7; }
+  .transition-overlay { display: none; }
 }
 
 /* ==========================================================================
