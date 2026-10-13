@@ -60,8 +60,13 @@
 (function () {
   var d = document.documentElement;
   var calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* The opening plays on every fresh visit and every reload, so it always behaves the same.
+     It is skipped only when someone comes back with the browser's back button, or jumps to a section (#link). */
   var seen = false;
-  try { seen = !!sessionStorage.getItem('solace-home-intro') && !/[?&]intro=1/.test(location.search); } catch (e) {}
+  try {
+    var nav = performance.getEntriesByType('navigation')[0];
+    seen = !!(nav && nav.type === 'back_forward') || (!!location.hash && location.hash.length > 1);
+  } catch (e) {}
   if (!calm && !seen) d.classList.add('wh-intro');
   if (!calm) d.classList.add('wh-hdr-off');   /* the site's header only pops in when the scroll reaches the site */
   /* Never block: after 16 s the page is usable whatever happened. */
@@ -917,5 +922,6 @@
 <script src="i18n.js" defer></script>
 <script src="float.js" defer></script>
 <script src="script.js" defer></script><script src="fx.js" defer></script><script src="live-feed.js" defer></script><script src="spiral.js" defer></script><script src="phone-demo.js" defer></script><script src="mobile-polish.js" defer></script><script src="hero-globe.js" defer></script><script src="https://cdn.jsdelivr.net/npm/lenis@1.2.3/dist/lenis.min.js" defer></script><script src="window-hero.js" defer></script><script type="module" src="empty-legs.js"></script><script type="module" src="instagram.js"></script>
+<script src="keep-playing.js" defer></script>
 </body>
 </html>
