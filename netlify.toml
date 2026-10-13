@@ -1,0 +1,4 @@
+# Edge function: our photos and videos can only be loaded by our own pages (no hotlinking).
+[[edge_functions]]
+  function = "hotlink"
+  path = "/assets/*"
