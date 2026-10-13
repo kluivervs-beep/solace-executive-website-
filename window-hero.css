@@ -136,7 +136,8 @@ html.wh-intro .wh-cover { opacity: 1; }
   left: clamp(20px, 6vw, 96px); right: clamp(20px, 6vw, 96px); bottom: clamp(60px, 11vh, 120px);
   max-width: 1100px;
   color: #fff;
-  text-shadow: 0 2px 4px rgba(10, 24, 48, 0.4), 0 8px 50px rgba(10, 24, 48, 0.55);
+  /* a soft shadow made on the finished letters (a text-shadow would be cut off into boxes by the word masks) */
+  filter: drop-shadow(0 2px 12px rgba(10, 24, 48, 0.32));
   opacity: 0;   /* shown by the scroll story */
   will-change: transform, opacity;
 }
