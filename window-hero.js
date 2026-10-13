@@ -30,16 +30,28 @@
     window.solaceLenis = lenis;   /* handy for testing: solaceLenis.scrollTo(y, { immediate: true }) */
   }
 
-  /* The header and the concierge button stay out of the opening; they pop in when we reach the site. */
+  /* The header and the concierge button stay out of the opening; they pop in when we reach the site.
+     Until then our logo stands top left (#whBrand). It fades in with the rest of the page after
+     the shade opens, and fades out as the real header (which has the logo itself) pops in, so
+     the logo is never there twice. With reduced motion the header just stays and there is no extra logo. */
   var chrome = document.querySelectorAll('.site-header, .sx-float');
+  var brand = document.getElementById('whBrand');
   var chromeOn = true;
+  var brandOk = false;
+  function setBrand(on, instant) {
+    if (!brandOk) return;
+    gsap.to(brand, on
+      ? { autoAlpha: 1, duration: instant ? 0 : 0.7, delay: instant ? 0 : 0.3, ease: 'power2.out', overwrite: true }
+      : { autoAlpha: 0, duration: instant ? 0 : 0.22, delay: 0, ease: 'power1.in', overwrite: true });
+  }
   function setChrome(on, instant) {
     if (!chrome.length || on === chromeOn) return;
     chromeOn = on;
     gsap.killTweensOf(chrome);
+    setBrand(!on, instant);
     if (on) {
       gsap.set(chrome, { visibility: 'visible', pointerEvents: 'auto' });
-      gsap.to(chrome, { opacity: 1, y: 0, scale: 1, duration: instant ? 0 : 0.75, ease: 'back.out(1.8)', stagger: 0.06, overwrite: true });
+      gsap.to(chrome, { opacity: 1, y: 0, scale: 1, duration: instant ? 0 : 0.75, delay: instant ? 0 : 0.12, ease: 'back.out(1.8)', stagger: 0.06, overwrite: true });
     } else {
       gsap.to(chrome, { opacity: 0, y: -18, scale: 0.97, duration: instant ? 0 : 0.35, ease: 'power2.in', pointerEvents: 'none', onComplete: function () { gsap.set(chrome, { visibility: 'hidden' }); } });
     }
@@ -47,6 +59,9 @@
   if (d.classList.contains('wh-hdr-off')) {
     gsap.set(chrome, { opacity: 0, y: -18, scale: 0.97, visibility: 'hidden', pointerEvents: 'none' });
     chromeOn = false;
+    brandOk = !!brand;
+    /* seen/skipped opening: the logo is there at once; during the opening the timeline brings it in */
+    if (brandOk) gsap.set(brand, { autoAlpha: intro ? 0 : 1 });
     d.classList.remove('wh-hdr-off');
   }
 
@@ -114,6 +129,8 @@
       .fromTo('#whB', blurIn, Object.assign({ duration: 1.1 }, sharp), 5.8)
       .fromTo('#whSub,#whHint', blurIn, Object.assign({ duration: 0.9, stagger: 0.15 }, sharp), 6.3)
       .fromTo('#whPill', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 6.5);
+    /* the logo comes in with the page, right after the shade has opened */
+    if (brandOk) tl.fromTo('#whBrand', { autoAlpha: 0 }, { autoAlpha: 1, duration: 1.0, ease: 'power2.out' }, 5.3);
     var skip = function (e) { if (e) e.preventDefault(); if (tl.progress() < 1) tl.progress(1); };
     var skipEl = document.getElementById('whSkip');
     if (skipEl) skipEl.addEventListener('click', skip);
@@ -162,6 +179,27 @@
       /* the sky dims into the night, and the site continues */
       .to('#whDusk', { opacity: 1, duration: 0.24, ease: 'power1.in' }, 0.76);
     if (manual) { var spv = parseFloat(q.get('sp')); story.progress(spv); setChrome(spv > 0.84, true); }
+  }
+
+  /* The plane button: on a hover or focus the little planes rise by CSS alone. On a tap we play the
+     same flight and navigate a moment later, so it is seen. A mouse click or the keyboard goes straight
+     through (the hover already played), and with reduced motion nothing is delayed. */
+  var plane = document.querySelector('.wh-pill .plane');
+  if (plane) {
+    var lastPtr = '';
+    plane.addEventListener('pointerdown', function (e) { lastPtr = e.pointerType || ''; });
+    plane.addEventListener('touchstart', function () { lastPtr = 'touch'; }, { passive: true });
+    plane.addEventListener('click', function (e) {
+      var tap = lastPtr === 'touch' || e.pointerType === 'touch';
+      lastPtr = '';
+      if (calm || !tap || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      if (plane.classList.contains('is-fly')) return;
+      plane.classList.add('is-fly');
+      var href = plane.href;
+      setTimeout(function () { location.href = href; }, 350);
+    });
+    window.addEventListener('pageshow', function () { plane.classList.remove('is-fly'); });   /* back button / bfcache */
   }
 
   /* test hooks for stills: ?t=3.2 shows the opening at that second */

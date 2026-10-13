@@ -1,0 +1,141 @@
+/* Private jets: a black jet flies in over a pale sky, then slowly turns into our seat map.
+   Markup: the .jf section in jets.html. Logic: jet-fly.js. The jet and the map are drawn
+   in one SVG, so the fade between them lines up exactly. */
+
+.jf {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  min-height: 560px;
+  overflow: hidden;
+  background: #c9d6e2;
+  color: #16232E;
+}
+.jf-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.jf-top {   /* the dark of the page above melts into the sky */
+  position: absolute; left: 0; right: 0; top: 0; height: 16vh; z-index: 1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(15, 27, 36, 0.85) 0%, rgba(15, 27, 36, 0) 100%);
+}
+.jf-night { position: absolute; inset: 0; z-index: 2; opacity: 0; pointer-events: none; background: var(--color-bg, #0F1B24); }
+
+.jf-w {
+  position: absolute; z-index: 3;
+  font-family: var(--font-display, 'Cormorant', Georgia, serif);
+  font-weight: 500;
+  font-size: clamp(54px, 10.4vw, 160px);
+  line-height: 0.95; letter-spacing: -0.012em;
+  color: #16232E;
+  white-space: nowrap;
+  top: clamp(150px, 27vh, 260px);
+  will-change: transform, opacity;
+}
+.jf-w-l { left: clamp(20px, 6vw, 96px); }
+.jf-w-r { right: clamp(20px, 6vw, 96px); font-style: italic; color: #2b4d75; }
+.jf-sub {
+  position: absolute; z-index: 3; left: clamp(20px, 6vw, 96px); bottom: clamp(60px, 11vh, 120px);
+  max-width: 30ch; font-size: 14px; line-height: 1.65; color: rgba(22, 35, 46, 0.82);
+}
+.jf-small {
+  position: absolute; z-index: 3; right: clamp(20px, 6vw, 96px); bottom: clamp(60px, 11vh, 120px);
+  max-width: 28ch; display: grid; gap: 8px; font-size: 13px; line-height: 1.6; color: rgba(22, 35, 46, 0.78);
+}
+.jf-small b { font-family: var(--font-display, serif); font-weight: 500; font-size: 22px; letter-spacing: 0; color: #16232E; }
+
+/* the real jet: a photo, cut out of its sky, flies in from the lower left */
+.jf-photo {
+  position: absolute; left: 50%; top: 50%; z-index: 4;
+  width: min(80vw, 1280px); height: auto;
+  filter: drop-shadow(0 46px 38px rgba(10, 26, 44, 0.32));
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* the seat map: drawn in gold, same coordinates as the plan */
+.jf-plane {
+  position: absolute; left: 50%; top: 0; z-index: 4;
+  height: 150vh; aspect-ratio: 1000 / 1500;
+  transform-origin: 50% 0;
+  will-change: transform;
+}
+.jf-plane svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* the map starts empty; the script draws it */
+#jfMap { opacity: 0; }
+.jfDraw, .jfWall { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.jfSeat, .jfLbl { opacity: 0; }
+
+.jf-copy {
+  position: absolute; z-index: 5; left: clamp(20px, 6vw, 96px); top: 50%; transform: translateY(-50%);
+  max-width: 30ch; color: #fff; opacity: 0;
+}
+.jf-copy p { margin: 0; }
+.jf-eyebrow { display: flex; align-items: center; gap: 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--color-gold-light, #D8BD7C); margin-bottom: 18px !important; }
+.jf-eyebrow i { display: block; width: 44px; height: 1px; background: currentColor; }
+.jf-copy h3 { font-family: var(--font-display, serif); font-weight: 500; font-size: clamp(34px, 4.4vw, 64px); line-height: 1; margin: 0 0 18px; }
+.jf-copy p:not(.jf-eyebrow):not(.jf-note) { font-size: 15px; line-height: 1.7; color: rgba(255, 255, 255, 0.84); }
+.jf-note { margin-top: 22px !important; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(216, 189, 124, 0.85); }
+
+@media (max-width: 760px) {
+  .jf-plane { height: 120vh; }
+  .jf-photo { width: 170vw; }
+  .jf-w { font-size: clamp(44px, 14vw, 72px); top: 120px; }
+  .jf-sub, .jf-small { display: none; }
+  .jf-copy { top: auto; bottom: 8vh; transform: none; max-width: calc(100% - 40px); }
+  #jfLabels { display: none; }
+}
+
+/* reduced motion: show the seat map as a plain picture */
+.jf-calm .jf-plane { position: relative; left: auto; top: auto; margin: 0 auto; height: 90vh; transform: none; }
+.jf-calm .jf-night { opacity: 1; }
+.jf-calm .jf-photo { display: none; }
+.jf-calm #jfMap, .jf-calm .jfSeat, .jf-calm .jfLbl { opacity: 1; }
+.jf-calm .jfDraw, .jf-calm .jfWall { stroke-dashoffset: 0; }
+.jf-calm .jf-w, .jf-calm .jf-sub, .jf-calm .jf-small { display: none; }
+.jf-calm .jf-copy { opacity: 1; position: relative; transform: none; top: auto; left: auto; margin: 24px auto; }
+
+.jf-photo[hidden] { display: none !important; }
+
+/* the real jet (top view photo, recoloured to black lacquer). White paper and soft shadow are baked in; multiply makes the paper vanish. */
+.jf-topphoto { position: absolute; left: 50%; top: 1%; height: 97%; width: auto; transform: translateX(-50%); pointer-events: none; }
+.jf-topmap { opacity: 0; }
+.jf-calm .jf-topphoto { display: none; }
+.jf-calm .jf-topmap { display: block; opacity: 1; }
+
+/* ---------- the cabin: photos and what we arrange ---------- */
+.jc { background: var(--color-bg, #0F1B24); color: var(--color-ink, #F5F1E6); padding: clamp(80px, 12vh, 150px) clamp(20px, 6vw, 96px) clamp(60px, 9vh, 110px); }
+.jc-head { max-width: 760px; margin: 0 auto clamp(40px, 7vh, 80px) 0; }
+.jc-eyebrow { display: flex; align-items: center; gap: 16px; margin: 0 0 22px; font-size: 11px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--color-gold-light, #D8BD7C); }
+.jc-eyebrow i { display: block; width: 44px; height: 1px; background: currentColor; }
+.jc-head h2 { margin: 0 0 22px; font-family: var(--font-display, serif); font-weight: 500; font-size: clamp(38px, 5.4vw, 80px); line-height: 1.02; letter-spacing: -0.01em; }
+.jc-head p:not(.jc-eyebrow) { margin: 0; max-width: 56ch; font-size: 16px; line-height: 1.7; color: var(--color-ink-muted, #A9B4BB); }
+
+.jc-grid { display: grid; grid-template-columns: 1.1fr 1fr 1fr 1.1fr; grid-template-rows: auto auto; gap: clamp(12px, 1.6vw, 24px); align-items: start; }
+.jc-ph { position: relative; margin: 0; overflow: hidden; border-radius: 6px; background: #16232E; }
+.jc-ph img { display: block; width: 100%; height: 100%; object-fit: cover; transform: scale(1.04); transition: transform 1100ms cubic-bezier(0.16, 1, 0.3, 1); }
+.jc-ph:hover img { transform: scale(1.0); }
+.jc-ph--tall { aspect-ratio: 3 / 4.3; }
+.jc-ph--sq { aspect-ratio: 1; align-self: end; }
+.jc-ph figcaption { position: absolute; left: 0; right: 0; bottom: 0; display: grid; gap: 4px; padding: 90px 18px 18px; background: linear-gradient(180deg, rgba(9, 14, 20, 0) 0%, rgba(9, 14, 20, 0.9) 100%); }
+.jc-ph figcaption b { font-family: var(--font-display, serif); font-weight: 500; font-size: 22px; color: #fff; }
+.jc-ph figcaption span { font-size: 12.5px; line-height: 1.55; color: rgba(255, 255, 255, 0.82); max-width: 30ch; }
+
+.jc-list { list-style: none; margin: clamp(48px, 8vh, 96px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0 clamp(20px, 3vw, 48px); border-top: 1px solid var(--color-border, rgba(212, 190, 140, 0.16)); }
+.jc-list li { padding: 26px 0 0; display: grid; gap: 10px; align-content: start; }
+.jc-list b { font-family: var(--font-display, serif); font-weight: 500; font-size: 24px; color: var(--color-gold-light, #D8BD7C); }
+.jc-list span { font-size: 14px; line-height: 1.7; color: var(--color-ink-muted, #A9B4BB); }
+
+@media (max-width: 960px) {
+  .jc-grid { grid-template-columns: 1fr 1fr; }
+  .jc-ph--tall { aspect-ratio: 3 / 4; }
+  .jc-list { grid-template-columns: 1fr 1fr; gap: 0 28px; }
+}
+@media (max-width: 560px) {
+  .jc-grid { grid-template-columns: 1fr; }
+  .jc-ph--sq, .jc-ph--tall { aspect-ratio: 4 / 5; align-self: auto; }
+  .jc-list { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .jc-ph img { transition: none; transform: none; } }
+
+/* the hero hands over to the sky: a long, eased fade instead of a hard edge */
+.lp-hero-full::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 18vh; z-index: 3; pointer-events: none; background: linear-gradient(180deg, rgba(15, 27, 36, 0) 0%, rgba(15, 27, 36, 0.55) 60%, var(--color-bg, #0F1B24) 100%); }
+.jf-top { height: 22vh !important; background: linear-gradient(180deg, var(--color-bg, #0F1B24) 0%, rgba(15, 27, 36, 0.72) 28%, rgba(15, 27, 36, 0.28) 62%, rgba(15, 27, 36, 0) 100%) !important; }
