@@ -140,9 +140,7 @@
 .jf-top { height: 22vh !important; background: linear-gradient(180deg, var(--color-bg, #0F1B24) 0%, rgba(15, 27, 36, 0.72) 28%, rgba(15, 27, 36, 0.28) 62%, rgba(15, 27, 36, 0) 100%) !important; }
 
 /* fuselage band: stays visible while the wings fade, then melts into the plan */
-.jf-fus { -webkit-mask-image: linear-gradient(90deg, transparent 41%, #000 46.5%, #000 53.5%, transparent 59%); mask-image: linear-gradient(90deg, transparent 41%, #000 46.5%, #000 53.5%, transparent 59%); }
-.jf-calm .jf-fus { display: none; }
-
+.jf-calm 
 /* the cabin plan: our own drawing, calm greys on the warm light */
 #jfPlan { opacity: 0; }
 .jpBody { fill: url(#jpFill); stroke: rgba(70, 64, 54, 0.55); stroke-width: 2.2; }
@@ -206,15 +204,26 @@
   .jc-stage img.is-in { animation: none; clip-path: inset(0 0 0 0); transform: none; }
 }
 
-/* the wings recede toward the fuselage: a soft horizontal mask that closes in (animated by jet-fly.js) */
-#jfTopPhoto { --ma: -20%; --mb: -6%; --mc: 106%; --md: 120%;
-  -webkit-mask-image: linear-gradient(90deg, transparent var(--ma), #000 var(--mb), #000 var(--mc), transparent var(--md));
-  mask-image: linear-gradient(90deg, transparent var(--ma), #000 var(--mb), #000 var(--mc), transparent var(--md)); }
-.jf-calm #jfTopPhoto { display: none; }
 
-/* the supplied cabin plan, laid exactly over the fuselage of the jet photo */
-.jf-planimg { position: absolute; left: -10.45%; top: -2.87%; width: 122.4%; height: auto; opacity: 0; pointer-events: none; transform-origin: 50% 50%; }
-.jf-calm .jf-planimg { opacity: 1; position: relative; left: auto; top: auto; width: auto; height: 90vh; }
 
 /* the site-wide "img { max-width: 100% }" squeezed these two images narrower than their real shape */
 .jf-topphoto, .jf-planimg { max-width: none; }
+
+/* jet and plan share the same box; a moving soft edge wipes the jet away from the tail forward while the plan appears behind it */
+.jf-wrapJet, .jf-wrapPlan { position: absolute; inset: 0; --wy: 112%; pointer-events: none; }
+.jf-wrapJet { -webkit-mask-image: linear-gradient(180deg, #000 calc(var(--wy) - 12%), transparent calc(var(--wy) + 6%)); mask-image: linear-gradient(180deg, #000 calc(var(--wy) - 12%), transparent calc(var(--wy) + 6%)); }
+.jf-wrapPlan { -webkit-mask-image: linear-gradient(180deg, transparent calc(var(--wy) - 12%), #000 calc(var(--wy) + 6%)); mask-image: linear-gradient(180deg, transparent calc(var(--wy) - 12%), #000 calc(var(--wy) + 6%)); }
+/* the fuselage by itself (soft sides), so the wings can dissolve first */
+.jf-fus { -webkit-mask-image: linear-gradient(90deg, transparent 41.5%, #000 45.5%, #000 54.5%, transparent 58.5%); mask-image: linear-gradient(90deg, transparent 41.5%, #000 45.5%, #000 54.5%, transparent 58.5%); }
+/* the cabin plan, scaled to the same width as the fuselage and laid over it */
+.jf-planimg { position: absolute; left: 7.29%; top: 0.22%; width: 86.9%; height: auto; max-width: none; }
+.jf-topphoto { max-width: none; }
+.jf-calm .jf-wrapJet { display: none; }
+.jf-calm .jf-wrapPlan { position: relative; inset: auto; -webkit-mask-image: none; mask-image: none; }
+.jf-calm .jf-planimg { position: relative; left: auto; top: auto; width: auto; height: 90vh; }
+
+/* drifting still behind the cloud video (see keep-playing.js) */
+.vid-fallback { position: absolute; inset: 0; background-size: cover; background-position: 50% 50%; animation: vid-drift 28s ease-in-out infinite alternate; will-change: transform; }
+@keyframes vid-drift { from { transform: scale(1.02) translate3d(0, 0, 0); } to { transform: scale(1.12) translate3d(-1.5%, -1%, 0); } }
+.vid-stuck { opacity: 0 !important; }
+@media (prefers-reduced-motion: reduce) { .vid-fallback { animation: none; } }

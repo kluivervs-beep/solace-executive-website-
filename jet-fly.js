@@ -24,8 +24,8 @@
   }
 
   var mobile = window.matchMedia('(max-width: 760px)').matches;
-  var endScale = mobile ? 0.7 : 0.613;           /* jet height ends near 92vh on desktop */
-  var endY = mobile ? '10vh' : '4vh';
+  var endScale = mobile ? 0.7 : 0.66;            /* the whole jet stays in view, near full height */
+  var endY = mobile ? '10vh' : '2vh';
 
   gsap.set('#jfPlane', { xPercent: -50, y: '104vh', scale: mobile ? 1.15 : 1.9 });
   gsap.set('#jfCopy', { opacity: 0, y: 30 });
@@ -45,12 +45,10 @@
     /* then it slowly pulls back until the whole jet sits in the picture, the sky turning to warm light */
     .to('#jfPlane', { y: endY, scale: endScale, duration: 0.3, ease: 'power2.inOut' }, 0.34)
     .to('#jfNight', { opacity: 1, duration: 0.3, ease: 'power1.inOut' }, 0.4)
-    /* the wings and engines dissolve; the fuselage stays and starts to open up into the plan */
-    .fromTo('#jfTopPhoto', { '--ma': '-20%', '--mb': '-6%', '--mc': '106%', '--md': '120%' }, { '--ma': '30%', '--mb': '42%', '--mc': '58%', '--md': '70%', filter: 'blur(5px)', duration: 0.22, ease: 'power1.inOut' }, 0.54)
-    .set('#jfPlanImg', { opacity: 0, scaleX: 0.71 }, 0)
-    .to('#jfPlanImg', { opacity: 1, duration: 0.18, ease: 'power1.inOut' }, 0.7)
-    .to('#jfPlanImg', { scaleX: 1, duration: 0.22, ease: 'power2.inOut' }, 0.7)
-    .to('#jfTopPhoto', { opacity: 0, duration: 0.14, ease: 'power1.inOut' }, 0.66)
+    /* the wings, engines and tail dissolve first (soft blur), the fuselage stays */
+    .to('#jfTopPhoto', { opacity: 0, filter: 'blur(9px)', duration: 0.16, ease: 'power1.inOut' }, 0.56)
+    /* then the jet melts away from the tail forward while the plan shows up behind it, at the same size */
+    .fromTo('#jfJetWrap,#jfPlanWrap', { '--wy': '112%' }, { '--wy': '-14%', duration: 0.3, ease: 'power1.inOut' }, 0.62)
     .fromTo('.jpLbl', { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.05, stagger: 0.03, ease: 'power2.out' }, 0.9)
     .fromTo('#jfCopy', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.1, ease: 'power2.out' }, 0.86);
   if (manual) { story.progress(parseFloat(q.get('sp'))); var hh = document.querySelector('.lp-hero-full'); if (hh) hh.style.display = 'none'; }

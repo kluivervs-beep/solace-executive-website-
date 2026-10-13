@@ -23,3 +23,29 @@
   setInterval(wake, 2500);
   wake();
 })();
+
+/* Safety net: if a cloud video ever fails to move (autoplay blocked, low-power mode, slow start),
+   a slowly drifting still of the same clouds shows instead, so the background is never frozen.
+   As soon as the video really plays, it takes over again. */
+(function () {
+  var vids = [].slice.call(document.querySelectorAll('#whVideo, .jf-bg'));
+  vids.forEach(function (v) {
+    var poster = v.getAttribute('poster');
+    if (!poster || !v.parentNode) return;
+    var fb = document.createElement('div');
+    fb.className = 'vid-fallback';
+    fb.setAttribute('aria-hidden', 'true');
+    fb.style.backgroundImage = 'url("' + poster + '")';
+    v.parentNode.insertBefore(fb, v);
+    var last = -1, still = 0;
+    function check() {
+      var t = v.currentTime;
+      var moving = !v.paused && t > 0.05 && Math.abs(t - last) > 0.02;
+      last = t;
+      if (moving) { still = 0; v.classList.remove('vid-stuck'); }
+      else if (++still >= 2) { v.classList.add('vid-stuck'); try { v.play(); } catch (e) {} }
+    }
+    setInterval(check, 700);
+    v.addEventListener('playing', function () { v.classList.remove('vid-stuck'); });
+  });
+})();

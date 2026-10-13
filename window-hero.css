@@ -282,3 +282,9 @@ html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
 .lenis.lenis-stopped { overflow: hidden; }
+
+/* drifting still behind the cloud videos (see keep-playing.js) */
+.vid-fallback { position: absolute; inset: 0; background-size: cover; background-position: 50% 50%; animation: vid-drift 28s ease-in-out infinite alternate; will-change: transform; }
+@keyframes vid-drift { from { transform: scale(1.02) translate3d(0, 0, 0); } to { transform: scale(1.12) translate3d(-1.5%, -1%, 0); } }
+.vid-stuck { opacity: 0 !important; }
+@media (prefers-reduced-motion: reduce) { .vid-fallback { animation: none; } }
