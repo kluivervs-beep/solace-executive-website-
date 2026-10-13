@@ -211,8 +211,8 @@
 
 /* jet and plan share the same box; a moving soft edge wipes the jet away from the tail forward while the plan appears behind it */
 .jf-wrapJet, .jf-wrapPlan { position: absolute; inset: 0; --wy: 112%; pointer-events: none; }
-.jf-wrapJet { -webkit-mask-image: linear-gradient(180deg, #000 calc(var(--wy) - 12%), transparent calc(var(--wy) + 6%)); mask-image: linear-gradient(180deg, #000 calc(var(--wy) - 12%), transparent calc(var(--wy) + 6%)); }
-.jf-wrapPlan { -webkit-mask-image: linear-gradient(180deg, transparent calc(var(--wy) - 12%), #000 calc(var(--wy) + 6%)); mask-image: linear-gradient(180deg, transparent calc(var(--wy) - 12%), #000 calc(var(--wy) + 6%)); }
+.jf-wrapJet { -webkit-mask-image: linear-gradient(180deg, #000 calc(var(--wy) - 22%), transparent calc(var(--wy) + 8%)); mask-image: linear-gradient(180deg, #000 calc(var(--wy) - 22%), transparent calc(var(--wy) + 8%)); }
+.jf-wrapPlan { -webkit-mask-image: linear-gradient(180deg, transparent calc(var(--wy) - 22%), #000 calc(var(--wy) + 8%)); mask-image: linear-gradient(180deg, transparent calc(var(--wy) - 22%), #000 calc(var(--wy) + 8%)); }
 /* the fuselage by itself (soft sides), so the wings can dissolve first */
 .jf-fus { -webkit-mask-image: linear-gradient(90deg, transparent 41.5%, #000 45.5%, #000 54.5%, transparent 58.5%); mask-image: linear-gradient(90deg, transparent 41.5%, #000 45.5%, #000 54.5%, transparent 58.5%); }
 /* the cabin plan, scaled to the same width as the fuselage and laid over it */
