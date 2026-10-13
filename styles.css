@@ -18,6 +18,8 @@
   --color-gold: #B4923D;
   --color-gold-light: #D8BD7C;
   --color-gold-dim: rgba(180, 146, 61, 0.35);
+  /* Gold as text on the light sections: 5.2:1 on #FAF7F0 (the plain gold gives 2.8:1). */
+  --color-gold-on-light: #7F6420;
 
   --color-border: rgba(212, 190, 140, 0.16);
   --color-border-light: rgba(22, 35, 46, 0.12);
@@ -1179,7 +1181,7 @@ input, textarea, select {
   color: var(--color-ink-on-light);
 }
 .philosophy-quote blockquote em {
-  color: var(--color-gold);
+  color: var(--color-gold-on-light);
   font-style: italic;
 }
 .quote-attr {
@@ -1207,7 +1209,7 @@ input, textarea, select {
   margin-bottom: var(--space-3);
   max-width: 46ch;
 }
-.philosophy-body .eyebrow { color: var(--color-gold); }
+.philosophy-body .eyebrow { color: var(--color-gold-on-light); }
 
 .stat-row {
   display: flex;
@@ -2694,10 +2696,10 @@ html.fx-on .service-grid .service-card.fx-ready > .service-link { opacity: 1; tr
 /* --gd = globe diameter. It also follows the window height, so on a short
    screen the globe shrinks and the headline card still shows its buttons;
    never below 320px (landscape phones). hero-globe.js reads this value. */
-.hero { --gd: min(70vw, 800px, max(320px, calc(100vh - 230px))); }
+.hero { --gd: min(70vw, 800px, max(320px, calc(100vh - 330px))); }
 @supports (height: 100svh) {
   /* svh, not dvh: the globe must not resize while the browser bars slide away. */
-  .hero { --gd: min(70vw, 800px, max(320px, calc(100svh - 230px))); }
+  .hero { --gd: min(70vw, 800px, max(320px, calc(100svh - 330px))); }
 }
 .hero.has-globe {
   min-height: 0;
