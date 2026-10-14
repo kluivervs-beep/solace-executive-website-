@@ -557,12 +557,29 @@
       <form class="intake-form intake-form--steps" id="intakeForm" action="https://formspree.io/f/xgojjlzv" method="POST" novalidate>
         <input type="hidden" name="_subject" value="Nieuwe aanvraag via solaceexecutive.com">
         <input type="hidden" name="referral_source" id="referralSourceField" value="">
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
 
         <div class="step-stage" id="stepStage">
-          <div class="form-step is-active" data-step="0">
+          <div class="form-step is-active" data-step="0" data-intro="1">
+            <div class="step-body step-welcome">
+              <p class="step-q" data-i18n="form.w.title">Fijn dat u er bent.</p>
+              <p class="step-lead" data-i18n="intake.sub">Wij beoordelen elke aanvraag persoonlijk.</p>
+              <ul class="welcome-facts">
+                <li><b data-i18n="form.w.f1b">12 vragen</b><span data-i18n="form.w.f1">Kort en makkelijk te beantwoorden</span></li>
+                <li><b data-i18n="form.w.f2b">Circa 3 minuten</b><span data-i18n="form.w.f2">Ruim de tijd, u kunt altijd terug</span></li>
+                <li><b data-i18n="form.w.f3b">Vertrouwelijk</b><span data-i18n="form.w.f3">Alleen ons team leest uw antwoorden</span></li>
+              </ul>
+              <p class="step-lead welcome-line" data-i18n="form.w.line">Geen formulier om doorheen te worstelen, maar een eerste kennismaking. Wij zijn benieuwd naar u.</p>
+            </div>
+            <div class="step-actions">
+              <button type="button" class="btn btn-primary step-next" data-i18n="form.w.start">Laten we beginnen</button>
+              <span class="step-hint" data-i18n="form.hint.enter">druk op Enter &crarr;</span>
+            </div>
+          </div>
+          <div class="form-step" data-step="1" data-validate="name">
             <div class="step-body">
-              <label class="step-q" for="name" data-i18n="form.name">Wat is uw naam?</label>
-              <p class="step-lead" data-i18n="intake.sub">Wij beoordelen elke aanvraag persoonlijk. Vertel ons wie u bent en wat u nodig heeft. Bij een match nemen wij per e-mail contact op.</p>
+              <label class="step-q" for="name" data-i18n="form.name">Hoe mogen wij u noemen?</label>
+              <p class="step-lead" data-i18n="form.name.lead">Uw volledige naam, dan weten wij met wie wij het genoegen hebben.</p>
               <input type="text" id="name" name="name" required autocomplete="name" enterkeyhint="next">
               <span class="field-error" role="alert"></span>
             </div>
@@ -571,10 +588,10 @@
               <span class="step-hint" data-i18n="form.hint.enter">druk op Enter &crarr;</span>
             </div>
           </div>
-
-          <div class="form-step" data-step="1">
+          <div class="form-step" data-step="2" data-validate="email">
             <div class="step-body">
-              <label class="step-q" for="email" data-i18n="form.email">Wat is uw e-mailadres?</label>
+              <label class="step-q" for="email" data-i18n="form.email">Waar kunnen wij u mailen?</label>
+              <p class="step-lead" data-i18n="form.email.lead">Hier sturen wij onze reactie naartoe. Geen nieuwsbrieven, beloofd.</p>
               <input type="email" id="email" name="email" required autocomplete="email" inputmode="email" enterkeyhint="next">
               <span class="field-error" role="alert"></span>
             </div>
@@ -583,11 +600,11 @@
               <span class="step-hint" data-i18n="form.hint.enter">druk op Enter &crarr;</span>
             </div>
           </div>
-
-          <div class="form-step" data-step="2">
+          <div class="form-step" data-step="3" data-validate="phone">
             <div class="step-body">
-              <label class="step-q" for="phone" data-i18n="form.phone">Wat is uw telefoonnummer?</label>
-              <input type="tel" id="phone" name="phone" required autocomplete="tel" inputmode="tel" enterkeyhint="next">
+              <label class="step-q" for="phone" data-i18n-html="form.phone">En uw telefoonnummer? <span class="optional">(optioneel)</span></label>
+              <p class="step-lead" data-i18n="form.phone.lead">Voor als het snel moet. Wij bellen niet zonder reden.</p>
+              <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" enterkeyhint="next" placeholder="+31 6 4827 1953" maxlength="22">
               <span class="field-error" role="alert"></span>
             </div>
             <div class="step-actions">
@@ -595,26 +612,39 @@
               <span class="step-hint" data-i18n="form.hint.enter">druk op Enter &crarr;</span>
             </div>
           </div>
-
-          <div class="form-step" data-step="3">
+          <div class="form-step" data-step="4">
             <div class="step-body">
-              <label class="step-q" for="company" data-i18n-html="form.company.label">Voor welk bedrijf werkt u? <span class="optional">(optioneel)</span></label>
-              <input type="text" id="company" name="company" autocomplete="organization" enterkeyhint="next">
+              <label class="step-q" for="region" data-i18n-html="form.region.label">Waar bent u thuis? <span class="optional">(optioneel)</span></label>
+              <p class="step-lead" data-i18n="form.region.lead">Een stad of regio is genoeg. Zo weten wij waar wij u mee kunnen verrassen.</p>
+              <input type="text" id="region" name="region" autocomplete="address-level2" enterkeyhint="next">
             </div>
             <div class="step-actions">
               <button type="button" class="btn btn-primary step-next" data-i18n="form.next">Verder</button>
               <span class="step-hint" data-i18n="form.hint.enter">druk op Enter &crarr;</span>
             </div>
           </div>
-
-          <div class="form-step" data-step="4" role="group" aria-labelledby="servicesQ">
+          <div class="form-step" data-step="5">
             <div class="step-body">
-              <p class="step-q" id="servicesQ" data-i18n="form.services.legend">Welke diensten hebben uw interesse?</p>
-              <p class="step-lead" data-i18n="form.services.hint">U kunt er meerdere kiezen.</p>
+              <label class="step-q" for="company" data-i18n-html="form.company.label">Wat doet u en waar? <span class="optional">(optioneel)</span></label>
+              <p class="step-lead" data-i18n="form.company.lead">Bijvoorbeeld uw bedrijf en functie. Dat helpt ons u beter te begrijpen.</p>
+              <input type="text" id="company" name="company" autocomplete="organization" enterkeyhint="next">
+              <input type="text" id="role" name="role" autocomplete="organization-title" enterkeyhint="next" data-i18n="form.role.ph" data-i18n-attr="placeholder" placeholder="Uw functie" style="margin-top:16px">
+            </div>
+            <div class="step-actions">
+              <button type="button" class="btn btn-primary step-next" data-i18n="form.next">Verder</button>
+              <span class="step-hint" data-i18n="form.hint.enter">druk op Enter &crarr;</span>
+            </div>
+          </div>
+          <div class="form-step" data-step="6" role="group" aria-labelledby="servicesQ" data-validate="services">
+            <div class="step-body">
+              <p class="step-q" id="servicesQ" data-i18n="form.services.legend">Waar kunnen wij u mee van dienst zijn?</p>
+              <p class="step-lead" data-i18n="form.services.hint">Kies gerust meerdere. Niets ligt vast.</p>
               <div class="choice-grid">
                 <label class="choice"><input type="checkbox" name="services" value="transport"><span class="choice-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3.5L6.5 6h11l2.5 5.5V15M3 15h18v3H3zM7.5 18v1.5M16.5 18v1.5"/></svg></span><span class="choice-text" data-i18n="service.transport">Executive Transport</span><span class="choice-mark" aria-hidden="true"></span></label>
                 <label class="choice"><input type="checkbox" name="services" value="jets"><span class="choice-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4 18-7z"/></svg></span><span class="choice-text" data-i18n="service.jets">Private Jets</span><span class="choice-mark" aria-hidden="true"></span></label>
                 <label class="choice"><input type="checkbox" name="services" value="yachts"><span class="choice-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l2 3h14l2-3H3zM12 3v12M12 4l6 9h-6M12 7l-5 6h5"/></svg></span><span class="choice-text" data-i18n="service.yachts">Jachten</span><span class="choice-mark" aria-hidden="true"></span></label>
+                <label class="choice"><input type="checkbox" name="services" value="villas"><span class="choice-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6"/></svg></span><span class="choice-text" data-i18n="service.villas">Villa's</span><span class="choice-mark" aria-hidden="true"></span></label>
+                <label class="choice"><input type="checkbox" name="services" value="shopping"><span class="choice-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8zM9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span class="choice-text" data-i18n="service.shopping">Personal shopping</span><span class="choice-mark" aria-hidden="true"></span></label>
                 <label class="choice"><input type="checkbox" name="services" value="other"><span class="choice-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg></span><span class="choice-text" data-i18n="service.other">Iets anders</span><span class="choice-mark" aria-hidden="true"></span></label>
               </div>
               <span class="field-error" id="servicesError" role="alert"></span>
@@ -624,10 +654,9 @@
               <span class="step-hint" data-i18n="form.hint.enter">druk op Enter &crarr;</span>
             </div>
           </div>
-
-          <div class="form-step" data-step="5" role="radiogroup" aria-labelledby="frequencyQ">
+          <div class="form-step" data-step="7" role="radiogroup" aria-labelledby="frequencyQ">
             <div class="step-body">
-              <p class="step-q" id="frequencyQ" data-i18n="form.frequency">Hoe vaak verwacht u gebruik te maken van Solace Executive?</p>
+              <p class="step-q" id="frequencyQ" data-i18n="form.frequency">Hoe vaak ziet u ons voor zich?</p>
               <div class="choice-grid">
                 <label class="choice"><input type="radio" name="frequency" value="incidenteel" checked><span class="choice-ico choice-dots" data-n="1" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="choice-text" data-i18n="form.freq.occasional">Incidenteel</span><span class="choice-mark" aria-hidden="true"></span></label>
                 <label class="choice"><input type="radio" name="frequency" value="maandelijks"><span class="choice-ico choice-dots" data-n="2" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="choice-text" data-i18n="form.freq.monthly">Maandelijks</span><span class="choice-mark" aria-hidden="true"></span></label>
@@ -640,21 +669,72 @@
               <span class="step-hint" data-i18n="form.hint.enter">druk op Enter &crarr;</span>
             </div>
           </div>
-
-          <div class="form-step" data-step="6">
+          <div class="form-step" data-step="8" role="radiogroup" aria-labelledby="incomeQ">
             <div class="step-body">
-              <label class="step-q" for="region" data-i18n-html="form.region.label">Wat is uw standplaats of regio? <span class="optional">(optioneel)</span></label>
-              <input type="text" id="region" name="region" autocomplete="address-level2" enterkeyhint="next">
+              <p class="step-q" id="incomeQ" data-i18n-html="form.income.q">Wat is uw ongeveer maandelijks netto inkomen? <span class="optional">(optioneel)</span></p>
+              <p class="step-lead" data-i18n="form.income.lead">Een grove schatting is genoeg. Dit blijft strikt vertrouwelijk en helpt ons te zien of Solace bij u past. Liever niet zeggen mag altijd.</p>
+              <div class="choice-grid choice-grid--chips">
+                <label class="choice"><input type="radio" name="income" value="onder-5000"><span class="choice-text" data-i18n="form.income.o1">Tot € 5.000</span><span class="choice-mark" aria-hidden="true"></span></label>
+                <label class="choice"><input type="radio" name="income" value="5000-10000"><span class="choice-text" data-i18n="form.income.o2">€ 5.000 tot € 10.000</span><span class="choice-mark" aria-hidden="true"></span></label>
+                <label class="choice"><input type="radio" name="income" value="10000-25000"><span class="choice-text" data-i18n="form.income.o3">€ 10.000 tot € 25.000</span><span class="choice-mark" aria-hidden="true"></span></label>
+                <label class="choice"><input type="radio" name="income" value="25000-50000"><span class="choice-text" data-i18n="form.income.o4">€ 25.000 tot € 50.000</span><span class="choice-mark" aria-hidden="true"></span></label>
+                <label class="choice"><input type="radio" name="income" value="50000-plus"><span class="choice-text" data-i18n="form.income.o5">Meer dan € 50.000</span><span class="choice-mark" aria-hidden="true"></span></label>
+                <label class="choice"><input type="radio" name="income" value="liever-niet" checked><span class="choice-text" data-i18n="form.income.o0">Liever niet zeggen</span><span class="choice-mark" aria-hidden="true"></span></label>
+              </div>
             </div>
             <div class="step-actions">
               <button type="button" class="btn btn-primary step-next" data-i18n="form.next">Verder</button>
               <span class="step-hint" data-i18n="form.hint.enter">druk op Enter &crarr;</span>
             </div>
           </div>
-
-          <div class="form-step" data-step="7">
+          <div class="form-step" data-step="9" role="radiogroup" aria-labelledby="budgetQ">
             <div class="step-body">
-              <label class="step-q" for="message" data-i18n-html="form.message.label">Nog iets dat wij moeten weten? <span class="optional">(optioneel)</span></label>
+              <p class="step-q" id="budgetQ" data-i18n-html="form.budget.q">Wat denkt u per jaar aan onze diensten te besteden? <span class="optional">(optioneel)</span></p>
+              <p class="step-lead" data-i18n="form.budget.lead">Reizen, vervoer, verblijven en lifestyle bij elkaar. Een gok is prima.</p>
+              <div class="choice-grid choice-grid--chips">
+                <label class="choice"><input type="radio" name="budget" value="onder-10000"><span class="choice-text" data-i18n="form.budget.o1">Tot € 10.000</span><span class="choice-mark" aria-hidden="true"></span></label>
+                <label class="choice"><input type="radio" name="budget" value="10000-50000"><span class="choice-text" data-i18n="form.budget.o2">€ 10.000 tot € 50.000</span><span class="choice-mark" aria-hidden="true"></span></label>
+                <label class="choice"><input type="radio" name="budget" value="50000-150000"><span class="choice-text" data-i18n="form.budget.o3">€ 50.000 tot € 150.000</span><span class="choice-mark" aria-hidden="true"></span></label>
+                <label class="choice"><input type="radio" name="budget" value="150000-plus"><span class="choice-text" data-i18n="form.budget.o4">Meer dan € 150.000</span><span class="choice-mark" aria-hidden="true"></span></label>
+                <label class="choice"><input type="radio" name="budget" value="weet-ik-niet" checked><span class="choice-text" data-i18n="form.budget.o0">Dat weet ik nog niet</span><span class="choice-mark" aria-hidden="true"></span></label>
+              </div>
+            </div>
+            <div class="step-actions">
+              <button type="button" class="btn btn-primary step-next" data-i18n="form.next">Verder</button>
+              <span class="step-hint" data-i18n="form.hint.enter">druk op Enter &crarr;</span>
+            </div>
+          </div>
+          <div class="form-step" data-step="10" role="radiogroup" aria-labelledby="timingQ">
+            <div class="step-body">
+              <p class="step-q" id="timingQ" data-i18n="form.timing.q">Wanneer wilt u de eerste keer reizen met ons?</p>
+              <div class="choice-grid choice-grid--chips">
+                <label class="choice"><input type="radio" name="timing" value="direct"><span class="choice-text" data-i18n="form.timing.o1">Zo snel mogelijk</span><span class="choice-mark" aria-hidden="true"></span></label>
+                <label class="choice"><input type="radio" name="timing" value="maand"><span class="choice-text" data-i18n="form.timing.o2">Binnen een maand</span><span class="choice-mark" aria-hidden="true"></span></label>
+                <label class="choice"><input type="radio" name="timing" value="kwartaal"><span class="choice-text" data-i18n="form.timing.o3">Dit kwartaal</span><span class="choice-mark" aria-hidden="true"></span></label>
+                <label class="choice"><input type="radio" name="timing" value="later"><span class="choice-text" data-i18n="form.timing.o4">Later dit jaar</span><span class="choice-mark" aria-hidden="true"></span></label>
+                <label class="choice"><input type="radio" name="timing" value="oriënteren" checked><span class="choice-text" data-i18n="form.timing.o5">Ik oriënteer me eerst</span><span class="choice-mark" aria-hidden="true"></span></label>
+              </div>
+            </div>
+            <div class="step-actions">
+              <button type="button" class="btn btn-primary step-next" data-i18n="form.next">Verder</button>
+              <span class="step-hint" data-i18n="form.hint.enter">druk op Enter &crarr;</span>
+            </div>
+          </div>
+          <div class="form-step" data-step="11">
+            <div class="step-body">
+              <label class="step-q" for="referrer" data-i18n-html="form.ref.q">Heeft iemand u naar ons doorverwezen? <span class="optional">(optioneel)</span></label>
+              <p class="step-lead" data-i18n="form.ref.lead">Een lid, een vriend of een collega. Vertel ons wie, dan zorgen wij dat zij bedankt worden. Anders hoe u ons vond.</p>
+              <input type="text" id="referrer" name="referrer" autocomplete="off" enterkeyhint="next">
+            </div>
+            <div class="step-actions">
+              <button type="button" class="btn btn-primary step-next" data-i18n="form.next">Verder</button>
+              <span class="step-hint" data-i18n="form.hint.enter">druk op Enter &crarr;</span>
+            </div>
+          </div>
+          <div class="form-step" data-step="12">
+            <div class="step-body">
+              <label class="step-q" for="message" data-i18n-html="form.message.label">Waar kijkt u het meest naar uit? <span class="optional">(optioneel)</span></label>
+              <p class="step-lead" data-i18n="form.message.lead">Een reis, een avond, een wens die al lang op de plank ligt. Of wat wij verder moeten weten.</p>
               <textarea id="message" name="message" rows="3"></textarea>
             </div>
             <div class="step-actions">
@@ -663,7 +743,7 @@
             </div>
           </div>
 
-          <div class="form-step" data-step="8">
+          <div class="form-step" data-step="13">
             <div class="step-body">
               <p class="step-q" data-i18n="form.review.title">Klaar om te versturen?</p>
               <dl class="review-list" id="reviewList">
@@ -672,6 +752,10 @@
                 <div><dt data-i18n="form.sum.phone">Telefoon</dt><dd id="sumPhone"></dd></div>
                 <div><dt data-i18n="form.sum.services">Diensten</dt><dd id="sumServices"></dd></div>
                 <div><dt data-i18n="form.sum.frequency">Gebruik</dt><dd id="sumFrequency"></dd></div>
+                <div><dt data-i18n="form.sum.region">Regio</dt><dd id="sumRegion"></dd></div>
+                <div><dt data-i18n="form.sum.income">Inkomen</dt><dd id="sumIncome"></dd></div>
+                <div><dt data-i18n="form.sum.budget">Budget</dt><dd id="sumBudget"></dd></div>
+                <div><dt data-i18n="form.sum.timing">Starten</dt><dd id="sumTiming"></dd></div>
               </dl>
               <p class="step-review-note" data-i18n="form.review.note">Wij beoordelen uw aanvraag persoonlijk en nemen bij een match per e-mail contact op.</p>
               <p class="form-note form-note--error" id="formError" role="alert" hidden data-i18n="form.error.submit">

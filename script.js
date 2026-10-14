@@ -257,11 +257,71 @@
     }
   }
 
+  /* Real-looking details only: this keeps out spam, typos and throw-away addresses. */
+  const DISPOSABLE = ['mailinator.com','guerrillamail.com','guerrillamail.net','sharklasers.com','10minutemail.com','10minutemail.net','tempmail.com','temp-mail.org','temp-mail.io','yopmail.com','trashmail.com','getnada.com','throwawaymail.com','dispostable.com','maildrop.cc','fakeinbox.com','mohmal.com','emailondeck.com','tempail.com','mailnesia.com','spamgourmet.com','mintemail.com','moakt.com','burnermail.io','tempinbox.com','discard.email','mailcatch.com','tmpmail.org','fakemail.net','inboxkitten.com'];
+  const FAKE_LOCAL = /^(test|tester|testing|asdf|asd|qwerty|abc|abcd|xxx|aaa|none|noreply|no-reply|fake|spam|example|mail|email|info@info)$/i;
+
+  function cleanPhone(v) { return String(v || '').replace(/[\s().\-\/]/g, ''); }
+  function validPhone(v) {
+    // Optional field: empty is fine. When filled, it only has to look like a phone number (not a made-up one).
+    let n = cleanPhone(v);
+    if (!n) return true;
+    if (!/^\+?[0-9]+$/.test(n)) return false;
+    const digits = n.replace(/\D/g, '');
+    if (digits.length < 9 || digits.length > 15) return false;
+    if (/^(\d)\1+$/.test(digits) || /(\d)\1{5,}/.test(digits)) return false;                      // 0000000000
+    if ('01234567890123456789'.includes(digits.slice(-7)) || '98765432109876543210'.includes(digits.slice(-7))) return false; // 1234567
+    return true;                                                                                 // +31 6 4827 1953, 06 4827 1953, 31648271953
+  }
+  // An address that looks typed at random ("kjkakdmk"): we ask once, we do not block.
+  function looksRandom(email) {
+    const local = String(email || '').toLowerCase().split('@')[0].replace(/[^a-z]/g, '');
+    if (local.length < 7) return false;
+    const vowels = (local.match(/[aeiouy]/g) || []).length;
+    return vowels / local.length <= 0.16 || /[^aeiouy]{6,}/.test(local);
+  }
+  function validEmailSyntax(v) {
+    const e = String(v || '').trim().toLowerCase();
+    if (e.length > 254 || !/^[a-z0-9._%+\-]+@[a-z0-9\-]+(\.[a-z0-9\-]+)*\.[a-z]{2,}$/.test(e)) return false;
+    const [local, domain] = e.split('@');
+    if (local.length < 2 || local.startsWith('.') || local.endsWith('.') || local.includes('..')) return false;
+    if (FAKE_LOCAL.test(local) && /^(test|example|domain)\./.test(domain)) return false;
+    if (/^(test|example|invalid|localhost)\.|\.(test|example|invalid|local)$/.test(domain)) return false;
+    return true;
+  }
   const validators = {
-    name: (v) => v.trim().length > 1,
-    email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
-    phone: (v) => v.replace(/[^0-9]/g, '').length >= 8,
+    name: (v) => {
+      const t = String(v || '').trim();
+      return t.length > 1 && /\p{L}{2}/u.test(t) && !/[0-9@]|https?:|www\./i.test(t) && !/^(.)\1+$/.test(t.replace(/\s/g, ''));
+    },
+    email: validEmailSyntax,
+    phone: validPhone,
   };
+  const isDisposable = (v) => DISPOSABLE.includes(String(v).trim().toLowerCase().split('@')[1] || '');
+
+  // Does the e-mail domain really receive mail? Asks a public DNS service for its MX (or A) records.
+  // If the lookup itself fails (offline, blocked), we let the visitor through rather than block a real person.
+  const dnsCache = {};
+  async function domainReceivesMail(email) {
+    const domain = String(email).trim().toLowerCase().split('@')[1];
+    if (!domain) return false;
+    if (domain in dnsCache) return dnsCache[domain];
+    const ask = async (type) => {
+      const ctl = new AbortController();
+      const timer = setTimeout(() => ctl.abort(), 3500);
+      try {
+        const r = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=${type}`, { headers: { accept: 'application/dns-json' }, signal: ctl.signal });
+        const j = await r.json();
+        return { ok: true, status: j.Status, has: Array.isArray(j.Answer) && j.Answer.some((a) => a.type === (type === 'MX' ? 15 : 1)) };
+      } catch (err) { return { ok: false }; } finally { clearTimeout(timer); }
+    };
+    const mx = await ask('MX');
+    if (!mx.ok) return true;
+    if (mx.has) return (dnsCache[domain] = true);
+    const a = await ask('A');
+    if (!a.ok) return true;
+    return (dnsCache[domain] = a.has);
+  }
 
   const showError = (field, message) => {
     const wrapper = field.closest('.field') || field.closest('.form-step');
@@ -288,7 +348,7 @@
   let stepIndex = 0;
 
   const stepFieldValidators = {
-    0: () => {
+    name: () => {
       const el = form.querySelector('#name');
       const t = window.SolaceI18n ? window.SolaceI18n.t : (k) => k;
       if (!validators.name(el.value)) {
@@ -298,17 +358,21 @@
       showError(el, '');
       return true;
     },
-    1: () => {
+    email: () => {
       const el = form.querySelector('#email');
       const t = window.SolaceI18n ? window.SolaceI18n.t : (k) => k;
       if (!validators.email(el.value)) {
         showError(el, t('form.error.email'));
         return false;
       }
+      if (isDisposable(el.value)) {
+        showError(el, t('form.error.email.temp'));
+        return false;
+      }
       showError(el, '');
       return true;
     },
-    2: () => {
+    phone: () => {
       const el = form.querySelector('#phone');
       const t = window.SolaceI18n ? window.SolaceI18n.t : (k) => k;
       if (!validators.phone(el.value)) {
@@ -318,7 +382,7 @@
       showError(el, '');
       return true;
     },
-    4: () => {
+    services: () => {
       const t = window.SolaceI18n ? window.SolaceI18n.t : (k) => k;
       const checked = form.querySelectorAll('input[name="services"]:checked');
       if (checked.length === 0) {
@@ -342,9 +406,13 @@
 
   function updateStepLabel() {
     if (!stepLabelEl || !steps.length) return;
-    stepLabelEl.textContent = stepIndex === steps.length - 1
-      ? tr('form.step.final')
-      : tr('form.step.label').replace('{n}', stepIndex + 1).replace('{total}', steps.length - 1);
+    if (stepIndex === steps.length - 1) { stepLabelEl.textContent = tr('form.step.final'); return; }
+    if (steps[stepIndex].hasAttribute('data-intro')) { stepLabelEl.textContent = tr('form.step.intro'); return; }
+    const total = steps.length - 2;       // without the welcome and the review screen
+    const n = stepIndex;
+    const ratio = n / total;
+    const cheer = n === total ? tr('form.cheer.last') : ratio >= 0.75 ? tr('form.cheer.q3') : ratio >= 0.5 ? tr('form.cheer.half') : ratio >= 0.25 ? tr('form.cheer.q1') : '';
+    stepLabelEl.textContent = tr('form.step.label').replace('{n}', n).replace('{total}', total) + (cheer ? ` · ${cheer}` : '');
   }
 
   // Summary on the last screen, so people can see what they are sending.
@@ -360,6 +428,11 @@
     set('sumServices', Array.from(form.querySelectorAll('input[name="services"]:checked')).map(labelOf).join(', '));
     const freq = form.querySelector('input[name="frequency"]:checked');
     set('sumFrequency', freq ? labelOf(freq) : '');
+    set('sumRegion', (form.querySelector('#region')?.value || '').trim());
+    const pick = (name) => { const el = form.querySelector(`input[name="${name}"]:checked`); return el ? labelOf(el) : ''; };
+    set('sumIncome', pick('income'));
+    set('sumBudget', pick('budget'));
+    set('sumTiming', pick('timing'));
   }
 
   function showStep(index, { focus = true } = {}) {
@@ -401,11 +474,42 @@
     showStep(0, { focus: false });
   }
 
-  function goToNextStep() {
-    const validate = stepFieldValidators[stepIndex];
+  let intakeOpenedAt = Date.now();
+  intakeModal?.addEventListener('transitionend', () => {}, { once: true });
+  new MutationObserver(() => { if (intakeModal.classList.contains('is-open')) intakeOpenedAt = Date.now(); }).observe(intakeModal || document.body, { attributes: true, attributeFilter: ['class'] });
+  let softWarnedEmail = '';
+  let checkingStep = false;
+  async function goToNextStep() {
+    if (checkingStep) return;
+    const validate = stepFieldValidators[steps[stepIndex]?.dataset.validate];
     if (validate && !validate()) {
       steps[stepIndex].querySelector('.has-error input, .has-error textarea')?.focus();
       return;
+    }
+    if (steps[stepIndex]?.dataset.validate === 'email') {
+      const mailEl = form.querySelector('#email');
+      const v = mailEl.value.trim().toLowerCase();
+      if (looksRandom(v) && softWarnedEmail !== v) {
+        softWarnedEmail = v;
+        showError(mailEl, tr('form.error.email.confirm').replace('{email}', mailEl.value.trim()));
+        mailEl.focus();
+        return;
+      }
+    }
+    // The e-mail domain must really exist (can receive mail).
+    if (steps[stepIndex]?.dataset.validate === 'email') {
+      const el = form.querySelector('#email');
+      const btn = steps[stepIndex].querySelector('.step-next');
+      checkingStep = true;
+      if (btn) { btn.disabled = true; btn.dataset.label = btn.textContent; btn.textContent = '…'; }
+      const ok = await domainReceivesMail(el.value);
+      checkingStep = false;
+      if (btn) { btn.disabled = false; btn.textContent = btn.dataset.label || btn.textContent; }
+      if (!ok) {
+        showError(el, tr('form.error.email.real'));
+        el.focus();
+        return;
+      }
     }
     if (stepIndex < steps.length - 1) {
       stepIndex += 1;
@@ -494,6 +598,22 @@
       } else {
         form.querySelector('.has-error input')?.focus();
       }
+      return;
+    }
+
+    // Bots: a hidden field real people never see, and nobody fills in 12 questions in a few seconds.
+    const trap = form.querySelector('input[name="_gotcha"]');
+    const tooFast = intakeOpenedAt && Date.now() - intakeOpenedAt < 5000;
+    if ((trap && trap.value) || tooFast) {
+      form.reset();
+      stepIndex = 0;
+      showDone(nameField.value.trim().split(/\s+/)[0]);
+      return;
+    }
+    if (isDisposable(emailField.value)) {
+      showError(emailField, t('form.error.email.temp'));
+      const bad = steps.findIndex((st) => st.classList.contains('has-error'));
+      if (bad >= 0) { stepIndex = bad; showStep(stepIndex); }
       return;
     }
 
