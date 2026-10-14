@@ -1,0 +1,110 @@
+/* Services as an Apple-style shelf: equal large cards with the photo full bleed, the words on the photo,
+   one tap target per card, and a calm sideways scroll with snap. Overrides the older strip in styles.css. */
+
+.services .section-title { max-width: none; font-size: clamp(34px, 4.8vw, 66px); margin-bottom: var(--space-4); }
+.services .shelf-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: var(--space-4); }
+.services .shelf-head .section-title { margin-bottom: 0; }
+.shelf-nav { display: flex; gap: 10px; flex: none; }
+.shelf-nav button {
+  width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--color-border);
+  background: rgba(245, 241, 230, 0.06); color: var(--color-ink); display: grid; place-items: center; cursor: pointer;
+  transition: background 300ms var(--ease-out), border-color 300ms var(--ease-out), opacity 300ms var(--ease-out), transform 200ms var(--ease-out);
+}
+.shelf-nav button:hover:not(:disabled) { background: rgba(245, 241, 230, 0.14); border-color: var(--color-gold-dim); }
+.shelf-nav button:active:not(:disabled) { transform: scale(0.94); }
+.shelf-nav button:disabled { opacity: 0.3; cursor: default; }
+.shelf-nav svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.services .service-grid {
+  display: flex; flex-wrap: nowrap; gap: 20px;
+  overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory; scroll-padding-inline: 0;
+  padding: 4px 0 28px;
+  margin-right: calc(50% - 50vw); padding-right: calc(50vw - 50%);   /* the last cards bleed off the right edge */
+  background: none; border: 0;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.services .service-grid::-webkit-scrollbar { display: none; }
+
+.services .service-grid .service-card:not(.service-card--cta),
+.services .service-grid .service-card--cta {
+  flex: 0 0 min(80vw, 400px);
+  height: clamp(460px, 66vh, 580px);
+  position: relative; display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 30px; border: 0; border-radius: 28px; overflow: hidden; isolation: isolate;
+  scroll-snap-align: start; background: #16232E;
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.7);
+}
+.services .service-grid .service-card:hover { background: #16232E; }
+
+.services .service-grid .service-card:not(.service-card--cta) .service-visual {
+  position: absolute; inset: 0; width: 100%; height: 100%; aspect-ratio: auto; margin: 0; border-radius: 0; z-index: -2;
+}
+.services .service-grid .service-visual::before, .services .service-grid .service-visual::after { display: none; }
+.services .service-grid .service-visual-photo { transition: transform 1200ms cubic-bezier(0.16, 1, 0.3, 1); transform: scale(1.02); }
+.services .service-grid .service-card:hover .service-visual-photo { transform: scale(1.07); }
+.services .service-grid .service-card:not(.service-card--cta)::before {      /* the dark foot that carries the words */
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(9, 15, 21, 0) 30%, rgba(9, 15, 21, 0.6) 58%, rgba(9, 15, 21, 0.94) 100%);
+}
+.services .service-grid .service-card:not(.service-card--cta) > h3 {
+  margin: 0 0 10px; padding: 0; font-family: var(--font-display); font-weight: 500; font-size: clamp(28px, 2.6vw, 36px); line-height: 1.05; color: #fff;
+}
+.services .service-grid .service-card:not(.service-card--cta) > p {
+  margin: 0 0 22px; max-width: 32ch; font-size: 14px; line-height: 1.6; color: rgba(255, 255, 255, 0.84);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.services .service-grid .service-card:not(.service-card--cta) > .service-link {
+  display: inline-flex; align-items: center; align-self: flex-start; gap: 10px; margin: 0; padding: 10px 18px 10px 20px;
+  border-radius: 999px; background: rgba(255, 255, 255, 0.92); color: #16232E; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap;
+  transition: background 300ms var(--ease-out), transform 300ms var(--ease-out);
+}
+.services .service-grid .service-card:hover > .service-link { background: #fff; transform: translateX(2px); }
+.services .service-grid .service-card:not(.service-card--cta) > .service-link::after { content: ''; position: absolute; inset: 0; z-index: 2; }   /* the whole card is the tap target */
+
+.services .service-grid .service-card--cta {
+  justify-content: space-between; background: linear-gradient(160deg, #1d2f3d 0%, #0f1b24 70%); border: 1px solid var(--color-border);
+}
+.services .service-grid .service-card--cta .service-cta-text h3 { font-family: var(--font-display); font-weight: 500; font-size: clamp(28px, 2.6vw, 36px); line-height: 1.05; margin: 0 0 12px; }
+.services .service-grid .service-card--cta .service-cta-text p { max-width: 28ch; font-size: 14px; line-height: 1.6; color: var(--color-ink-muted); margin: 0; }
+
+@media (max-width: 760px) {
+  .services .shelf-head { align-items: flex-start; flex-direction: column; }
+  .shelf-nav { display: none; }
+  .services .service-grid { gap: 14px; margin-left: 0; padding-left: 0; scroll-padding-inline: 0; }
+  .services .service-grid .service-card:not(.service-card--cta), .services .service-grid .service-card--cta { flex-basis: 82vw; height: clamp(440px, 64vh, 520px); padding: 24px; border-radius: 24px; }
+}
+@media (prefers-reduced-motion: reduce) { .services .service-grid .service-visual-photo { transition: none; } }
+
+/* ---- take over from the older strip rules (entrance effects, hidden text, lifted hover, muted mobile text) ---- */
+.services .service-grid .service-visual.fx-wipe { clip-path: none; }
+html.fx-on .services .service-grid .service-card:not(.service-card--cta) > h3,
+html.fx-on .services .service-grid .service-card:not(.service-card--cta) > .service-link { opacity: 1; transform: none; transition-delay: 0s; }
+.services .service-grid .service-card:not(.service-card--cta):hover { transform: none; }
+.services .service-grid .service-card:not(.service-card--cta)::before { display: block; }
+.services .service-grid .service-card:not(.service-card--cta) > h3,
+.services .service-grid .service-card:not(.service-card--cta) > p { position: static; grid-column: auto; grid-row: auto; padding: 0; opacity: 1; transform: none; text-shadow: none; pointer-events: auto; }
+.services .service-grid .service-card:not(.service-card--cta) > p { display: -webkit-box; color: rgba(255, 255, 255, 0.84); margin-top: 0; }
+.services .service-grid .service-card:not(.service-card--cta) > .service-link { grid-column: auto; grid-row: auto; background-image: none; }
+.services .service-grid .service-visual-photo, .services .service-grid .service-card:hover .service-visual-photo { transform: scale(1.02); }
+.services .service-grid .service-card:hover .service-visual-photo { transform: scale(1.07); }
+.services .service-grid .service-card--cta .btn { align-self: flex-start; }
+
+
+/* ---- motion: the photo drifts against the scroll (parallax) and breathes in on hover ---- */
+.services .service-grid .service-visual-photo,
+.services .service-grid .service-card:hover .service-visual-photo { transform: none; }
+.services .service-grid .service-visual-photo {
+  scale: 1.16; translate: var(--par, 0px) 0;
+  transition: scale 1400ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: translate;
+}
+.services .service-grid .service-card:hover .service-visual-photo { scale: 1.24; }
+.services .service-grid .service-card > h3, .services .service-grid .service-card > p, .services .service-grid .service-card > .service-link { translate: calc(var(--par, 0px) * -0.18) 0; }
+.services .service-grid .service-card { transition: box-shadow 500ms var(--ease-out), translate 500ms var(--ease-out); }
+.services .service-grid .service-card:hover { box-shadow: 0 40px 70px -28px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(216, 189, 124, 0.18); }
+@media (prefers-reduced-motion: reduce) {
+  .services .service-grid .service-visual-photo { scale: 1.04; translate: none; will-change: auto; }
+  .services .service-grid .service-card > h3, .services .service-grid .service-card > p, .services .service-grid .service-card > .service-link { translate: none; }
+}

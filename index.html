@@ -74,6 +74,7 @@
 })();
 </script>
 <link rel="stylesheet" href="window-hero.css">
+<link rel="stylesheet" href="shelf.css">
 
 <link rel="stylesheet" href="phone-demo.css">
 <link rel="stylesheet" href="motion.css"><script src="motion.js" defer></script>
@@ -268,7 +269,13 @@
   <section class="services" id="diensten">
     <div class="section-inner">
       <p class="eyebrow reveal" data-i18n="services.eyebrow">ONZE DIENSTEN</p>
-      <h2 class="section-title reveal" data-i18n="services.title">Vier domeinen. Eén aanspreekpunt.</h2>
+      <div class="shelf-head">
+        <h2 class="section-title reveal" data-i18n="services.title">Vier domeinen. Eén aanspreekpunt.</h2>
+        <div class="shelf-nav" aria-label="Diensten">
+          <button type="button" id="shelfPrev" aria-label="Vorige" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <button type="button" id="shelfNext" aria-label="Volgende"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        </div>
+      </div>
 
       <div class="service-grid">
 
@@ -1007,6 +1014,6 @@
 <script src="float.js" defer></script>
 <script src="script.js" defer></script><script src="fx.js" defer></script><script src="live-feed.js" defer></script><script src="spiral.js" defer></script><script src="phone-demo.js" defer></script><script src="mobile-polish.js" defer></script><script src="hero-globe.js" defer></script><script src="https://cdn.jsdelivr.net/npm/lenis@1.2.3/dist/lenis.min.js" defer></script><script src="window-hero.js" defer></script><script type="module" src="empty-legs.js"></script><script type="module" src="instagram.js"></script>
 <script src="keep-playing.js" defer></script>
-<script src="protect.js" defer></script>
+<script src="shelf.js" defer></script><script src="protect.js" defer></script>
 </body>
 </html>
