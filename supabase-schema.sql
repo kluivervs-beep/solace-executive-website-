@@ -2530,3 +2530,78 @@ alter table public.invoices
   add column if not exists checkout_url text,
   add column if not exists paid_at timestamptz;
 create index if not exists invoices_revolut_order_idx on public.invoices (revolut_order_id) where revolut_order_id is not null;
+-- Push notifications for invoices.
+-- 1) A new invoice: the member gets "Nieuwe factuur" (opens the payment screen).
+-- 2) An invoice that was PAID through the app (paid_at is set by revolut-webhook / revolut-pay):
+--    the member gets a receipt and every admin gets "Betaling ontvangen".
+--    A manual "Markeer betaald" in the dashboard does not set paid_at, so it stays quiet.
+
+create or replace function public.notify_new_invoice()
+returns trigger as $$
+declare
+  tok text;
+  amt text;
+begin
+  select push_token into tok from public.profiles where id = new.member_id;
+  if tok is null then return new; end if;
+  amt := (case when new.currency = 'EUR' then '€ ' else new.currency || ' ' end) || replace(to_char(new.amount, 'FM999G990D00'), 'G', '.');
+  amt := replace(amt, '.', ',');
+  perform net.http_post(
+    url := 'https://weiihajterqholxppgsl.supabase.co/functions/v1/send-push',
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'apikey', 'sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr',
+      'Authorization', 'Bearer sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr'
+    ),
+    body := jsonb_build_object(
+      'push_token', tok,
+      'title', 'Nieuwe factuur',
+      'body', left(new.description, 90) || ' · ' || amt,
+      'data', jsonb_build_object('type', 'invoice', 'invoiceId', new.id)
+    )
+  );
+  return new;
+end;
+$$ language plpgsql security definer set search_path = public, net;
+
+drop trigger if exists notify_new_invoice_trigger on public.invoices;
+create trigger notify_new_invoice_trigger
+  after insert on public.invoices
+  for each row execute function public.notify_new_invoice();
+
+create or replace function public.notify_invoice_paid()
+returns trigger as $$
+declare
+  mtok text;
+  mname text;
+  amt text;
+  admin_row record;
+begin
+  if not (new.status = 'paid' and old.status is distinct from 'paid' and new.paid_at is not null) then
+    return new;
+  end if;
+  select push_token, coalesce(nullif(full_name, ''), 'Een lid') into mtok, mname from public.profiles where id = new.member_id;
+  amt := (case when new.currency = 'EUR' then '€ ' else new.currency || ' ' end) || replace(to_char(new.amount, 'FM999G990D00'), 'G', '.');
+  amt := replace(amt, '.', ',');
+  if mtok is not null then
+    perform net.http_post(
+      url := 'https://weiihajterqholxppgsl.supabase.co/functions/v1/send-push',
+      headers := jsonb_build_object('Content-Type', 'application/json', 'apikey', 'sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr', 'Authorization', 'Bearer sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr'),
+      body := jsonb_build_object('push_token', mtok, 'title', 'Betaling ontvangen', 'body', 'Dank je wel. ' || amt || ' is betaald.', 'data', jsonb_build_object('type', 'invoice_paid', 'invoiceId', new.id))
+    );
+  end if;
+  for admin_row in select push_token from public.profiles where is_admin and push_token is not null and id <> new.member_id loop
+    perform net.http_post(
+      url := 'https://weiihajterqholxppgsl.supabase.co/functions/v1/send-push',
+      headers := jsonb_build_object('Content-Type', 'application/json', 'apikey', 'sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr', 'Authorization', 'Bearer sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr'),
+      body := jsonb_build_object('push_token', admin_row.push_token, 'title', 'Betaling ontvangen', 'body', mname || ' · ' || amt || ' · ' || left(new.description, 60), 'data', jsonb_build_object('type', 'invoice_paid_staff', 'memberId', new.member_id))
+    );
+  end loop;
+  return new;
+end;
+$$ language plpgsql security definer set search_path = public, net;
+
+drop trigger if exists notify_invoice_paid_trigger on public.invoices;
+create trigger notify_invoice_paid_trigger
+  after update on public.invoices
+  for each row execute function public.notify_invoice_paid();

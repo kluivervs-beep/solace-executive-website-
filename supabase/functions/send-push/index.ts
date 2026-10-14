@@ -46,6 +46,8 @@ Deno.serve(async (req) => {
       .from('profiles')
       .select('id, notification_prefs')
       .eq('push_token', push_token)
+      .order('id')
+      .limit(1)
       .maybeSingle();
     if (!owner) {
       return new Response(JSON.stringify({ error: 'Unknown push_token' }), {
