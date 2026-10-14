@@ -101,6 +101,19 @@
     });
   }
 
+  /* Calls done() once the cloud video is playing and its time is advancing (or after a safety wait). */
+  function whenVideoMoving(done) {
+    var finished = false;
+    function fin() { if (finished) return; finished = true; clearInterval(iv); clearTimeout(cap); done(); }
+    var cap = setTimeout(fin, 4500);
+    if (!video || calm) { fin(); return; }
+    var start = video.currentTime;
+    var iv = setInterval(function () {
+      if (video.paused) { var p = video.play(); if (p && p.catch) p.catch(function () {}); }
+      if (video.readyState >= 3 && !video.paused && video.currentTime > Math.max(0.25, start + 0.15)) fin();
+    }, 120);
+  }
+
   var blurIn = { opacity: 0, filter: 'blur(14px)', y: 14 };
   var sharp = { opacity: 1, filter: 'blur(0px)', y: 0, ease: 'power3.out' };
   var built = false;
@@ -124,6 +137,8 @@
       .fromTo('.wh-win', { scale: 0.965 }, { scale: 1, duration: 1.9, ease: 'power2.out' }, 0.3)
       .from('.wh-tag', { opacity: 0, duration: 1.0, ease: 'power1.out' }, 1.1)
       .to('.wh-tag', { opacity: 0, duration: 0.5, ease: 'power1.in' }, 3.0)
+      /* the shade only lifts once the clouds are really moving, so the window never opens on a frozen picture */
+      .addPause(3.05, function () { whenVideoMoving(function () { tl.resume(); }); })
       .to('.wh-shade', { yPercent: -102, duration: 1.6, ease: 'power2.inOut' }, 3.1)
       .fromTo('#whA', blurIn, Object.assign({ duration: 1.1 }, sharp), 5.4)
       .fromTo('#whB', blurIn, Object.assign({ duration: 1.1 }, sharp), 5.8)
@@ -131,12 +146,12 @@
       .fromTo('#whPill', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 6.5);
     /* the logo comes in with the page, right after the shade has opened */
     if (brandOk) tl.fromTo('#whBrand', { autoAlpha: 0 }, { autoAlpha: 1, duration: 1.0, ease: 'power2.out' }, 5.3);
-    var skip = function (e) { if (e) e.preventDefault(); if (tl.progress() < 1) tl.progress(1); };
+    var skip = function (e) { if (e) e.preventDefault(); if (tl.progress() < 1) { tl.paused(false); tl.progress(1); } };
     var skipEl = document.getElementById('whSkip');
     if (skipEl) skipEl.addEventListener('click', skip);
     window.addEventListener('keydown', function (e) { if (e.key === 'Escape') skip(); });
     /* Never block the page: after 14 s everything is usable, whatever happened. */
-    setTimeout(function () { if (tl.progress() < 1) tl.progress(1); }, 14000);
+    setTimeout(function () { if (tl.progress() < 1) { tl.paused(false); tl.progress(1); } }, 14000);
   }
 
   /* ------------------------------------------------------------------
