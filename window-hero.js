@@ -205,7 +205,13 @@
   /* test hooks for stills: ?t=3.2 shows the opening at that second */
   if (q.get('t') !== null && tl) { tl.pause(); tl.time(parseFloat(q.get('t'))); }
   if (q.get('sp') !== null) { if (tl) tl.progress(1); else buildStory(); }
-  if (!intro) buildStory();
+  if (!intro) {
+    /* No opening this time (back button, a #link, reduced motion): the window must already be open,
+       otherwise the shade would stay down for good. */
+    gsap.set('.wh-shade', { yPercent: -102 });
+    gsap.set('.wh-tag', { opacity: 0 });
+    buildStory();
+  }
   /* a visit that starts below the hero (reload, anchor link) gets the header at once */
   window.addEventListener('load', function () { if (window.scrollY > hero.offsetHeight * 2) setChrome(true, true); });
 })();
