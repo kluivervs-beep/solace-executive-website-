@@ -1900,10 +1900,23 @@
   // invitation code on the "Request access" screen before they have an
   // account. Approving here is informational only, staff still creates
   // the actual login (Supabase Authentication) by hand.
+  function requestDetailHtml(r) {
+    const i = r.intake || {};
+    const bits = [
+      r.city && escapeHtml(r.city),
+      i.company && escapeHtml(i.company + (i.role ? ' (' + i.role + ')' : '')),
+      i.income && i.income !== 'liever-niet' && 'inkomen ' + escapeHtml(i.income),
+      r.looking_for && escapeHtml(r.looking_for),
+      i.referrer && 'via ' + escapeHtml(i.referrer),
+      i.message && '&ldquo;' + escapeHtml(i.message) + '&rdquo;',
+    ].filter(Boolean);
+    return bits.length ? '<div class="playbook-item-desc">' + bits.join(' &middot; ') + '</div>' : '';
+  }
+
   async function loadAccessRequests() {
     const { data: rows, error } = await supabase
       .from('access_requests')
-      .select('id, full_name, email, phone, referral_code, status, created_at')
+      .select('id, full_name, email, phone, referral_code, status, created_at, city, looking_for, source, intake')
       .order('created_at', { ascending: false });
 
     const listEl = document.getElementById('accessRequestsList');
@@ -1925,7 +1938,8 @@
       row.innerHTML = `
         <div>
           <div class="playbook-item-title">${escapeHtml(r.full_name)} <span class="playbook-item-tag">${STATUS_LABEL[r.status] || r.status}</span></div>
-          <div class="playbook-item-desc">${escapeHtml(r.email)}${r.phone ? ' &middot; ' + escapeHtml(r.phone) : ''} &middot; code ${escapeHtml(r.referral_code || '-')} &middot; ${when}</div>
+          <div class="playbook-item-desc">${escapeHtml(r.email)}${r.phone ? ' &middot; ' + escapeHtml(r.phone) : ''} &middot; ${r.source === 'website' ? 'website' : 'app'} &middot; code ${escapeHtml(r.referral_code || '-')} &middot; ${when}</div>
+          ${requestDetailHtml(r)}
         </div>
         <div class="playbook-item-actions">
           ${r.status === 'pending' ? '<button type="button" class="btn btn-outline btn-small" data-action="approve">Goedkeuren</button><button type="button" class="btn btn-outline btn-small" data-action="reject">Afwijzen</button>' : ''}

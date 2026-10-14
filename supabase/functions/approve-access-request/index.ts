@@ -20,6 +20,10 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!;
 const REDIRECT_TO = 'https://solaceexecutive.com/reset-password.html';
+// Where members download the app (App Store or TestFlight link). Set it as
+// the APP_DOWNLOAD_URL secret once the app is available; until then the
+// mail simply leaves the download block out.
+const APP_DOWNLOAD_URL = Deno.env.get('APP_DOWNLOAD_URL') ?? '';
 
 // generateLink's own action_link always points at Supabase's own
 // /auth/v1/verify endpoint, which -- if opened directly -- consumes the
@@ -93,7 +97,9 @@ function buildEmailHtml(name: string, actionLink: string, isNewAccount: boolean,
         <div style="${sans}font-size:11px;letter-spacing:0.12em;color:#7F8C95;margin-top:8px;">LID SINDS ${since.toUpperCase()}</div>
       </div>
       <a href="${actionLink}" style="display:block;background:#B4923D;color:#1B1405;text-decoration:none;padding:15px 24px;border-radius:12px;font-size:12px;font-weight:bold;letter-spacing:0.22em;text-align:center;${sans}">${cta.toUpperCase()}</a>
-      <p style="${sans}font-size:12px;line-height:1.6;color:#8F8777;margin:14px 0 28px;text-align:center;">Deze link is eenmalig en persoonlijk. Deel hem met niemand.</p>
+      <p style="${sans}font-size:12px;line-height:1.6;color:#8F8777;margin:14px 0 ${APP_DOWNLOAD_URL ? '18px' : '28px'};text-align:center;">Deze link is eenmalig en persoonlijk. Deel hem met niemand.</p>
+      ${APP_DOWNLOAD_URL ? `<p style="${serif}font-size:16px;line-height:1.7;color:#2A3742;margin:0 0 14px;">Daarna haalt u er alles uit in de app. Download hem hier, en log in met het e-mailadres hierboven.</p>
+      <a href="${escapeHtml(APP_DOWNLOAD_URL)}" style="display:block;border:1px solid #B4923D;color:#8A6D2B;text-decoration:none;padding:13px 24px;border-radius:12px;font-size:12px;font-weight:bold;letter-spacing:0.22em;text-align:center;margin:0 0 28px;${sans}">DOWNLOAD DE APP</a>` : ''}
       <p style="${serif}font-size:16px;line-height:1.7;color:#2A3742;margin:0 0 6px;">Het is een eer u te mogen verwelkomen.</p>
       <img src="${SITE}/assets/signature/kluiver-signature.png" width="200" alt="Kluiver van Spronsen" style="display:block;border:0;height:auto;max-width:200px;margin:12px 0 4px 0;">
       <div style="${serif}font-size:16px;color:#16232E;">Kluiver van Spronsen</div>

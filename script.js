@@ -453,6 +453,49 @@
     focusable?.focus({ preventScroll: true });
   }
 
+  // The mail via Formspree stays the full record. The same application also
+  // goes into access_requests so it can be approved from the dashboard or
+  // the team app with one tap, like an application from the app. Best
+  // effort: a failure here never blocks the thank-you screen.
+  const SB_URL = 'https://weiihajterqholxppgsl.supabase.co/rest/v1/access_requests';
+  const SB_KEY = 'sb_publishable_RpQkAm1CWbmYtswpnye6zA_DBpJ7vTr';
+  function buildAccessRequestRow(fd) {
+    const get = (k) => String(fd.get(k) || '').trim();
+    const services = fd.getAll('services').map(String);
+    const summary = [
+      services.length ? `Interesse: ${services.join(', ')}` : '',
+      get('frequency') && `Frequentie: ${get('frequency')}`,
+      get('budget') && get('budget') !== 'weet-ik-niet' ? `Budget: ${get('budget')}` : '',
+      get('timing') && `Wanneer: ${get('timing')}`,
+    ].filter(Boolean).join('. ');
+    const intake = {};
+    ['company', 'role', 'services', 'frequency', 'income', 'budget', 'timing', 'referrer', 'message', 'referral_source'].forEach((k) => {
+      const v = k === 'services' ? services : get(k);
+      if (Array.isArray(v) ? v.length : v) intake[k] = v;
+    });
+    intake.lang = (document.documentElement.lang || 'nl').slice(0, 2);
+    return {
+      id: (crypto.randomUUID && crypto.randomUUID()) || undefined,
+      full_name: get('name').slice(0, 120),
+      email: get('email').slice(0, 200),
+      phone: get('phone').slice(0, 40) || null,
+      city: get('region').slice(0, 120) || null,
+      looking_for: summary.slice(0, 500) || null,
+      source: 'website',
+      intake,
+    };
+  }
+  function saveAccessRequest(row) {
+    try {
+      fetch(SB_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, Prefer: 'return=minimal' },
+        body: JSON.stringify(row),
+        keepalive: true,
+      }).then((r) => { if (!r.ok) console.warn('Solace: access request not stored', r.status); }).catch(() => {});
+    } catch (e) { /* the mail already went out */ }
+  }
+
   // Terminal state after a successful send: thank-you + app teaser.
   function showDone(firstName) {
     form.classList.add('is-done');
@@ -622,13 +665,16 @@
     submitBtn.querySelector('.btn-label').textContent = t('form.submitting');
     formErrorMsg.hidden = true;
 
+    const fd = new FormData(form);
+    const requestRow = buildAccessRequestRow(fd);
     fetch(form.action, {
       method: 'POST',
-      body: new FormData(form),
+      body: fd,
       headers: { Accept: 'application/json' },
     })
       .then((response) => {
         if (!response.ok) throw new Error(`Formspree responded with ${response.status}`);
+        saveAccessRequest(requestRow);
         const firstName = nameField.value.trim().split(/\s+/)[0];
         form.reset();
         stepIndex = 0;
