@@ -6,8 +6,8 @@
 
   const dict = {
     nl: {
-      'meta.title': 'Solace Executive | Executive Concierge',
-      'meta.description': 'Solace Executive: besloten conciergedienst voor privévervoer, private jets, jachten en luxegoederen.',
+      'meta.title': 'Solace Executive | Private concierge Amsterdam',
+      'meta.description': 'Besloten conciergedienst in Amsterdam voor privévervoer, private jets, jachten, villa's op Ibiza en personal shopping. Lidmaatschap op uitnodiging.',
       'a11y.skip': 'Ga naar hoofdinhoud',
       'nav.services': 'Diensten',
       'nav.network': 'Netwerk',
@@ -762,8 +762,8 @@
       'dash.rewards.teaser.body': 'We werken achter de schermen aan een nieuw beloningsprogramma voor leden: punten sparen bij elke aanvraag en inwisselen voor exclusieve extra’s. Zodra het klaar is, hoort u het als eerste, hier en per e-mail.',
     },
     en: {
-      'meta.title': 'Solace Executive | Executive Concierge',
-      'meta.description': 'Solace Executive: a private concierge service for executive transport, private jets, yachts and curated luxury goods.',
+      'meta.title': 'Solace Executive | Private concierge Amsterdam',
+      'meta.description': 'Private concierge service in Amsterdam for executive transport, private jets, yachts, villas in Ibiza and personal shopping. Membership by invitation.',
       'a11y.skip': 'Skip to main content',
       'nav.services': 'Services',
       'nav.network': 'Network',
