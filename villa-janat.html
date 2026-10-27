@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Villa Janat | Solace Executive</title>
+<title data-i18n="janat.title">Villa Janat | Solace Executive</title>
 <meta name="description" content="Loop door Villa Janat in Marrakech: een 3D-rondgang door buiten, beneden en de slaapkamers, met alle foto's.">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0F1B24">
@@ -34,6 +34,11 @@ button{font-family:inherit;color:inherit}
 .back:hover{opacity:1}
 .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:20px;letter-spacing:.06em}
 .brand img{width:30px;height:30px}
+.right{display:flex;align-items:center;gap:18px}
+.lang-switch{display:flex;gap:2px;border:1px solid rgba(245,241,230,.22);border-radius:999px;padding:3px;background:rgba(15,27,36,.3);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.lang-btn{font:500 11px/1 var(--sans);letter-spacing:.14em;padding:8px 11px;border:0;border-radius:999px;background:transparent;color:var(--muted);cursor:pointer}
+.lang-btn.is-active{background:var(--gold-light);color:#1B1405}
+.lang-btn:focus-visible{outline:2px solid var(--gold-light);outline-offset:2px}
 .info{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:0 24px calc(env(safe-area-inset-bottom) + 26px);
   display:grid;grid-template-columns:minmax(0,1fr) minmax(0,auto);align-items:end;gap:24px;max-width:1360px;margin:0 auto}
 .eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-light);margin-bottom:10px}
@@ -108,22 +113,22 @@ h1{font-family:var(--display);font-weight:500;font-size:clamp(40px,7vw,84px);lin
   <div class="shade"></div>
 
   <div class="top">
-    <a class="back" href="villas.html" aria-label="Terug naar de villa's">&larr; Villa's</a>
-    <a class="brand" href="index.html"><img src="assets/icons/monogram.svg" alt=""><span>Solace Executive</span></a>
+    <a class="back" href="villas.html"><span aria-hidden="true">&larr;</span> <span data-i18n="janat.back">Villa's</span></a>
+    <div class="right"><div class="lang-switch" role="group" aria-label="Taal / Language"><button type="button" class="lang-btn" data-lang="nl">NL</button><button type="button" class="lang-btn" data-lang="en">EN</button></div><a class="brand" href="index.html"><img src="assets/icons/monogram.svg" alt=""><span>Solace Executive</span></a></div>
   </div>
 
   <div class="info">
     <div>
-      <p class="eyebrow">Marrakech</p>
+      <p class="eyebrow" data-i18n="janat.eyebrow">Marrakech</p>
       <h1>Villa Janat</h1>
       <p class="scene" aria-live="polite"><b id="num">1</b><span id="label">Straatzijde</span><small id="total"></small></p>
-      <p class="hint" id="hint">Beweeg uw muis of sleep om rond te kijken.</p>
+      <p class="hint" id="hint" data-i18n="janat.hint">Beweeg uw muis of sleep om rond te kijken.</p>
     </div>
     <div class="actions">
       <div class="groups" id="groups" role="group" aria-label="Deel van de villa"></div>
       <div class="dots" id="dots" role="group" aria-label="Ruimtes"></div>
       <div class="btnrow">
-        <button class="btn" id="prev" type="button">Terug</button>
+        <button class="btn" id="prev" type="button" data-i18n="janat.prev">Terug</button>
         <button class="btn primary" id="next" type="button">Loop door</button>
       </div>
     </div>
@@ -133,13 +138,13 @@ h1{font-family:var(--display);font-weight:500;font-size:clamp(40px,7vw,84px);lin
 </section>
 
 <section class="gallery" id="fotos" aria-labelledby="gh">
-  <p class="eyebrow">Marrakech</p>
-  <h2 id="gh">Alle foto's van Villa Janat</h2>
-  <p class="lead">Klik op een foto om hem groot te bekijken. Met de pijltjestoetsen of door te vegen loopt u door de hele serie.</p>
+  <p class="eyebrow" data-i18n="janat.eyebrow">Marrakech</p>
+  <h2 id="gh" data-i18n="janat.gal.title">Alle foto's van Villa Janat</h2>
+  <p class="lead" data-i18n="janat.gal.lead">Klik op een foto om hem groot te bekijken. Met de pijltjestoetsen of door te vegen loopt u door de hele serie.</p>
   <div class="g-grid" id="grid"></div>
 </section>
 </main>
-<footer class="foot">Solace Executive &middot; Lidmaatschap op aanvraag &middot; <a href="index.html#top">Terug naar de website</a></footer>
+<footer class="foot"><span data-i18n="janat.foot">Solace Executive &middot; Lidmaatschap op aanvraag</span> &middot; <a href="index.html#top" data-i18n="janat.foot.link">Terug naar de website</a></footer>
 
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Foto bekijken">
   <button class="x" id="lbx" type="button" aria-label="Sluiten">&times;</button>
@@ -149,6 +154,7 @@ h1{font-family:var(--display);font-weight:500;font-size:clamp(40px,7vw,84px);lin
   <div class="c" id="lbc"></div>
 </div>
 
+<script src="i18n.js"></script>
 <script>
 (function () {
   var BASE = 'assets/photos/villas/villa-janat/';
@@ -158,7 +164,11 @@ h1{font-family:var(--display);font-weight:500;font-size:clamp(40px,7vw,84px);lin
   var META = null, SCENES = [], GROUPS = [];
   var cur = 0, nextIdx = 0, tAnim = 1, DUR = 1.7, busy = false, visible = true, lbOpen = false;
   var px = 0, py = 0, tx = 0, ty = 0, dragging = false, lastX = 0, lastY = 0;
-  var gl = null, A = null, B = null, ready = false, go = function () {};
+  var gl = null, A = null, B = null, ready = false, go = function () {}, shown = 0;
+  function EN() { return !!(window.SolaceI18n && window.SolaceI18n.lang === 'en'); }
+  function tr(k, fb) { return (window.SolaceI18n && window.SolaceI18n.t(k)) || fb; }
+  function sLabel(s) { return EN() ? s.e : s.t; }
+  function gLabel(s) { return EN() ? s.ge : s.g; }
 
   fetch(BASE + 'tour.json').then(function (r) { return r.json(); }).then(function (m) {
     META = m; SCENES = m.tour;
@@ -169,7 +179,7 @@ h1{font-family:var(--display);font-weight:500;font-size:clamp(40px,7vw,84px);lin
   // ---------------- tour UI ----------------
   function initTour() {
     GROUPS.forEach(function (g, gi) {
-      var b = document.createElement('button'); b.type = 'button'; b.textContent = g.n; b.dataset.g = gi;
+      var b = document.createElement('button'); b.type = 'button'; b.dataset.g = gi;
       b.addEventListener('click', function () { go(g.first); });
       $('groups').appendChild(b);
     });
@@ -182,23 +192,25 @@ h1{font-family:var(--display);font-weight:500;font-size:clamp(40px,7vw,84px);lin
       if (e.key === 'ArrowLeft') go(Math.max(0, cur - 1));
     });
     setUI(0);
+    new MutationObserver(function () { setUI(shown); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
     initGL();
   }
   function setUI(i) {
     var s = SCENES[i], gi = 0;
     GROUPS.forEach(function (g, k) { if (g.n === s.g) gi = k; });
+    shown = i;
     $('num').textContent = i + 1;
-    $('label').textContent = s.t;
-    Array.prototype.forEach.call($('groups').children, function (b, k) { b.setAttribute('aria-pressed', k === gi ? 'true' : 'false'); });
+    $('label').textContent = sLabel(s);
+    Array.prototype.forEach.call($('groups').children, function (b, k) { b.setAttribute('aria-pressed', k === gi ? 'true' : 'false'); b.textContent = gLabel(SCENES[GROUPS[k].first]); });
     var d = $('dots'); d.innerHTML = '';
     GROUPS[gi].ids.forEach(function (id) {
-      var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', SCENES[id].t);
+      var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', sLabel(SCENES[id]));
       b.setAttribute('aria-current', id === i ? 'true' : 'false');
       b.addEventListener('click', function () { go(id); });
       d.appendChild(b);
     });
     $('prev').disabled = i === 0;
-    $('next').textContent = i === SCENES.length - 1 ? 'Opnieuw' : 'Loop door';
+    $('next').textContent = i === SCENES.length - 1 ? tr('janat.again', 'Opnieuw') : tr('janat.next', 'Loop door');
   }
 
   // ---------------- WebGL ----------------
@@ -324,8 +336,8 @@ h1{font-family:var(--display);font-weight:500;font-size:clamp(40px,7vw,84px);lin
   function initGallery() {
     var grid = $('grid'), list = META.gallery, idx = 0;
     list.forEach(function (g, i) {
-      var b = document.createElement('button'); b.type = 'button'; b.className = 'g-item'; b.setAttribute('aria-label', 'Foto ' + (i + 1) + ' bekijken');
-      var im = document.createElement('img'); im.loading = 'lazy'; im.decoding = 'async'; im.width = g.w; im.height = g.h; im.alt = 'Villa Janat, foto ' + (i + 1);
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'g-item'; b.setAttribute('aria-label', 'Villa Janat ' + (i + 1));
+      var im = document.createElement('img'); im.loading = 'lazy'; im.decoding = 'async'; im.width = g.w; im.height = g.h; im.alt = 'Villa Janat ' + (i + 1);
       im.src = BASE + 'gallery/' + g.k + '.webp'; b.appendChild(im);
       b.addEventListener('click', function () { open(i); });
       grid.appendChild(b);
@@ -333,7 +345,7 @@ h1{font-family:var(--display);font-weight:500;font-size:clamp(40px,7vw,84px);lin
     var lb = $('lb'), lbi = $('lbi'), lastFocus = null;
     function show(i) {
       idx = (i + list.length) % list.length;
-      lbi.src = BASE + 'gallery/' + list[idx].k + '-l.webp'; lbi.alt = 'Villa Janat, foto ' + (idx + 1);
+      lbi.src = BASE + 'gallery/' + list[idx].k + '-l.webp'; lbi.alt = 'Villa Janat ' + (idx + 1);
       $('lbc').textContent = (idx + 1) + ' / ' + list.length;
       var nx = list[(idx + 1) % list.length]; (new Image()).src = BASE + 'gallery/' + nx.k + '-l.webp';
     }
