@@ -26,7 +26,11 @@ function whatsappHref(villa) {
 }
 
 // Villas that have a 3D walk-through page get a button on their card.
-const TOURS = { 'Villa Janat': 'villa-janat.html' };
+const TOURS = {
+  'Villa Janat': 'villa-tour.html?v=janat',
+  'Villa Nilo': 'villa-tour.html?v=nilo',
+  'Villa Jondal': 'villa-tour.html?v=jondal',
+};
 
 function cardHtml(villa, index) {
   const chips = [];
