@@ -77,6 +77,7 @@ Mensen hebben al een account in de huidige desk-app. Zet ze over naar de nieuwe 
 
 ### 5. Chat
 - Chatrooms voor actieve leden (realtime, bestaat al): The Lounge, Aankomend, Trips.
+- **The Side Quest** (extra room, alternatief: "Extra Muros"): voor kleine uitstapjes buiten de officiële events. Een lid plaatst een plan ("Zaterdag wijnbar in de Pijp, wie gaat mee?") met plek, tijd en max. aantal personen; anderen reageren "Ik ga mee". Zo neem je een paar leden mee. Zonder ingewikkeld: een bericht met een "Ik ga mee"-knop en teller is genoeg. Ondertitel: "Ergens heen? Neem een paar leden mee."
 - **Private room**: besloten ruimte waar leden met elkaar kunnen chatten. Leden kunnen zelf een privéroom of groepschat maken en alleen uitgenodigde leden zien die. Ook 1-op-1 berichten tussen leden.
 - Behoud melden van berichten en voeg blokkeren van leden toe (App Store-eis).
 
