@@ -69,10 +69,17 @@ Je bouwt **Verum Society**: een besloten members club-app voor iOS (App Store). 
 - **Private room**: besloten ruimte waar leden met elkaar kunnen chatten. Leden kunnen zelf een privéroom of groepschat maken en alleen uitgenodigde leden zien die. Ook 1-op-1 berichten tussen leden.
 - Behoud melden van berichten en voeg blokkeren van leden toe (App Store-eis).
 
-### 6. Admin
-- Leden: activeren/weigeren/wachtlijst/pauzeren, vragenlijst-antwoorden lezen, plekken instellen.
-- Events: aanmaken/bewerken/verwijderen met banner, link, capaciteit, prijs; zien wie komt.
-- Meldingen (reports) lezen en afhandelen.
+### 6. Rollen en beheer
+Drie rollen in `profiles.role`: `member`, `curator`, `admin`. Rechten worden **in de database afgedwongen (RLS)**, niet alleen verborgen in de app.
+
+- **Admin (Kluiver en Keurten, de oprichters)**: alles. Leden activeren/weigeren/wachtlijst/pauzeren, vragenlijst-antwoorden lezen, ledenplekken instellen, meldingen (reports) afhandelen, rollen toewijzen, instellingen, én alles wat de curator kan.
+- **Curator (de event curator, bijv. onze eventdame)**: mag **alleen events** beheren: events aanmaken, bewerken, verwijderen (met banner, link, capaciteit, prijs), **versturen/publiceren** (inclusief de pushmelding naar leden) en zien wie komt (RSVP-lijst). Zij heeft **geen toegang** tot ledenaanvragen, vragenlijst-antwoorden, wachtlijst, plekken, meldingen, rollen of instellingen. In de app ziet zij alleen een tab "Events beheren", niet het volledige beheerpaneel.
+- **Lid**: gewoon gebruiker.
+
+Details:
+- Events krijgen een status `concept` / `gepubliceerd`. De curator kan eerst een concept maken en daarna publiceren; leden zien alleen gepubliceerde events. Bij publiceren gaat de pushmelding uit.
+- Voor events ziet de curator alleen de naam en RSVP-status van aanwezigen, geen verdere profielgegevens.
+- Admin wijst rollen toe in het beheerpaneel. Gebruik `public.is_admin()` en `public.is_curator()` (admin telt ook als curator) in de RLS-policies.
 
 ### 7. Wat Verum uniek maakt (neem mee en bouw in fases)
 Kies zelf een slimme volgorde; deze horen bij een club die "echt" wil zijn:
