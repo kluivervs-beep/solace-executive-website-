@@ -102,5 +102,26 @@ create policy "messages insert" on public.messages for insert
 
 alter publication supabase_realtime add table public.messages;
 
+-- Account verwijderen (App Store-eis): leden verwijderen zichzelf, alles cascade mee
+create function public.delete_my_account() returns void
+language sql security definer set search_path = public, auth as $$
+  delete from auth.users where id = auth.uid();
+$$;
+revoke all on function public.delete_my_account() from public;
+grant execute on function public.delete_my_account() to authenticated;
+
+-- Berichten melden (App Store-eis voor user-generated content)
+create table public.reports (
+  id uuid primary key default gen_random_uuid(),
+  message_id uuid references public.messages on delete cascade,
+  reporter_id uuid references public.profiles on delete cascade,
+  reason text not null default '',
+  created_at timestamptz not null default now()
+);
+alter table public.reports enable row level security;
+create policy "reports insert" on public.reports for insert
+  with check (reporter_id = auth.uid() and public.is_active());
+create policy "reports admin read" on public.reports for select using (public.is_admin());
+
 -- Eerste admin: registreer in de app en voer dan uit:
 -- update public.profiles set role='admin', status='active' where email='jouw@email.nl';
