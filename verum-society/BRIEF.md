@@ -42,14 +42,14 @@ Je bouwt **Verum Society**: een besloten members club-app voor iOS (App Store). 
 #### Welkom na acceptatie (eenmalig)
 - Zodra een admin een lid activeert: **één keer** een korte pushmelding ("Welkom bij Verum") en bij de eerstvolgende opening **één keer** een kort welkomscherm met één knop ("Naar binnen").
 - Eenmalig afdwingen met kolom `welcomed_at` in `profiles` (leeg = nog niet gezien). Geen herhaling bij opnieuw inloggen of op een ander toestel.
-- Het welkomscherm is **kort en persoonlijk**: een welkom van de oprichters ({naam oprichter 1} en Keurten) met één zin over respect. De uitgebreide huisregels staan in de **voorwaarden** (bij aanmelden accepteren, terug te lezen onder Instellingen). Leg vast dat het lid de voorwaarden heeft geaccepteerd, met tijdstip.
+- Het welkomscherm is **kort en persoonlijk**: een welkom van de oprichters (Kluiver en Keurten) met één zin over respect. De uitgebreide huisregels staan in de **voorwaarden** (bij aanmelden accepteren, terug te lezen onder Instellingen). Leg vast dat het lid de voorwaarden heeft geaccepteerd, met tijdstip.
 - Concepttekst (NL), pas gerust aan:
 
   > **Welkom bij Verum, {voornaam}.**
   > Fijn dat je erbij bent. Verum is wat we samen ervan maken, en dat begint bij respect voor elkaar.
   > Geniet ervan.
   >
-  > {naam oprichter 1} en Keurten
+  > Kluiver en Keurten
 
 - Engelse versie:
 
@@ -57,7 +57,7 @@ Je bouwt **Verum Society**: een besloten members club-app voor iOS (App Store). 
   > We are glad you are here. Verum is what we make of it together, and that starts with respect for one another.
   > Enjoy.
   >
-  > {founder 1} and Keurten
+  > Kluiver and Keurten
 
 ### 4. Wachtlijst en schaarste
 - Admin stelt in: **totaal aantal ledenplekken** (bijv. 150) en eventueel per event capaciteit.
