@@ -101,6 +101,13 @@ Kies zelf een slimme volgorde; deze horen bij een club die "echt" wil zijn:
 - Bouw en test: TypeScript moet slagen; test de flow in de browser/simulator. Zet bouwen via EAS klaar voor TestFlight (zie `mobile/README.md`).
 - Raak niets van Solace aan.
 
+### 8b. Privacy en Apple-goedkeuring (eerste keer goed)
+- Lees `APPLE_CHECKLIST.md` en `legal/privacy.nl.md` / `legal/privacy.en.md` (conceptbeleid, vul de [haakjes] in). De webversie toont het beleid publiek op `/privacy`; deploy dat en gebruik die URL als Privacybeleid-URL in App Store Connect. Neem in de app links naar privacybeleid en voorwaarden op bij het aanmaken van een account en onder Instellingen.
+- **Account verwijderen** moet echt **alles** wissen: account, profiel, profielfoto's in Storage, aanvraag, RSVP's, berichten, meldingen. Gebruik `delete_my_account()` in het schema en ruim ook Storage-bestanden op (bijvoorbeeld via een database-trigger of Edge Function). Test dit end-to-end met een echt testaccount.
+- Dieet/allergie is gezondheidsinformatie: vraag uitdrukkelijke toestemming of laat het veld weg.
+- **Controleer eerst wat de Solace-app hiervan al heeft** (verwijderen, melden, privacy-links, review-notities) en neem dat over, verbeter waar nodig, in plaats van opnieuw te bouwen.
+- Lidmaatschap/digitale goederen niet in de app verkopen zonder In-App Purchase. Fysieke events via externe link mag.
+
 ### 9. Eerste fase (MVP) die ik wil zien
 1. Nieuwe repo + overnemen basis van Solace-app (login, instellingen, update-methode).
 2. Strak loginscherm, aanvraag met Typeform-vragen, wachtlijst met plekken-teller.

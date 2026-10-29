@@ -18,7 +18,7 @@ const icons = {
   admin: <path d="M12 3l8 4v6c0 4-3 7-8 8-5-1-8-4-8-8V7z" />,
 };
 
-const PUBLIC = ["/login"];
+const PUBLIC = ["/login", "/privacy"];
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
