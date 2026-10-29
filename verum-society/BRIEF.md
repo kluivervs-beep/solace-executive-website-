@@ -17,6 +17,14 @@ Je bouwt **Verum Society**: een besloten members club-app voor iOS (App Store). 
 ### 0b. Bestaande basic desk-app (referentie)
 Onze huidige, basic webversie staat op https://verumsociety.vercel.app/#/home (saai en niet smooth, maar sommige onderdelen horen wel in de echte app). **Bekijk die eerst** (als je er niet bij kan: laat het me weten, ik plak screenshots of tekst). Haal de belangrijkste functies, schermen en teksten eruit, neem over wat werkt, en maak het strakker en soepeler. Overlap met deze brief: volg deze brief, tenzij de desk-app iets heeft dat hier ontbreekt.
 
+### 0c. Bestaande accounts overzetten
+Mensen hebben al een account in de huidige desk-app. Zet ze over naar de nieuwe app:
+1. **Zoek uit waar de desk-app accounts opslaat** (Supabase, Firebase, eigen database of alleen in de browser). Alleen in de browser = niet over te zetten; dan melden mensen zich opnieuw aan.
+2. Bij een echte database: exporteer naam, e-mail, aanvraagantwoorden en status. Importeer als `profiles` met behoud van status (`active`/`pending`), geef actieve leden een lidnummer. Wachtwoord-hashes alleen importeren als het formaat door Supabase Auth wordt ondersteund (bcrypt); anders stuur elk lid een e-mail "stel je wachtwoord in".
+3. Laat bestaande aanvragers meetellen in de wachtlijst-teller.
+4. **Privacy:** informeer bestaande gebruikers over de nieuwe app, laat ze het privacybeleid en de voorwaarden accepteren en vraag opnieuw uitdrukkelijke toestemming voor allergieën/dieet (Verum DNA). Neem geen gezondheidsgegevens zonder die toestemming mee.
+5. Test de import eerst met een paar testaccounts voor je alle leden verhuist.
+
 ### 1. Ontwerp
 - Mooi, strak en duidelijk. Donker, chic, rustig. Zwart/wijnrood/goud is de huidige richting (zie `mobile/src/theme.ts`).
 - **Loginscherm**: strak en duidelijk. Logo, korte tekst, e-mail + wachtwoord, "Vraag toegang aan". Basis van Solace-login overnemen waar het beter is.
