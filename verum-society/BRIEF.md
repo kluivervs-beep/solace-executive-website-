@@ -14,6 +14,9 @@ Je bouwt **Verum Society**: een besloten members club-app voor iOS (App Store). 
 3. Lees de **Solace-app-repo** en neem de basis over op dezelfde manier: login-flow, instellingen-scherm, build-configuratie, signing en de **update-methode**. Bij Solace pas ik kleine wijzigingen aan en dan herstart de app zichzelf met de update (over-the-air), zonder App Store. Zoek zelf uit hoe dat bij Solace is gebouwd (waarschijnlijk EAS Update/`expo-updates`) en bouw hetzelfde voor Verum. Grote updates gaan via de App Store/TestFlight.
 4. Werk in fases en lever na elke fase iets dat draait. Begin met fase 1 (MVP). Vraag alleen iets als je echt vastzit. Houd antwoorden kort.
 
+### 0b. Bestaande basic desk-app (referentie)
+Onze huidige, basic webversie staat op https://verumsociety.vercel.app/#/home (saai en niet smooth, maar sommige onderdelen horen wel in de echte app). **Bekijk die eerst** (als je er niet bij kan: laat het me weten, ik plak screenshots of tekst). Haal de belangrijkste functies, schermen en teksten eruit, neem over wat werkt, en maak het strakker en soepeler. Overlap met deze brief: volg deze brief, tenzij de desk-app iets heeft dat hier ontbreekt.
+
 ### 1. Ontwerp
 - Mooi, strak en duidelijk. Donker, chic, rustig. Zwart/wijnrood/goud is de huidige richting (zie `mobile/src/theme.ts`).
 - **Loginscherm**: strak en duidelijk. Logo, korte tekst, e-mail + wachtwoord, "Vraag toegang aan". Basis van Solace-login overnemen waar het beter is.
