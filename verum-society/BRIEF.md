@@ -78,7 +78,7 @@ Drie rollen in `profiles.role`: `member`, `curator`, `admin`. Rechten worden **i
 
 Details:
 - Events krijgen een status `concept` / `gepubliceerd`. De curator kan eerst een concept maken en daarna publiceren; leden zien alleen gepubliceerde events. Bij publiceren gaat de pushmelding uit.
-- Voor events ziet de curator alleen de naam en RSVP-status van aanwezigen, geen verdere profielgegevens.
+- Voor events ziet de curator de naam en RSVP-status van aanwezigen en, alleen voor aanwezigen en alleen voor het organiseren (reservering, menu), hun allergieën en dieet uit het Verum DNA. Geen andere profielgegevens.
 - Admin wijst rollen toe in het beheerpaneel. Gebruik `public.is_admin()` en `public.is_curator()` (admin telt ook als curator) in de RLS-policies.
 
 ### 7. Wat Verum uniek maakt (neem mee en bouw in fases)
@@ -94,6 +94,25 @@ Kies zelf een slimme volgorde; deze horen bij een club die "echt" wil zijn:
 - **Partner-voordelen** (restaurants, wijnhuizen, hotels) alleen voor leden.
 - **Concierge-koppeling met Solace** (optioneel, later): leden kunnen via Verum iets regelen (vervoer, villa).
 - **Pushmeldingen** bij nieuw event, plek vrij, bevestigd van wachtlijst.
+
+### 7b. Verum DNA (smaakprofiel, slim rekening houden met leden)
+Elk lid heeft een persoonlijk **DNA-profiel**: wie ben je en wat vind je lekker. Eén keer invullen (in de aanvraag of daarna), altijd aan te passen onder Profiel. Zo kunnen wij bij reserveren en organiseren **snel en zonder rondvragen** rekening houden met iedereen, en voelt het persoonlijk.
+
+- **Veldjes (gestructureerd, met keuzes, geen vrije chaos):**
+  - **Allergieën en intoleranties** (noten, gluten, lactose, schaaldieren, ei, vis, soja, sesam, anders) + ernst (voorkeur / echt allergisch).
+  - **Dieet** (vegetarisch, veganistisch, halal, geen alcohol, geen varken, anders).
+  - **Eten en drinken:** favoriete keukens, wat je niet lust, wijn (rood/wit/bubbels), cocktails, geen alcohol.
+  - **Sfeer en interesses:** muziek, soort avonden (feest, diner, kunst, sport), reizen.
+  - **Praktisch:** plus-one ja/nee, vervoer (zelf rijden), bijzonderheden.
+- **DNA-kaart:** een mooi, strak overzicht in Profiel ("jouw Verum DNA"), met iconen. Voor jezelf, leden zien alleen wat je zelf deelt.
+- **Privacy, belangrijk:** allergieën en dieet kunnen gezondheidsinformatie zijn. Vraag **uitdrukkelijke toestemming** met een aparte schakelaar, uit te zetten wanneer je wilt. Andere leden zien dit **nooit**. Alleen het team ziet het, en alleen voor events waarvoor een lid zich heeft aangemeld (zie hieronder). Verwijderen van account wist ook het DNA.
+- **Slim bij events (voor admin en curator):**
+  - Per event een **Gastenoverzicht**: aantal gasten ("Ik ben erbij") en een samenvatting van allergieën en diëten (bijv. "2x notenallergie (echt allergisch), 3x vegetarisch, 1x geen alcohol"), met namen erbij.
+  - Knop **"Kopieer voor het restaurant"**: een nette tekst met aantal personen en alle bijzonderheden, om te mailen of appen.
+  - Een **waarschuwing** bij het samenstellen van een menu of bij het bevestigen van een event als er een ernstige allergie bij de aanwezigen zit.
+  - Past op het moment van RSVP: wijzigt iemand van "Misschien" naar "Ik ben erbij", dan telt zijn DNA direct mee.
+- **Slim voor leden:** op basis van het DNA suggesties ("Past bij jou") bij events en een korte melding als er een event aankomt dat bij hun smaak past. Houd het simpel, geen ingewikkelde algoritmes: een eenvoudige match op interesses is genoeg.
+- Bouw in `profiles` of een aparte tabel `member_dna` met strikte RLS: lid ziet en wijzigt alleen zijn eigen rij; admin en curator mogen alleen DNA lezen van leden met een RSVP "going" voor een event. Opslaan van de toestemming (`dna_consent_at`).
 
 ### 8. Techniek en eisen
 - Expo/React Native + TypeScript, Supabase (auth, Postgres met RLS, Realtime, Storage). **Eigen Supabase-project voor Verum**, nooit dat van Solace.

@@ -10,7 +10,7 @@ Verum Society, [BEDRIJFSNAAM], [ADRES], KvK [KVK-NUMMER]. Contact over privacy: 
 ## Welke gegevens we verwerken
 - **Accountgegevens:** naam, e-mailadres en wachtwoord. Het wachtwoord wordt versleuteld opgeslagen en is voor ons niet leesbaar.
 - **Aanvraag:** je antwoorden op de vragenlijst (bijvoorbeeld wat je naar Verum brengt, interesses, expertise, motivatie, Instagram).
-- **Dieetwensen en allergieën (optioneel):** alleen als je die zelf invult, zodat we bij diners en proeverijen rekening met je kunnen houden. Dit kan gezondheidsinformatie zijn. We verwerken het alleen met jouw uitdrukkelijke toestemming, die je bij het invullen geeft.
+- **Dieetwensen, allergieën en smaak (optioneel, "Verum DNA"):** alleen als je die zelf invult, zodat we bij diners, proeverijen en reserveringen rekening met je kunnen houden en events kunnen voorstellen die bij je passen. Dit kan gezondheidsinformatie zijn. We verwerken het alleen met jouw uitdrukkelijke toestemming, die je bij het invullen geeft.
 - **Profiel:** profielfoto en je gekozen thema en taal.
 - **Gebruik van de app:** je aanmeldingen voor events (RSVP) en je berichten in de chat.
 - **Technische gegevens:** een apparaattoken om pushmeldingen te sturen en basale gegevens om de app veilig en stabiel te houden.
@@ -26,7 +26,7 @@ Wij verkopen je gegevens niet en gebruiken ze niet voor reclame of tracking.
 
 ## Wie ziet je gegevens
 - **Andere leden:** je naam, profielfoto en wat je zelf deelt in profiel en chat. Je antwoorden op de aanvraagvragenlijst zijn alleen zichtbaar voor het Verum-team.
-- **Het team:** oprichters hebben toegang tot ledengegevens. De event curator ziet alleen wie zich voor een event heeft aangemeld.
+- **Het team:** oprichters hebben toegang tot ledengegevens. De event curator ziet alleen wie zich voor een event heeft aangemeld en, voor die aanwezigen, hun dieetwensen en allergieën, uitsluitend om het event goed te organiseren (bijvoorbeeld bij een restaurant).
 - **Verwerkers** die in onze opdracht werken: Supabase (database, inloggen en opslag, in de EU), Expo (updates en pushmeldingen), en Apple (distributie en pushmeldingen). Met hen zijn verwerkersafspraken gemaakt. We delen je gegevens verder niet met derden, tenzij de wet dat eist.
 
 ## Hoe lang we gegevens bewaren
