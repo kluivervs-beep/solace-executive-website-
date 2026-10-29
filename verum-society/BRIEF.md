@@ -12,7 +12,14 @@ Je bouwt **Verum Society**: een besloten members club-app voor iOS (App Store). 
 1. Lees `verum-society/HANDOFF.md` en `verum-society/mobile/README.md` op branch `claude/verum-society-app`. Daar staat al een werkende Expo/React Native-app (home met events + RSVP, vragenlijst, ledenactivatie, realtime chat, beheerpaneel, account verwijderen, berichten melden) met Supabase-schema in `verum-society/supabase/schema.sql`.
 2. Zet dit over naar de nieuwe repo `verum-society` (los van Solace, eigen Supabase-project, eigen bundle ID).
 3. Lees de **Solace-app-repo** en neem de basis over op dezelfde manier: login-flow, instellingen-scherm, build-configuratie, signing en de **update-methode**. Bij Solace pas ik kleine wijzigingen aan en dan herstart de app zichzelf met de update (over-the-air), zonder App Store. Zoek zelf uit hoe dat bij Solace is gebouwd (waarschijnlijk EAS Update/`expo-updates`) en bouw hetzelfde voor Verum. Grote updates gaan via de App Store/TestFlight.
-4. Werk in fases en lever na elke fase iets dat draait. Begin met fase 1 (MVP). Vraag alleen iets als je echt vastzit. Houd antwoorden kort.
+4. **Werkwijze met meerdere agents (zodat niets vergeten wordt):**
+   - Begin met een **takenlijst**: haal elke eis uit deze brief eruit (elk onderdeel, elke zin met "moet") en zet ze als losse taken in de takenlijst. Vink pas af wat gebouwd én getest is.
+   - Gebruik **meerdere agents**, één per werkstroom, bijvoorbeeld: (a) database/Supabase en rechten, (b) auth, aanvraag, wachtlijst en welkom, (c) events, home en curator, (d) chat, Side Quest en private rooms, (e) profiel, DNA, thema en instellingen, (f) taal NL/EN, privacy en Apple-eisen. Geef elke agent eigen bestanden/mappen zodat ze elkaar niet overschrijven. Alleen de database-agent wijzigt het schema.
+   - Laat daarna een **onafhankelijke controle-agent** de hele brief regel voor regel naast de code leggen en een lijst maken van wat ontbreekt of niet klopt (inclusief `APPLE_CHECKLIST.md`). Los alles op voor je "klaar" meldt.
+   - Laat een **testagent** de belangrijkste flows doorlopen: aanmelden, vragenlijst, activeren, wachtlijst, RSVP, chat, account verwijderen, rollen (lid/curator/admin: kan de curator écht niet bij ledendata?). Typecheck moet slagen.
+   - Houd tokens in de hand: werk in fases, geef agents korte, duidelijke opdrachten en laat ze alleen de relevante bestanden lezen.
+   - Sluit elke sessie af met `BRIEF.md` bijwerken (wat klaar is, wat open staat).
+5. Werk in fases en lever na elke fase iets dat draait. Begin met fase 1 (MVP). Vraag alleen iets als je echt vastzit. Houd antwoorden kort.
 
 ### 0b. Bestaande basic desk-app (referentie)
 Onze huidige, basic webversie staat op https://verumsociety.vercel.app/#/home (saai en niet smooth, maar sommige onderdelen horen wel in de echte app). **Bekijk die eerst** (als je er niet bij kan: laat het me weten, ik plak screenshots of tekst). Haal de belangrijkste functies, schermen en teksten eruit, neem over wat werkt, en maak het strakker en soepeler. Overlap met deze brief: volg deze brief, tenzij de desk-app iets heeft dat hier ontbreekt.
