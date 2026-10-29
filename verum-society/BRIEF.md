@@ -34,6 +34,25 @@ Je bouwt **Verum Society**: een besloten members club-app voor iOS (App Store). 
 - Status: `onboarding` → `pending` (in behandeling) → `active` of `waitlist`/`suspended`.
 - Admin bekijkt antwoorden, activeert, weigert of zet op de wachtlijst.
 
+#### Welkom na acceptatie (eenmalig)
+- Zodra een admin een lid activeert: stuur **één keer** een kleine **pushmelding** ("Welkom bij Verum, je bent binnen") en toon bij de eerstvolgende app-opening **één keer** een **welkomscherm** in de app (mooi, kort, met één knop "Ik begrijp het, naar binnen").
+- Eenmalig afdwingen: kolom `welcomed_at` in `profiles` (leeg = nog niet gezien). Na bevestigen op nu zetten. Geen herhaling bij opnieuw inloggen of op een ander toestel.
+- Inhoud draait om **respect voor elkaar**. De regels hieronder zijn tegelijk de "huisregels" die ook later terug te lezen zijn onder Instellingen. Concepttekst (pas gerust aan):
+
+  > **Welkom bij Verum, {voornaam}.**
+  > Je bent binnen. Verum is wat wij er samen van maken, en dat werkt alleen als we met respect met elkaar omgaan.
+  >
+  > • Behandel elkaar met respect, binnen en buiten de app.
+  > • Wat hier gebeurt, blijft hier. Deel geen namen, foto's of verhalen van anderen zonder toestemming.
+  > • Kom je afspraken na. Kun je niet, meld het op tijd af.
+  > • Geen pesten, geen opdringerig gedrag, geen ongewenste berichten.
+  > • Neem de ander zoals die is. Iedereen hoort hier bij.
+  >
+  > Wie zich niet aan deze afspraken houdt, kan worden verwijderd.
+  > Fijn dat je erbij bent.
+
+- Meer dan één keer bevestigen is niet nodig, maar leg vast **dat** het lid de huisregels heeft geaccepteerd (tijdstip). Dit helpt ook bij Apple-review voor user-generated content.
+
 ### 4. Wachtlijst en schaarste
 - Admin stelt in: **totaal aantal ledenplekken** (bijv. 150) en eventueel per event capaciteit.
 - Toon in de app (aanvraagscherm en home): "X van Y plekken bezet · Z mensen wachten". Dit moet exclusief voelen: niet iedereen kan erbij.
