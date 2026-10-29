@@ -21,6 +21,11 @@ Je bouwt **Verum Society**: een besloten members club-app voor iOS (App Store). 
 - **Profielfoto**: elk lid kan een foto toevoegen (Supabase Storage, bijsnijden rond).
 - **Instellingen**: zoals bij Solace (profiel, thema, meldingen, privacy, uitloggen, account verwijderen).
 
+### 1b. Taal (Nederlands en Engels)
+- De app staat **standaard op de taal van het toestel**: Nederlands als het toestel Nederlands is, anders Engels. Het lid kan dit **zelf wisselen onder Instellingen** (Automatisch / Nederlands / English) en de keuze wordt onthouden.
+- Alle teksten in de app staan in vertaalbestanden (bijv. `i18n/nl.ts` en `i18n/en.ts`), niets hardcoded in schermen. Gebruik `expo-localization` met `i18n-js` of `react-i18next`. Datums en tijden in de gekozen taal. Controleer hoe Solace dit doet en neem dat over.
+- **Het Nederlands moet verzorgd, vlot en correct zijn.** Geen letterlijk vertaalde of stijve zinnen, geen lompe woorden. Schrijf zoals een goed hotel of restaurant: warm, rustig en beleefd, met "je" (niet "u"), korte zinnen. Laat de Engelse tekst even natuurlijk klinken. Dit geldt ook voor foutmeldingen en knoppen.
+
 ### 2. Home
 - Duidelijk welke events eraan komen. Eerstvolgende event groot met **banner-afbeelding**, daaronder de rest.
 - Per event: banner, titel, datum/tijd, locatie, prijs, beschrijving, wie komt, "Ik ben erbij / Misschien / Kan niet".
@@ -35,23 +40,24 @@ Je bouwt **Verum Society**: een besloten members club-app voor iOS (App Store). 
 - Admin bekijkt antwoorden, activeert, weigert of zet op de wachtlijst.
 
 #### Welkom na acceptatie (eenmalig)
-- Zodra een admin een lid activeert: stuur **één keer** een kleine **pushmelding** ("Welkom bij Verum, je bent binnen") en toon bij de eerstvolgende app-opening **één keer** een **welkomscherm** in de app (mooi, kort, met één knop "Ik begrijp het, naar binnen").
-- Eenmalig afdwingen: kolom `welcomed_at` in `profiles` (leeg = nog niet gezien). Na bevestigen op nu zetten. Geen herhaling bij opnieuw inloggen of op een ander toestel.
-- Inhoud draait om **respect voor elkaar**. De regels hieronder zijn tegelijk de "huisregels" die ook later terug te lezen zijn onder Instellingen. Concepttekst (pas gerust aan):
+- Zodra een admin een lid activeert: **één keer** een korte pushmelding ("Welkom bij Verum") en bij de eerstvolgende opening **één keer** een kort welkomscherm met één knop ("Naar binnen").
+- Eenmalig afdwingen met kolom `welcomed_at` in `profiles` (leeg = nog niet gezien). Geen herhaling bij opnieuw inloggen of op een ander toestel.
+- Het welkomscherm is **kort en persoonlijk**: een welkom van de oprichters ({naam oprichter 1} en Keurten) met één zin over respect. De uitgebreide huisregels staan in de **voorwaarden** (bij aanmelden accepteren, terug te lezen onder Instellingen). Leg vast dat het lid de voorwaarden heeft geaccepteerd, met tijdstip.
+- Concepttekst (NL), pas gerust aan:
 
   > **Welkom bij Verum, {voornaam}.**
-  > Je bent binnen. Verum is wat wij er samen van maken, en dat werkt alleen als we met respect met elkaar omgaan.
+  > Fijn dat je erbij bent. Verum is wat we samen ervan maken, en dat begint bij respect voor elkaar.
+  > Geniet ervan.
   >
-  > • Behandel elkaar met respect, binnen en buiten de app.
-  > • Wat hier gebeurt, blijft hier. Deel geen namen, foto's of verhalen van anderen zonder toestemming.
-  > • Kom je afspraken na. Kun je niet, meld het op tijd af.
-  > • Geen pesten, geen opdringerig gedrag, geen ongewenste berichten.
-  > • Neem de ander zoals die is. Iedereen hoort hier bij.
-  >
-  > Wie zich niet aan deze afspraken houdt, kan worden verwijderd.
-  > Fijn dat je erbij bent.
+  > {naam oprichter 1} en Keurten
 
-- Meer dan één keer bevestigen is niet nodig, maar leg vast **dat** het lid de huisregels heeft geaccepteerd (tijdstip). Dit helpt ook bij Apple-review voor user-generated content.
+- Engelse versie:
+
+  > **Welcome to Verum, {first name}.**
+  > We are glad you are here. Verum is what we make of it together, and that starts with respect for one another.
+  > Enjoy.
+  >
+  > {founder 1} and Keurten
 
 ### 4. Wachtlijst en schaarste
 - Admin stelt in: **totaal aantal ledenplekken** (bijv. 150) en eventueel per event capaciteit.
